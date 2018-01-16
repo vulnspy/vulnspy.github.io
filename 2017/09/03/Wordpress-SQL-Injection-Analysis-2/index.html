@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Wordpress SQL注入分析（二） | Vulspy Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="作者：Ambulong@VulSpy  Wordpress SQL注入分析（一） Wordpress SQL注入分析（二）  在上一篇文章 Wordpress SQL注入分析（一） 中，我们分析了Wordpress中的prepare函数在什么情况下会产生SQL注入漏洞。本篇文章将分析Wordpress中的一处SQL注入。 当前最新版：Wordpress 4.8.1 第三章：发现Wordpress中">
+<meta name="keywords" content="漏洞分析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Wordpress SQL注入分析（二）">
+<meta property="og:url" content="http://blog.vulspy.com/2017/09/03/Wordpress-SQL-Injection-Analysis-2/index.html">
+<meta property="og:site_name" content="Vulspy Blog">
+<meta property="og:description" content="作者：Ambulong@VulSpy  Wordpress SQL注入分析（一） Wordpress SQL注入分析（二）  在上一篇文章 Wordpress SQL注入分析（一） 中，我们分析了Wordpress中的prepare函数在什么情况下会产生SQL注入漏洞。本篇文章将分析Wordpress中的一处SQL注入。 当前最新版：Wordpress 4.8.1 第三章：发现Wordpress中">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://blog.vulspy.com/2017/09/03/Wordpress-SQL-Injection-Analysis-2/4.1.1.png">
+<meta property="og:image" content="http://blog.vulspy.com/2017/09/03/Wordpress-SQL-Injection-Analysis-2/4.2.1.png">
+<meta property="og:updated_time" content="2017-10-25T09:21:47.240Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Wordpress SQL注入分析（二）">
+<meta name="twitter:description" content="作者：Ambulong@VulSpy  Wordpress SQL注入分析（一） Wordpress SQL注入分析（二）  在上一篇文章 Wordpress SQL注入分析（一） 中，我们分析了Wordpress中的prepare函数在什么情况下会产生SQL注入漏洞。本篇文章将分析Wordpress中的一处SQL注入。 当前最新版：Wordpress 4.8.1 第三章：发现Wordpress中">
+<meta name="twitter:image" content="http://blog.vulspy.com/2017/09/03/Wordpress-SQL-Injection-Analysis-2/4.1.1.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Vulspy Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-108901411-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-108901411-1');
+  </script>
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Vulspy Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Vulspy Blog</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.vulspy.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Wordpress-SQL-Injection-Analysis-2" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/09/03/Wordpress-SQL-Injection-Analysis-2/" class="article-date">
+  <time datetime="2017-09-02T17:14:41.000Z" itemprop="datePublished">2017-09-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Wordpress SQL注入分析（二）
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>作者：Ambulong@VulSpy</p>
+<ul>
+<li><a href="/2017/09/02/Wordpress-SQL-Injection-Analysis-1/">Wordpress SQL注入分析（一）</a></li>
+<li><a href="/2017/09/03/Wordpress-SQL-Injection-Analysis-2/">Wordpress SQL注入分析（二）</a></li>
+</ul>
+<p>在上一篇文章 <a href="/2017/09/05/Wordpress-SQL-Injection-Analysis-1/">Wordpress SQL注入分析（一）</a> 中，我们分析了Wordpress中的prepare函数在什么情况下会产生SQL注入漏洞。本篇文章将分析Wordpress中的一处SQL注入。</p>
+<p>当前最新版：Wordpress 4.8.1</p>
+<h2 id="第三章：发现Wordpress中的SQL注入"><a href="#第三章：发现Wordpress中的SQL注入" class="headerlink" title="第三章：发现Wordpress中的SQL注入"></a>第三章：发现Wordpress中的SQL注入</h2><h3 id="3-1-SQL注入分析"><a href="#3-1-SQL注入分析" class="headerlink" title="3.1 SQL注入分析"></a>3.1 SQL注入分析</h3><p>在delete_metadata函数（文件：<a href="https://github.com/WordPress/WordPress/blob/bbb8d48086b7d10908f4fda673585ee122f2851d/wp-includes/meta.php#L307" target="_blank" rel="external">/wp-includes/meta.php</a>）中存在如下代码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">delete_metadata</span><span class="params">($meta_type, $object_id, $meta_key, $meta_value = <span class="string">''</span>, $delete_all = false)</span> </span>&#123;</div><div class="line">	<span class="keyword">global</span> $wpdb;</div><div class="line">	<span class="keyword">if</span> ( ! $meta_type || ! $meta_key || ! is_numeric( $object_id ) &amp;&amp; ! $delete_all ) &#123;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">	&#125;</div><div class="line">	$object_id = absint( $object_id );</div><div class="line">	<span class="keyword">if</span> ( ! $object_id &amp;&amp; ! $delete_all ) &#123;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">	&#125;</div><div class="line">	$table = _get_meta_table( $meta_type );</div><div class="line">	<span class="keyword">if</span> ( ! $table ) &#123;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">	&#125;</div><div class="line">	$type_column = sanitize_key($meta_type . <span class="string">'_id'</span>);</div><div class="line">	$id_column = <span class="string">'user'</span> == $meta_type ? <span class="string">'umeta_id'</span> : <span class="string">'meta_id'</span>;</div><div class="line">	<span class="comment">// expected_slashed ($meta_key)</span></div><div class="line">	$meta_key = wp_unslash($meta_key);</div><div class="line">	$meta_value = wp_unslash($meta_value);</div><div class="line">	</div><div class="line">	$check = apply_filters( <span class="string">"delete_&#123;$meta_type&#125;_metadata"</span>, <span class="keyword">null</span>, $object_id, $meta_key, $meta_value, $delete_all );</div><div class="line">	<span class="keyword">if</span> ( <span class="keyword">null</span> !== $check )</div><div class="line">		<span class="keyword">return</span> (bool) $check;</div><div class="line">	$_meta_value = $meta_value;</div><div class="line">	$meta_value = maybe_serialize( $meta_value );</div><div class="line">	$query = $wpdb-&gt;prepare( <span class="string">"SELECT $id_column FROM $table WHERE meta_key = %s"</span>, $meta_key );</div><div class="line">	<span class="keyword">if</span> ( !$delete_all )</div><div class="line">		$query .= $wpdb-&gt;prepare(<span class="string">" AND $type_column = %d"</span>, $object_id );</div><div class="line">	<span class="keyword">if</span> ( <span class="string">''</span> !== $meta_value &amp;&amp; <span class="keyword">null</span> !== $meta_value &amp;&amp; <span class="keyword">false</span> !== $meta_value )</div><div class="line">		$query .= $wpdb-&gt;prepare(<span class="string">" AND meta_value = %s"</span>, $meta_value );</div><div class="line">	$meta_ids = $wpdb-&gt;get_col( $query );</div><div class="line">	<span class="keyword">if</span> ( !count( $meta_ids ) )</div><div class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">	<span class="keyword">if</span> ( $delete_all ) &#123;</div><div class="line">		$value_clause = <span class="string">''</span>;</div><div class="line">		<span class="keyword">if</span> ( <span class="string">''</span> !== $meta_value &amp;&amp; <span class="keyword">null</span> !== $meta_value &amp;&amp; <span class="keyword">false</span> !== $meta_value ) &#123;</div><div class="line">=&gt;			$value_clause = $wpdb-&gt;prepare( <span class="string">" AND meta_value = %s"</span>, $meta_value );</div><div class="line">		&#125;</div><div class="line">=&gt;		$object_ids = $wpdb-&gt;get_col( $wpdb-&gt;prepare( <span class="string">"SELECT $type_column FROM $table WHERE meta_key = %s $value_clause"</span>, $meta_key ) );</div><div class="line">	&#125;</div><div class="line">	...<span class="comment">//ignore</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我们来看下关键部分代码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> ( $delete_all ) &#123;</div><div class="line">	$value_clause = <span class="string">''</span>;</div><div class="line">	<span class="keyword">if</span> ( <span class="string">''</span> !== $meta_value &amp;&amp; <span class="keyword">null</span> !== $meta_value &amp;&amp; <span class="keyword">false</span> !== $meta_value ) &#123;</div><div class="line">=&gt;		$value_clause = $wpdb-&gt;prepare( <span class="string">" AND meta_value = %s"</span>, $meta_value );</div><div class="line">	&#125;</div><div class="line">=&gt;	$object_ids = $wpdb-&gt;get_col( $wpdb-&gt;prepare( <span class="string">"SELECT $type_column FROM $table WHERE meta_key = %s $value_clause"</span>, $meta_key ) );</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>按我们上一篇文章的分析，若<code>$meta_value</code>可控，此处就存在SQL注入漏洞。而<code>$meta_value</code>变量是作为参数从外部传进来的，所以我们需要查找调用到delete_metadata函数，且第四个参数可控的地方。</p>
+<p>我们此处直接选用<a href="https://medium.com/@slavco" target="_blank" rel="external">@slavco</a><a href="https://medium.com/websec/wordpress-sqli-bbb2afcc8e94" target="_blank" rel="external">文章</a>中的wp_delete_attachment函数（文件：<a href="https://github.com/WordPress/WordPress/blob/bbb8d48086b7d10908f4fda673585ee122f2851d/wp-includes/post.php#L4864" target="_blank" rel="external">/wp-includes/post.php</a>），代码如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">wp_delete_attachment</span><span class="params">( $post_id, $force_delete = false )</span> </span>&#123;</div><div class="line">	<span class="keyword">global</span> $wpdb;</div><div class="line">	<span class="keyword">if</span> ( !$post = $wpdb-&gt;get_row( $wpdb-&gt;prepare(<span class="string">"SELECT * FROM $wpdb-&gt;posts WHERE ID = %d"</span>, $post_id) ) )</div><div class="line">		<span class="keyword">return</span> $post;</div><div class="line">	<span class="keyword">if</span> ( <span class="string">'attachment'</span> != $post-&gt;post_type )</div><div class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">	<span class="keyword">if</span> ( !$force_delete &amp;&amp; EMPTY_TRASH_DAYS &amp;&amp; MEDIA_TRASH &amp;&amp; <span class="string">'trash'</span> != $post-&gt;post_status )</div><div class="line">		<span class="keyword">return</span> wp_trash_post( $post_id );</div><div class="line">	delete_post_meta($post_id, <span class="string">'_wp_trash_meta_status'</span>);</div><div class="line">	delete_post_meta($post_id, <span class="string">'_wp_trash_meta_time'</span>);</div><div class="line">	$meta = wp_get_attachment_metadata( $post_id );</div><div class="line">	$backup_sizes = get_post_meta( $post-&gt;ID, <span class="string">'_wp_attachment_backup_sizes'</span>, <span class="keyword">true</span> );</div><div class="line">	$file = get_attached_file( $post_id );</div><div class="line">	<span class="keyword">if</span> ( is_multisite() )</div><div class="line">		delete_transient( <span class="string">'dirsize_cache'</span> );</div><div class="line"></div><div class="line">	do_action( <span class="string">'delete_attachment'</span>, $post_id );</div><div class="line">	wp_delete_object_term_relationships($post_id, <span class="keyword">array</span>(<span class="string">'category'</span>, <span class="string">'post_tag'</span>));</div><div class="line">	wp_delete_object_term_relationships($post_id, get_object_taxonomies($post-&gt;post_type));</div><div class="line">	<span class="comment">// Delete all for any posts.</span></div><div class="line">=&gt;	delete_metadata( <span class="string">'post'</span>, <span class="keyword">null</span>, <span class="string">'_thumbnail_id'</span>, $post_id, <span class="keyword">true</span> );</div><div class="line">	...<span class="comment">//ignore</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>关键代码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">delete_metadata( <span class="string">'post'</span>, <span class="keyword">null</span>, <span class="string">'_thumbnail_id'</span>, $post_id, <span class="keyword">true</span> );</div></pre></td></tr></table></figure>
+<p>里面的$post_id同样从外部传入，所以我们继续查找调用到wp_delete_attachment函数，且第一个参数可控的地方。</p>
+<p>在文件<a href="https://github.com/WordPress/WordPress/blob/bbb8d48086b7d10908f4fda673585ee122f2851d/wp-admin/edit.php#L143" target="_blank" rel="external">/wp-admin/edit.php</a>中有个比较明显的调用点，且$post_id（即：wp_delete_attachment函数的第一个参数）可控。<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">case</span> <span class="string">'delete'</span>:</div><div class="line">	$deleted = <span class="number">0</span>;</div><div class="line">	<span class="keyword">foreach</span> ( (<span class="keyword">array</span>) $post_ids <span class="keyword">as</span> $post_id ) &#123;</div><div class="line">		$post_del = get_post($post_id);</div><div class="line">		<span class="keyword">if</span> ( !current_user_can( <span class="string">'delete_post'</span>, $post_id ) )</div><div class="line">			wp_die( __(<span class="string">'Sorry, you are not allowed to delete this item.'</span>) );</div><div class="line">		<span class="keyword">if</span> ( $post_del-&gt;post_type == <span class="string">'attachment'</span> ) &#123;</div><div class="line">=&gt;			<span class="keyword">if</span> ( ! wp_delete_attachment($post_id) )</div><div class="line">				wp_die( __(<span class="string">'Error in deleting.'</span>) );</div><div class="line">		&#125; <span class="keyword">else</span> &#123;</div><div class="line">			<span class="keyword">if</span> ( !wp_delete_post($post_id) )</div><div class="line">				wp_die( __(<span class="string">'Error in deleting.'</span>) );</div><div class="line">		&#125;</div><div class="line">		$deleted++;</div><div class="line">	&#125;</div><div class="line">	$sendback = add_query_arg(<span class="string">'deleted'</span>, $deleted, $sendback);</div><div class="line">	<span class="keyword">break</span>;</div></pre></td></tr></table></figure></p>
+<h3 id="3-2-利用条件分析"><a href="#3-2-利用条件分析" class="headerlink" title="3.2 利用条件分析"></a>3.2 利用条件分析</h3><p>我们首先简单地整理下相关文件/函数的调用过程与调用条件。</p>
+<p><strong>1. 文件：<a href="https://github.com/WordPress/WordPress/blob/bbb8d48086b7d10908f4fda673585ee122f2851d/wp-admin/edit.php#L143" target="_blank" rel="external">/wp-admin/edit.php</a></strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">...<span class="comment">//ignore</span></div><div class="line">$doaction = $wp_list_table-&gt;current_action();</div><div class="line"><span class="keyword">if</span> ( $doaction ) &#123;</div><div class="line">	check_admin_referer(<span class="string">'bulk-posts'</span>);</div><div class="line">	...<span class="comment">//ignore</span></div><div class="line">	&#125; <span class="keyword">elseif</span> ( <span class="keyword">isset</span>( $_REQUEST[<span class="string">'media'</span>] ) ) &#123;</div><div class="line">		$post_ids = $_REQUEST[<span class="string">'media'</span>];</div><div class="line">	&#125; <span class="keyword">elseif</span> ( <span class="keyword">isset</span>( $_REQUEST[<span class="string">'ids'</span>] ) ) &#123;</div><div class="line">		$post_ids = explode( <span class="string">','</span>, $_REQUEST[<span class="string">'ids'</span>] );</div><div class="line">	&#125; <span class="keyword">elseif</span> ( !<span class="keyword">empty</span>( $_REQUEST[<span class="string">'post'</span>] ) ) &#123;</div><div class="line">		$post_ids = array_map(<span class="string">'intval'</span>, $_REQUEST[<span class="string">'post'</span>]);</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">if</span> ( !<span class="keyword">isset</span>( $post_ids ) ) &#123;</div><div class="line">		wp_redirect( $sendback );</div><div class="line">		<span class="keyword">exit</span>;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">switch</span> ( $doaction ) &#123;</div><div class="line">		...<span class="comment">//ignore</span></div><div class="line">		<span class="keyword">case</span> <span class="string">'delete'</span>:</div><div class="line">			$deleted = <span class="number">0</span>;</div><div class="line">			<span class="keyword">foreach</span> ( (<span class="keyword">array</span>) $post_ids <span class="keyword">as</span> $post_id ) &#123;</div><div class="line">				$post_del = get_post($post_id);</div><div class="line">				<span class="keyword">if</span> ( !current_user_can( <span class="string">'delete_post'</span>, $post_id ) )</div><div class="line">					wp_die( __(<span class="string">'Sorry, you are not allowed to delete this item.'</span>) );</div><div class="line">				<span class="keyword">if</span> ( $post_del-&gt;post_type == <span class="string">'attachment'</span> ) &#123;</div><div class="line">					<span class="keyword">if</span> ( ! wp_delete_attachment($post_id) )</div><div class="line">						wp_die( __(<span class="string">'Error in deleting.'</span>) );</div><div class="line">				&#125; <span class="keyword">else</span> &#123;</div><div class="line">					<span class="keyword">if</span> ( !wp_delete_post($post_id) )</div><div class="line">						wp_die( __(<span class="string">'Error in deleting.'</span>) );</div><div class="line">				&#125;</div><div class="line">				$deleted++;</div><div class="line">			&#125;</div><div class="line">			...<span class="comment">//ignore</span></div></pre></td></tr></table></figure>
+<p><strong>需满足条件：</strong></p>
+<ul>
+<li><strong>$doaction = $wp_list_table-&gt;current_action() = ‘delete’</strong><br>  即：$_REQUEST[‘action’] = ‘delete’</li>
+<li><strong>通过check_admin_referer(‘bulk-posts’)</strong><br>  检查$_REQUEST[‘_wpnonce’]</li>
+<li><strong>$post_ids = $_REQUEST[‘media’] = ‘%1$%s abc’</strong><br>  传入测试注入字符串</li>
+<li><strong>current_user_can( ‘delete_post’, $post_id ) == true</strong><br>  当前用户是否有删除该文章权限</li>
+<li><strong>$post_del-&gt;post_type == ‘attachment’</strong><br>  该文章类型为attachment，可通过添加媒体功能添加</li>
+</ul>
+<p><strong>2. 文件：<a href="https://github.com/WordPress/WordPress/blob/bbb8d48086b7d10908f4fda673585ee122f2851d/wp-includes/post.php#L4864" target="_blank" rel="external">/wp-includes/post.php</a></strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">...<span class="comment">//ignore</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">wp_delete_attachment</span><span class="params">( $post_id, $force_delete = false )</span> </span>&#123;</div><div class="line">	<span class="keyword">global</span> $wpdb;</div><div class="line">	<span class="keyword">if</span> ( !$post = $wpdb-&gt;get_row( $wpdb-&gt;prepare(<span class="string">"SELECT * FROM $wpdb-&gt;posts WHERE ID = %d"</span>, $post_id) ) )</div><div class="line">		<span class="keyword">return</span> $post;</div><div class="line">	<span class="keyword">if</span> ( <span class="string">'attachment'</span> != $post-&gt;post_type )</div><div class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">	<span class="keyword">if</span> ( !$force_delete &amp;&amp; EMPTY_TRASH_DAYS &amp;&amp; MEDIA_TRASH &amp;&amp; <span class="string">'trash'</span> != $post-&gt;post_status )</div><div class="line">		<span class="keyword">return</span> wp_trash_post( $post_id );</div><div class="line">	...<span class="comment">//ignore</span></div><div class="line">	delete_metadata( <span class="string">'post'</span>, <span class="keyword">null</span>, <span class="string">'_thumbnail_id'</span>, $post_id, <span class="keyword">true</span> );</div><div class="line">...<span class="comment">//ignore</span></div></pre></td></tr></table></figure>
+<p><strong>需满足条件：</strong></p>
+<ul>
+<li><strong>$post_id对应的文章存在</strong><br>  因为有类型转换，所以可以用<code>$post_id = &#39;123 %1$%s abc&#39;</code>绕过。（转换为整数后<code>$post_id = 123</code>）</li>
+<li><strong>$post_id对应的文章类型为attachment</strong></li>
+</ul>
+<p><strong>3. 文件：<a href="https://github.com/WordPress/WordPress/blob/bbb8d48086b7d10908f4fda673585ee122f2851d/wp-includes/meta.php#L307" target="_blank" rel="external">/wp-includes/meta.php</a></strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">...<span class="comment">//ignore</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">delete_metadata</span><span class="params">($meta_type, $object_id, $meta_key, $meta_value = <span class="string">''</span>, $delete_all = false)</span> </span>&#123;</div><div class="line">	<span class="keyword">global</span> $wpdb;</div><div class="line">	<span class="keyword">if</span> ( ! $meta_type || ! $meta_key || ! is_numeric( $object_id ) &amp;&amp; ! $delete_all ) &#123;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">	&#125;</div><div class="line">	...<span class="comment">//ignore</span></div><div class="line">	$meta_key = wp_unslash($meta_key);</div><div class="line">	$meta_value = wp_unslash($meta_value);</div><div class="line"></div><div class="line">	$check = apply_filters( <span class="string">"delete_&#123;$meta_type&#125;_metadata"</span>, <span class="keyword">null</span>, $object_id, $meta_key, $meta_value, $delete_all );</div><div class="line">	<span class="keyword">if</span> ( <span class="keyword">null</span> !== $check )</div><div class="line">		<span class="keyword">return</span> (bool) $check;</div><div class="line">	$_meta_value = $meta_value;</div><div class="line">	$meta_value = maybe_serialize( $meta_value );</div><div class="line">	$query = $wpdb-&gt;prepare( <span class="string">"SELECT $id_column FROM $table WHERE meta_key = %s"</span>, $meta_key );</div><div class="line">	<span class="keyword">if</span> ( !$delete_all )</div><div class="line">		$query .= $wpdb-&gt;prepare(<span class="string">" AND $type_column = %d"</span>, $object_id );</div><div class="line">	<span class="keyword">if</span> ( <span class="string">''</span> !== $meta_value &amp;&amp; <span class="keyword">null</span> !== $meta_value &amp;&amp; <span class="keyword">false</span> !== $meta_value )</div><div class="line">		$query .= $wpdb-&gt;prepare(<span class="string">" AND meta_value = %s"</span>, $meta_value );</div><div class="line">	$meta_ids = $wpdb-&gt;get_col( $query );</div><div class="line">	<span class="keyword">if</span> ( !count( $meta_ids ) )</div><div class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">	<span class="keyword">if</span> ( $delete_all ) &#123;</div><div class="line">		$value_clause = <span class="string">''</span>;</div><div class="line">		<span class="keyword">if</span> ( <span class="string">''</span> !== $meta_value &amp;&amp; <span class="keyword">null</span> !== $meta_value &amp;&amp; <span class="keyword">false</span> !== $meta_value ) &#123;</div><div class="line">			$value_clause = $wpdb-&gt;prepare( <span class="string">" AND meta_value = %s"</span>, $meta_value );</div><div class="line">		&#125;</div><div class="line">		$object_ids = $wpdb-&gt;get_col( $wpdb-&gt;prepare( <span class="string">"SELECT $type_column FROM $table WHERE meta_key = %s $value_clause"</span>, $meta_key ) );</div><div class="line">	&#125;</div><div class="line">...<span class="comment">//ignore</span></div></pre></td></tr></table></figure>
+<p><strong>需满足条件：</strong></p>
+<ul>
+<li><strong>“SELECT meta_id FROM wp_postmeta WHERE meta_key = ‘_thumbnail_id’ AND meta_value = ‘xxx’”存在</strong><br>  即：需要使得wp_postmeta表内的_thumbnail_id的内容与我们的SQL语句一样（即内容为’123 %2$%s abc’）。</li>
+</ul>
+<p><strong>wp_postmeta表内的meta_key和meta_value字段是可通过<code>写文章</code>功能内的<code>自定义栏目</code>添加的。但是禁止添加名称以<code>下划线</code>开头的自定义栏目，所以正常情况下我们无法添加_thumbnail_id栏目。</strong></p>
+<p>关于如果绕过<code>下划线</code>检查添加post meta，请见下一篇文章：</p>
+<ul>
+<li><a href="/2017/09/05/Wordpress-POST-META-Check-Bypass/">Wordpress POST META_NAME校验绕过</a></li>
+</ul>
+<h3 id="3-3-SQL注入漏洞利用"><a href="#3-3-SQL注入漏洞利用" class="headerlink" title="3.3 SQL注入漏洞利用"></a>3.3 SQL注入漏洞利用</h3><ol>
+<li>添加媒体（/wp-admin/media-new.php），并记住媒体ID（这里的ID是55）。</li>
+</ol>
+<img src="/2017/09/03/Wordpress-SQL-Injection-Analysis-2/4.1.1.png" alt="添加媒体" title="添加媒体">
+<ol>
+<li>获取_wpnonce。<br>打开<code>/wp-admin/edit.php?post_type=post</code>，找到posts-filter内的_wpnonce（这里的_wpnonce是301ee97c09）</li>
+</ol>
+<img src="/2017/09/03/Wordpress-SQL-Injection-Analysis-2/4.2.1.png" alt="添加媒体" title="添加媒体">
+<ol>
+<li><p>添加/修改POST META，使存在meta_key为’_thumbnail_id’的meta_value为<code>&#39;55 %1$%s or sleep(10)#&#39;</code></p>
+</li>
+<li><p>访问<code>/wp-admin/edit.php?action=delete&amp;_wpnonce=301ee97c09&amp;ids=55 %1$%s or sleep(10)#</code>，触发SQL注入漏洞</p>
+</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.vulspy.com/2017/09/03/Wordpress-SQL-Injection-Analysis-2/" data-id="cj9y5qhhk0007lqpva9rs7qu0" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/漏洞分析/">漏洞分析</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/09/05/Wordpress-POST-META-Check-Bypass/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Wordpress POST META_NAME校验绕过
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/09/02/Wordpress-SQL-Injection-Analysis-1/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Wordpress SQL注入分析（一）</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/渗透测试/">渗透测试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/漏洞分析/">漏洞分析</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/11/09/Wordpress-4-8-2-SQL-Injection-POC/">Wordpress &lt;= 4.8.2 SQL Injection POC</a>
+          </li>
+        
+          <li>
+            <a href="/2017/09/05/Wordpress-POST-META-Check-Bypass/">Wordpress POST META_NAME校验绕过</a>
+          </li>
+        
+          <li>
+            <a href="/2017/09/03/Wordpress-SQL-Injection-Analysis-2/">Wordpress SQL注入分析（二）</a>
+          </li>
+        
+          <li>
+            <a href="/2017/09/02/Wordpress-SQL-Injection-Analysis-1/">Wordpress SQL注入分析（一）</a>
+          </li>
+        
+          <li>
+            <a href="/2017/08/12/SSRF-And-URL-Related-TIPS/">SSRF And URL Related TIPS</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 <a href="mailto:zeng.ambulong@gmail.com">Ambulong</a><br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Vulspy Blog</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

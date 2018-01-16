@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Local Privilege Escalation Tips | Vulspy Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Author: Ambulong@vulspy PHP SESSION phpMyAdmin ownCloud  PHP Disable Functions Bypass Shellshock(CVE-2014-6271) Imagemagick Ghostscript FFmpeg  Port 1099 - Java RMI (Java Deserialization RCE) 2375 - D">
+<meta name="keywords" content="渗透测试">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Local Privilege Escalation Tips">
+<meta property="og:url" content="http://blog.vulspy.com/2017/08/02/Local-Privilege-Escalation-Tips/index.html">
+<meta property="og:site_name" content="Vulspy Blog">
+<meta property="og:description" content="Author: Ambulong@vulspy PHP SESSION phpMyAdmin ownCloud  PHP Disable Functions Bypass Shellshock(CVE-2014-6271) Imagemagick Ghostscript FFmpeg  Port 1099 - Java RMI (Java Deserialization RCE) 2375 - D">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2017-09-04T16:58:00.963Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Local Privilege Escalation Tips">
+<meta name="twitter:description" content="Author: Ambulong@vulspy PHP SESSION phpMyAdmin ownCloud  PHP Disable Functions Bypass Shellshock(CVE-2014-6271) Imagemagick Ghostscript FFmpeg  Port 1099 - Java RMI (Java Deserialization RCE) 2375 - D">
+  
+    <link rel="alternate" href="/atom.xml" title="Vulspy Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-108901411-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-108901411-1');
+  </script>
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Vulspy Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Vulspy Blog</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.vulspy.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Local-Privilege-Escalation-Tips" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2017/08/02/Local-Privilege-Escalation-Tips/" class="article-date">
+  <time datetime="2017-08-01T16:00:00.000Z" itemprop="datePublished">2017-08-02</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Local Privilege Escalation Tips
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Author: Ambulong@vulspy</p>
+<h1 id="PHP-SESSION"><a href="#PHP-SESSION" class="headerlink" title="PHP SESSION"></a>PHP SESSION</h1><ul>
+<li>phpMyAdmin</li>
+<li>ownCloud</li>
+</ul>
+<h1 id="PHP-Disable-Functions-Bypass"><a href="#PHP-Disable-Functions-Bypass" class="headerlink" title="PHP Disable Functions Bypass"></a>PHP Disable Functions Bypass</h1><ul>
+<li>Shellshock(CVE-2014-6271)</li>
+<li>Imagemagick</li>
+<li>Ghostscript</li>
+<li>FFmpeg</li>
+</ul>
+<h1 id="Port"><a href="#Port" class="headerlink" title="Port"></a>Port</h1><ul>
+<li>1099 - Java RMI (Java Deserialization RCE)</li>
+<li>2375 - Docker Remote API</li>
+<li>6379 - Redis</li>
+<li>8161 - ActiveMQ (CVE-2016-3088)</li>
+<li>9000 - PHP-CGI/FastCGI RCE</li>
+<li>9001 - Supervisord (CVE-2017-11610)</li>
+<li>9200 - Elasticsearch</li>
+<li>11211 - Memcached</li>
+<li>27017 - MongoDB</li>
+<li>27018 - MongoDB</li>
+<li>27019 - MongoDB</li>
+</ul>
+<h1 id="Service"><a href="#Service" class="headerlink" title="Service"></a>Service</h1><ul>
+<li><p>Shellshock (CVE-2014-6271)</p>
+<ul>
+<li>CGI-based web server</li>
+<li>DHCP</li>
+<li>Git/Subversion</li>
+<li>Qmail</li>
+<li>OpenSSH</li>
+</ul>
+</li>
+<li><p>Cisco Prime Infrastructure (CVE-2016-1291)<br><a href="https://github.com/CoalfireLabs/java_deserialization_exploits" target="_blank" rel="external">CoalfireLabs/java_deserialization_exploits</a></p>
+</li>
+<li><p>IBM WebSphere (CVE-2015-7450)<br><a href="https://github.com/CoalfireLabs/java_deserialization_exploits" target="_blank" rel="external">CoalfireLabs/java_deserialization_exploits</a></p>
+</li>
+<li><p>OpenNMS Java Object Deserialization RCE<br><a href="https://github.com/CoalfireLabs/java_deserialization_exploits" target="_blank" rel="external">CoalfireLabs/java_deserialization_exploits</a></p>
+</li>
+<li><p>Jenkins CLI (CVE-2015-8103)<br><a href="https://github.com/CoalfireLabs/java_deserialization_exploits" target="_blank" rel="external">CoalfireLabs/java_deserialization_exploits</a></p>
+</li>
+<li><p>Jenkins Groovy XML RCE (CVE-2016-0792)<br><a href="https://github.com/CoalfireLabs/java_deserialization_exploits" target="_blank" rel="external">CoalfireLabs/java_deserialization_exploits</a></p>
+</li>
+<li><p>Oracle WebLogic Server (CVE-2016-3510)<br><a href="https://github.com/CoalfireLabs/java_deserialization_exploits" target="_blank" rel="external">CoalfireLabs/java_deserialization_exploits</a></p>
+</li>
+<li><p>Jenkins Unauthenticated Code Execution (CVE-2017-1000353)<br><a href="https://blogs.securiteam.com/index.php/archives/3171" target="_blank" rel="external">SSD Advisory – CloudBees Jenkins Unauthenticated Code Execution</a></p>
+</li>
+<li><p>JBOSS</p>
+</li>
+<li><p>Struts 2 RCE</p>
+<ul>
+<li>S2-001</li>
+<li>S2-003 </li>
+<li>S2-005 (CVE-2010-1870)</li>
+<li>S2-007</li>
+<li>S2-008</li>
+<li>S2-009 (CVE-2011-3923)</li>
+<li>S2-012 (CVE-2013-1965)</li>
+<li>S2-013 (CVE-2013-1966)</li>
+<li>S2-015 (CVE-2013-2135, CVE-2013-2134)</li>
+<li>S2-016 (CVE-2013-2251)</li>
+<li>S2-019 (CVE-2013-4316)</li>
+<li>S2-020 (CVE-2014-0094)</li>
+<li>S2-021 (CVE-2014-0112, CVE-2014-0113)</li>
+<li>S2-022 (CVE-2014-0116)</li>
+<li>S2-029 (CVE-2016-0785)</li>
+<li>S2-032 (CVE-2016-3081)</li>
+<li>S2-033 (CVE-2016-3087)</li>
+<li>S2-036 (CVE-2016-4461)</li>
+<li>S2-037 (CVE-2016-4438)</li>
+<li>S2-045 (CVE-2017-5638)</li>
+<li>S2-046 (CVE-2017-5638)</li>
+<li>S2-048 (CVE-2017-9791)</li>
+<li>S2-devMode</li>
+</ul>
+</li>
+</ul>
+<ul>
+<li>Apache Tomcat</li>
+</ul>
+<h1 id="PATH"><a href="#PATH" class="headerlink" title="PATH"></a>PATH</h1><ul>
+<li>PHP SESSION SAVE PATH<ul>
+<li>/tmp</li>
+<li>/var/lib/php/</li>
+<li>/var/lib/php5/</li>
+<li>/var/lib/php/sessions/</li>
+<li>/var/lib/php5/sessions/</li>
+</ul>
+</li>
+<li>NGINX CONFIG<ul>
+<li>/usr/local/nginx/conf/nginx.conf </li>
+<li>/usr/local/nginx/nginx.conf</li>
+<li>/etc/nginx/nginx.conf</li>
+</ul>
+</li>
+<li>APACHE CONFIG<ul>
+<li>/etc/httpd/conf/httpd.conf</li>
+<li>/usr/local/apache/conf/httpd.conf</li>
+<li>/usr/local/apache2/conf/httpd.conf</li>
+<li>/etc/httpd/conf.d</li>
+<li>/etc/apache2/conf/httpd.conf</li>
+<li>/etc/apache2/httpd.conf</li>
+<li>/etc/apache2/sites-available/000-default.conf</li>
+<li>/etc/apache2/sites-enabled/000-default.conf</li>
+<li>/apps/apache/conf/httpd.conf</li>
+<li>/apps/apache2/conf/httpd.conf</li>
+<li>/etc/httpd/conf.d/vhosts.conf</li>
+</ul>
+</li>
+<li>PHP INI<ul>
+<li>/etc/php.ini</li>
+<li>/etc/php/7.0/cli/php.ini</li>
+<li>/etc/php/7.0/fpm/php.ini</li>
+<li>/etc/php5/apache2/php.ini</li>
+<li>/etc/php5/cli/php.ini</li>
+<li>/usr/local/php/etc/php.ini</li>
+<li>/usr/local/Zend/etc/php.ini</li>
+<li>/usr/local/php/lib/php.ini</li>
+</ul>
+</li>
+<li>OTHER<ul>
+<li>/etc/passwd</li>
+<li>/etc/shadow</li>
+<li>/etc/group</li>
+<li>/etc/gshadow</li>
+<li>/etc/rc.local</li>
+<li>/etc/issue</li>
+<li>/etc/issue.net</li>
+<li>/proc/version</li>
+<li>/proc/self/environ</li>
+<li>/etc/sysconfig/network-scripts/ifcfg-eth0</li>
+<li>/etc/init.d/httpd</li>
+<li>/etc/init.d/mysqld</li>
+<li>/etc/syslog.conf</li>
+<li>/var/log/yum.log</li>
+<li>/etc/sysconfig/iptables-config</li>
+<li>/var/log/cron</li>
+<li>.bash_history</li>
+<li>.mysql_history</li>
+<li>.viminfo</li>
+<li>/etc/vsftpd/vsftpd.conf</li>
+<li>/etc/logrotate.d/vsftpd.log</li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.vulspy.com/2017/08/02/Local-Privilege-Escalation-Tips/" data-id="cj9y5qhgt0000lqpv795wc2ek" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/渗透测试/">渗透测试</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/08/12/SSRF-And-URL-Related-TIPS/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          SSRF And URL Related TIPS
+        
+      </div>
+    </a>
+  
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/渗透测试/">渗透测试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/漏洞分析/">漏洞分析</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2017/11/09/Wordpress-4-8-2-SQL-Injection-POC/">Wordpress &lt;= 4.8.2 SQL Injection POC</a>
+          </li>
+        
+          <li>
+            <a href="/2017/09/05/Wordpress-POST-META-Check-Bypass/">Wordpress POST META_NAME校验绕过</a>
+          </li>
+        
+          <li>
+            <a href="/2017/09/03/Wordpress-SQL-Injection-Analysis-2/">Wordpress SQL注入分析（二）</a>
+          </li>
+        
+          <li>
+            <a href="/2017/09/02/Wordpress-SQL-Injection-Analysis-1/">Wordpress SQL注入分析（一）</a>
+          </li>
+        
+          <li>
+            <a href="/2017/08/12/SSRF-And-URL-Related-TIPS/">SSRF And URL Related TIPS</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2017 <a href="mailto:zeng.ambulong@gmail.com">Ambulong</a><br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Vulspy Blog</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
