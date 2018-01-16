@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>Vulspy Blog</title>
+  <title>Vulnspy Blog</title>
   
   <link href="/atom.xml" rel="self"/>
   
-  <link href="http://blog.vulspy.com/"/>
-  <updated>2017-11-11T02:09:25.111Z</updated>
-  <id>http://blog.vulspy.com/</id>
+  <link href="http://blog.vulnspy.com/"/>
+  <updated>2018-01-16T11:23:16.917Z</updated>
+  <id>http://blog.vulnspy.com/</id>
   
   <author>
     <name>Ambulong</name>
@@ -17,12 +17,12 @@
   
   <entry>
     <title>Wordpress &lt;= 4.8.2 SQL Injection POC</title>
-    <link href="http://blog.vulspy.com/2017/11/09/Wordpress-4-8-2-SQL-Injection-POC/"/>
-    <id>http://blog.vulspy.com/2017/11/09/Wordpress-4-8-2-SQL-Injection-POC/</id>
+    <link href="http://blog.vulnspy.com/2017/11/09/Wordpress-4-8-2-SQL-Injection-POC/"/>
+    <id>http://blog.vulnspy.com/2017/11/09/Wordpress-4-8-2-SQL-Injection-POC/</id>
     <published>2017-11-09T11:13:04.000Z</published>
-    <updated>2017-11-11T02:09:25.111Z</updated>
+    <updated>2018-01-16T11:23:16.917Z</updated>
     
-    <content type="html"><![CDATA[<p>Author: Ambulong@vulspy</p>
+    <content type="html"><![CDATA[<p>Author: Ambulong</p>
 <p>I found this vulnerability after reading <a href="https://medium.com/websec/wordpress-sqli-bbb2afcc8e94" target="_blank" rel="external">slavco’s post</a>, and reported it to Wordpress Team via Hackerone on Sep. 2nd, 2017. But, unfortunately, WordPress team didn’t pay attention to this report too.</p>
 <h2 id="SQL-Injection-Details"><a href="#SQL-Injection-Details" class="headerlink" title="# SQL Injection Details"></a># SQL Injection Details</h2><ul>
 <li><a href="https://medium.com/websec/wordpress-sqli-bbb2afcc8e94" target="_blank" rel="external">Wordpress SQLi by slavco</a></li>
@@ -61,24 +61,24 @@
     
     <summary type="html">
     
-      &lt;p&gt;Author: Ambulong@vulspy&lt;/p&gt;
-&lt;p&gt;I found this vulnerability after reading &lt;a href=&quot;https://medium.com/websec/wordpress-sqli-bbb2afcc8e94&quot; t
+      &lt;p&gt;Author: Ambulong&lt;/p&gt;
+&lt;p&gt;I found this vulnerability after reading &lt;a href=&quot;https://medium.com/websec/wordpress-sqli-bbb2afcc8e94&quot; target=&quot;
     
     </summary>
     
     
-      <category term="漏洞分析" scheme="http://blog.vulspy.com/tags/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"/>
+      <category term="漏洞分析" scheme="http://blog.vulnspy.com/tags/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"/>
     
   </entry>
   
   <entry>
     <title>Wordpress POST META_NAME校验绕过</title>
-    <link href="http://blog.vulspy.com/2017/09/05/Wordpress-POST-META-Check-Bypass/"/>
-    <id>http://blog.vulspy.com/2017/09/05/Wordpress-POST-META-Check-Bypass/</id>
+    <link href="http://blog.vulnspy.com/2017/09/05/Wordpress-POST-META-Check-Bypass/"/>
+    <id>http://blog.vulnspy.com/2017/09/05/Wordpress-POST-META-Check-Bypass/</id>
     <published>2017-09-04T16:00:00.000Z</published>
-    <updated>2017-11-09T10:55:51.206Z</updated>
+    <updated>2018-01-16T11:23:30.141Z</updated>
     
-    <content type="html"><![CDATA[<p>作者：Ambulong@vulspy</p>
+    <content type="html"><![CDATA[<p>作者：Ambulong</p>
 <p>Wordpress中的POST META为<code>文章</code>的<code>自定义栏目/字段</code>，就如一篇<code>文章</code>中会有<code>标题</code>、<code>作者</code>等字段，但是对于有些主题/插件来说，<code>文章</code>中的自有字段显得不够用，就需要用到<code>自定义栏目/字段</code>。</p>
 <p><em>（该操作的位置在<code>添加/编辑文章</code>，在文本编辑框下方的<code>自定义栏目</code>，如果没有找到<code>自定义栏目</code>，需要在右上角的<code>显示选项</code>内将<code>自定义栏目</code>勾选。）</em></p>
 <p><code>自定义栏目/字段</code>的数据以<code>meta_key</code>（字段/栏目名）-&gt;<code>meta_value</code>（值）的形式存放在<code>wp_postmeta</code>表内。以<code>下划线</code>开头的<code>meta_key</code>（字段/栏目名）被认为是保留字段，不允许用户添加。</p>
@@ -113,24 +113,24 @@
     
     <summary type="html">
     
-      &lt;p&gt;作者：Ambulong@vulspy&lt;/p&gt;
-&lt;p&gt;Wordpress中的POST META为&lt;code&gt;文章&lt;/code&gt;的&lt;code&gt;自定义栏目/字段&lt;/code&gt;，就如一篇&lt;code&gt;文章&lt;/code&gt;中会有&lt;code&gt;标题&lt;/code&gt;、&lt;code&gt;作者&lt;/code
+      &lt;p&gt;作者：Ambulong&lt;/p&gt;
+&lt;p&gt;Wordpress中的POST META为&lt;code&gt;文章&lt;/code&gt;的&lt;code&gt;自定义栏目/字段&lt;/code&gt;，就如一篇&lt;code&gt;文章&lt;/code&gt;中会有&lt;code&gt;标题&lt;/code&gt;、&lt;code&gt;作者&lt;/code&gt;等字段，但是
     
     </summary>
     
     
-      <category term="漏洞分析" scheme="http://blog.vulspy.com/tags/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"/>
+      <category term="漏洞分析" scheme="http://blog.vulnspy.com/tags/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"/>
     
   </entry>
   
   <entry>
     <title>Wordpress SQL注入分析（二）</title>
-    <link href="http://blog.vulspy.com/2017/09/03/Wordpress-SQL-Injection-Analysis-2/"/>
-    <id>http://blog.vulspy.com/2017/09/03/Wordpress-SQL-Injection-Analysis-2/</id>
+    <link href="http://blog.vulnspy.com/2017/09/03/Wordpress-SQL-Injection-Analysis-2/"/>
+    <id>http://blog.vulnspy.com/2017/09/03/Wordpress-SQL-Injection-Analysis-2/</id>
     <published>2017-09-02T17:14:41.000Z</published>
-    <updated>2017-10-25T09:21:47.240Z</updated>
+    <updated>2018-01-16T11:23:41.457Z</updated>
     
-    <content type="html"><![CDATA[<p>作者：Ambulong@VulSpy</p>
+    <content type="html"><![CDATA[<p>作者：Ambulong</p>
 <ul>
 <li><a href="/2017/09/02/Wordpress-SQL-Injection-Analysis-1/">Wordpress SQL注入分析（一）</a></li>
 <li><a href="/2017/09/03/Wordpress-SQL-Injection-Analysis-2/">Wordpress SQL注入分析（二）</a></li>
@@ -195,26 +195,26 @@
     
     <summary type="html">
     
-      &lt;p&gt;作者：Ambulong@VulSpy&lt;/p&gt;
+      &lt;p&gt;作者：Ambulong&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&quot;/2017/09/02/Wordpress-SQL-Injection-Analysis-1/&quot;&gt;Wordpress SQL注入分析（一）&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;/201
+&lt;li&gt;&lt;a href=&quot;/2017/09/03
     
     </summary>
     
     
-      <category term="漏洞分析" scheme="http://blog.vulspy.com/tags/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"/>
+      <category term="漏洞分析" scheme="http://blog.vulnspy.com/tags/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"/>
     
   </entry>
   
   <entry>
     <title>Wordpress SQL注入分析（一）</title>
-    <link href="http://blog.vulspy.com/2017/09/02/Wordpress-SQL-Injection-Analysis-1/"/>
-    <id>http://blog.vulspy.com/2017/09/02/Wordpress-SQL-Injection-Analysis-1/</id>
+    <link href="http://blog.vulnspy.com/2017/09/02/Wordpress-SQL-Injection-Analysis-1/"/>
+    <id>http://blog.vulnspy.com/2017/09/02/Wordpress-SQL-Injection-Analysis-1/</id>
     <published>2017-09-01T16:50:59.000Z</published>
-    <updated>2017-09-05T09:11:07.759Z</updated>
+    <updated>2018-01-16T11:23:36.733Z</updated>
     
-    <content type="html"><![CDATA[<p>作者：Ambulong@vulspy</p>
+    <content type="html"><![CDATA[<p>作者：Ambulong</p>
 <ul>
 <li><a href="/2017/09/02/Wordpress-SQL-Injection-Analysis-1/">Wordpress SQL注入分析（一）</a></li>
 <li><a href="/2017/09/03/Wordpress-SQL-Injection-Analysis-2/">Wordpress SQL注入分析（二）</a></li>
@@ -258,7 +258,7 @@
 <p>sprintf/vsprintf的格式化字符串支持<strong>Argument numbering/swapping</strong>（中文直译：参数交换），即可以指定格式化标识表示的是第几个参数。<br>例一：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">echo</span> sprintf(<span class="string">'%2$s %3$s %1$s'</span>, <span class="string">'a1'</span>, <span class="string">'a2'</span>, <span class="string">'a3'</span>);</div><div class="line"><span class="comment">//输出：a2 a3 a1</span></div></pre></td></tr></table></figure></p>
 <p>例二：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">echo</span> sprintf(<span class="string">'%s %s %1$s'</span>, <span class="string">'a1'</span>, <span class="string">'a2'</span>, <span class="string">'a3'</span>);</div><div class="line"><span class="comment">//输出：a1 a2 a1</span></div></pre></td></tr></table></figure></p>
 <p>例三：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">echo</span> sprintf(<span class="string">'%s %s %1$\'.5s'</span>, <span class="string">'a1'</span>, <span class="string">'a2'</span>, <span class="string">'a3'</span>);</div><div class="line"><span class="comment">//输出：a1 a2 ...a1</span></div></pre></td></tr></table></figure></p>
-<p><em>注：Chapter 1由<a href="http://blog.vulspy.com/">@Ambulong</a>与<a href="http://yqxiaojunjie.com/" target="_blank" rel="external">@乐清小俊杰</a>共同完成。</em></p>
+<p><em>注：Chapter 1由<a href="http://blog.vulspy.com/" target="_blank" rel="external">@Ambulong</a>与<a href="http://yqxiaojunjie.com/" target="_blank" rel="external">@乐清小俊杰</a>共同完成。</em></p>
 <h2 id="第二章-wpdb类中的prepare-函数"><a href="#第二章-wpdb类中的prepare-函数" class="headerlink" title="第二章: wpdb类中的prepare()函数"></a>第二章: wpdb类中的prepare()函数</h2><p>在Wordpress的数据库操作类wpdb(文件: <a href="https://github.com/WordPress/WordPress/blob/bbb8d48086b7d10908f4fda673585ee122f2851d/wp-includes/wp-db.php#L1228" target="_blank" rel="external">/wp-includes/wp-db.php</a>)中有一个prepare()函数，该函数主要用来对将要执行SQL语句进行预处理，如：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$wpdb-&gt;prepare( <span class="string">"SELECT * FROM `table` WHERE `column` = %s AND `field` = %d"</span>, <span class="string">'foo'</span>, <span class="number">1337</span> );</div></pre></td></tr></table></figure></p>
 <p>以上例子将会返回下列字符串:<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="string">`table`</span> <span class="keyword">WHERE</span> <span class="string">`column`</span> = <span class="string">'foo'</span> <span class="keyword">AND</span> <span class="string">`field`</span> = <span class="number">1337</span><span class="string">"</span></div></pre></td></tr></table></figure></p>
 <p>但是该函数没有并没有对传入的$query参数进行严格的过滤，如果$query参数内容或部分内容可控，就可能导致SQL注入。</p>
@@ -283,26 +283,26 @@
     
     <summary type="html">
     
-      &lt;p&gt;作者：Ambulong@vulspy&lt;/p&gt;
+      &lt;p&gt;作者：Ambulong&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&quot;/2017/09/02/Wordpress-SQL-Injection-Analysis-1/&quot;&gt;Wordpress SQL注入分析（一）&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;/201
+&lt;li&gt;&lt;a href=&quot;/2017/09/03
     
     </summary>
     
     
-      <category term="漏洞分析" scheme="http://blog.vulspy.com/tags/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"/>
+      <category term="漏洞分析" scheme="http://blog.vulnspy.com/tags/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"/>
     
   </entry>
   
   <entry>
     <title>SSRF And URL Related TIPS</title>
-    <link href="http://blog.vulspy.com/2017/08/12/SSRF-And-URL-Related-TIPS/"/>
-    <id>http://blog.vulspy.com/2017/08/12/SSRF-And-URL-Related-TIPS/</id>
+    <link href="http://blog.vulnspy.com/2017/08/12/SSRF-And-URL-Related-TIPS/"/>
+    <id>http://blog.vulnspy.com/2017/08/12/SSRF-And-URL-Related-TIPS/</id>
     <published>2017-08-11T16:00:01.000Z</published>
-    <updated>2017-09-04T16:58:11.863Z</updated>
+    <updated>2018-01-16T11:23:07.033Z</updated>
     
-    <content type="html"><![CDATA[<p>Author: Ambulong@vulspy</p>
+    <content type="html"><![CDATA[<p>Author: Ambulong</p>
 <h1 id="SSRF-Related-Tips"><a href="#SSRF-Related-Tips" class="headerlink" title="SSRF Related Tips"></a>SSRF Related Tips</h1><h2 id="Vulnerabilities"><a href="#Vulnerabilities" class="headerlink" title="Vulnerabilities"></a>Vulnerabilities</h2><ul>
 <li>Weblogic SSRF</li>
 <li>DokuWiki<ul>
@@ -369,24 +369,24 @@
     
     <summary type="html">
     
-      &lt;p&gt;Author: Ambulong@vulspy&lt;/p&gt;
-&lt;h1 id=&quot;SSRF-Related-Tips&quot;&gt;&lt;a href=&quot;#SSRF-Related-Tips&quot; class=&quot;headerlink&quot; title=&quot;SSRF Related Tips&quot;&gt;&lt;/a&gt;SSRF
+      &lt;p&gt;Author: Ambulong&lt;/p&gt;
+&lt;h1 id=&quot;SSRF-Related-Tips&quot;&gt;&lt;a href=&quot;#SSRF-Related-Tips&quot; class=&quot;headerlink&quot; title=&quot;SSRF Related Tips&quot;&gt;&lt;/a&gt;SSRF Relate
     
     </summary>
     
     
-      <category term="渗透测试" scheme="http://blog.vulspy.com/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
+      <category term="渗透测试" scheme="http://blog.vulnspy.com/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
     
   </entry>
   
   <entry>
     <title>Local Privilege Escalation Tips</title>
-    <link href="http://blog.vulspy.com/2017/08/02/Local-Privilege-Escalation-Tips/"/>
-    <id>http://blog.vulspy.com/2017/08/02/Local-Privilege-Escalation-Tips/</id>
+    <link href="http://blog.vulnspy.com/2017/08/02/Local-Privilege-Escalation-Tips/"/>
+    <id>http://blog.vulnspy.com/2017/08/02/Local-Privilege-Escalation-Tips/</id>
     <published>2017-08-01T16:00:00.000Z</published>
-    <updated>2017-09-04T16:58:00.963Z</updated>
+    <updated>2018-01-16T11:23:10.889Z</updated>
     
-    <content type="html"><![CDATA[<p>Author: Ambulong@vulspy</p>
+    <content type="html"><![CDATA[<p>Author: Ambulong</p>
 <h1 id="PHP-SESSION"><a href="#PHP-SESSION" class="headerlink" title="PHP SESSION"></a>PHP SESSION</h1><ul>
 <li>phpMyAdmin</li>
 <li>ownCloud</li>
@@ -536,14 +536,14 @@
     
     <summary type="html">
     
-      &lt;p&gt;Author: Ambulong@vulspy&lt;/p&gt;
+      &lt;p&gt;Author: Ambulong&lt;/p&gt;
 &lt;h1 id=&quot;PHP-SESSION&quot;&gt;&lt;a href=&quot;#PHP-SESSION&quot; class=&quot;headerlink&quot; title=&quot;PHP SESSION&quot;&gt;&lt;/a&gt;PHP SESSION&lt;/h1&gt;&lt;ul&gt;
-&lt;
+&lt;li&gt;phpM
     
     </summary>
     
     
-      <category term="渗透测试" scheme="http://blog.vulspy.com/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
+      <category term="渗透测试" scheme="http://blog.vulnspy.com/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/"/>
     
   </entry>
   

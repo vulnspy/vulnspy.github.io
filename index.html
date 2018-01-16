@@ -3,17 +3,17 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Vulspy Blog</title>
+  <title>Vulnspy Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta property="og:type" content="website">
-<meta property="og:title" content="Vulspy Blog">
-<meta property="og:url" content="http://blog.vulspy.com/index.html">
-<meta property="og:site_name" content="Vulspy Blog">
+<meta property="og:title" content="Vulnspy Blog">
+<meta property="og:url" content="http://blog.vulnspy.com/index.html">
+<meta property="og:site_name" content="Vulnspy Blog">
 <meta property="og:locale" content="zh-CN">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Vulspy Blog">
+<meta name="twitter:title" content="Vulnspy Blog">
   
-    <link rel="alternate" href="/atom.xml" title="Vulspy Blog" type="application/atom+xml">
+    <link rel="alternate" href="/atom.xml" title="Vulnspy Blog" type="application/atom+xml">
   
   
     <link rel="icon" href="/favicon.png">
@@ -44,7 +44,7 @@
   <div id="header-outer" class="outer">
     <div id="header-title" class="inner">
       <h1 id="logo-wrap">
-        <a href="/" id="logo">Vulspy Blog</a>
+        <a href="/" id="logo">Vulnspy Blog</a>
       </h1>
       
     </div>
@@ -64,7 +64,7 @@
         <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.vulspy.com"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.vulnspy.com"></form>
       </div>
     </div>
   </div>
@@ -94,7 +94,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>Author: Ambulong@vulspy</p>
+        <p>Author: Ambulong</p>
 <p>I found this vulnerability after reading <a href="https://medium.com/websec/wordpress-sqli-bbb2afcc8e94" target="_blank" rel="external">slavco’s post</a>, and reported it to Wordpress Team via Hackerone on Sep. 2nd, 2017. But, unfortunately, WordPress team didn’t pay attention to this report too.</p>
 <h2 id="SQL-Injection-Details"><a href="#SQL-Injection-Details" class="headerlink" title="# SQL Injection Details"></a># SQL Injection Details</h2><ul>
 <li><a href="https://medium.com/websec/wordpress-sqli-bbb2afcc8e94" target="_blank" rel="external">Wordpress SQLi by slavco</a></li>
@@ -133,7 +133,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.vulspy.com/2017/11/09/Wordpress-4-8-2-SQL-Injection-POC/" data-id="cj9y5qhhr0009lqpvklx3pork" class="article-share-link">Share</a>
+      <a data-url="http://blog.vulnspy.com/2017/11/09/Wordpress-4-8-2-SQL-Injection-POC/" data-id="cjchjwq7s0003g0s6j56dz1xw" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/漏洞分析/">漏洞分析</a></li></ul>
@@ -167,7 +167,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>作者：Ambulong@vulspy</p>
+        <p>作者：Ambulong</p>
 <p>Wordpress中的POST META为<code>文章</code>的<code>自定义栏目/字段</code>，就如一篇<code>文章</code>中会有<code>标题</code>、<code>作者</code>等字段，但是对于有些主题/插件来说，<code>文章</code>中的自有字段显得不够用，就需要用到<code>自定义栏目/字段</code>。</p>
 <p><em>（该操作的位置在<code>添加/编辑文章</code>，在文本编辑框下方的<code>自定义栏目</code>，如果没有找到<code>自定义栏目</code>，需要在右上角的<code>显示选项</code>内将<code>自定义栏目</code>勾选。）</em></p>
 <p><code>自定义栏目/字段</code>的数据以<code>meta_key</code>（字段/栏目名）-&gt;<code>meta_value</code>（值）的形式存放在<code>wp_postmeta</code>表内。以<code>下划线</code>开头的<code>meta_key</code>（字段/栏目名）被认为是保留字段，不允许用户添加。</p>
@@ -202,7 +202,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.vulspy.com/2017/09/05/Wordpress-POST-META-Check-Bypass/" data-id="cj9y5qhhd0003lqpvgulqyd8d" class="article-share-link">Share</a>
+      <a data-url="http://blog.vulnspy.com/2017/09/05/Wordpress-POST-META-Check-Bypass/" data-id="cjchjwq7w0004g0s64dg0gs2t" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/漏洞分析/">漏洞分析</a></li></ul>
@@ -236,7 +236,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>作者：Ambulong@VulSpy</p>
+        <p>作者：Ambulong</p>
 <ul>
 <li><a href="/2017/09/02/Wordpress-SQL-Injection-Analysis-1/">Wordpress SQL注入分析（一）</a></li>
 <li><a href="/2017/09/03/Wordpress-SQL-Injection-Analysis-2/">Wordpress SQL注入分析（二）</a></li>
@@ -301,7 +301,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.vulspy.com/2017/09/03/Wordpress-SQL-Injection-Analysis-2/" data-id="cj9y5qhhk0007lqpva9rs7qu0" class="article-share-link">Share</a>
+      <a data-url="http://blog.vulnspy.com/2017/09/03/Wordpress-SQL-Injection-Analysis-2/" data-id="cjchjwq830008g0s6kkhyshkl" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/漏洞分析/">漏洞分析</a></li></ul>
@@ -335,7 +335,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>作者：Ambulong@vulspy</p>
+        <p>作者：Ambulong</p>
 <ul>
 <li><a href="/2017/09/02/Wordpress-SQL-Injection-Analysis-1/">Wordpress SQL注入分析（一）</a></li>
 <li><a href="/2017/09/03/Wordpress-SQL-Injection-Analysis-2/">Wordpress SQL注入分析（二）</a></li>
@@ -379,7 +379,7 @@
 <p>sprintf/vsprintf的格式化字符串支持<strong>Argument numbering/swapping</strong>（中文直译：参数交换），即可以指定格式化标识表示的是第几个参数。<br>例一：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">echo</span> sprintf(<span class="string">'%2$s %3$s %1$s'</span>, <span class="string">'a1'</span>, <span class="string">'a2'</span>, <span class="string">'a3'</span>);</div><div class="line"><span class="comment">//输出：a2 a3 a1</span></div></pre></td></tr></table></figure></p>
 <p>例二：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">echo</span> sprintf(<span class="string">'%s %s %1$s'</span>, <span class="string">'a1'</span>, <span class="string">'a2'</span>, <span class="string">'a3'</span>);</div><div class="line"><span class="comment">//输出：a1 a2 a1</span></div></pre></td></tr></table></figure></p>
 <p>例三：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">echo</span> sprintf(<span class="string">'%s %s %1$\'.5s'</span>, <span class="string">'a1'</span>, <span class="string">'a2'</span>, <span class="string">'a3'</span>);</div><div class="line"><span class="comment">//输出：a1 a2 ...a1</span></div></pre></td></tr></table></figure></p>
-<p><em>注：Chapter 1由<a href="http://blog.vulspy.com/">@Ambulong</a>与<a href="http://yqxiaojunjie.com/" target="_blank" rel="external">@乐清小俊杰</a>共同完成。</em></p>
+<p><em>注：Chapter 1由<a href="http://blog.vulspy.com/" target="_blank" rel="external">@Ambulong</a>与<a href="http://yqxiaojunjie.com/" target="_blank" rel="external">@乐清小俊杰</a>共同完成。</em></p>
 <h2 id="第二章-wpdb类中的prepare-函数"><a href="#第二章-wpdb类中的prepare-函数" class="headerlink" title="第二章: wpdb类中的prepare()函数"></a>第二章: wpdb类中的prepare()函数</h2><p>在Wordpress的数据库操作类wpdb(文件: <a href="https://github.com/WordPress/WordPress/blob/bbb8d48086b7d10908f4fda673585ee122f2851d/wp-includes/wp-db.php#L1228" target="_blank" rel="external">/wp-includes/wp-db.php</a>)中有一个prepare()函数，该函数主要用来对将要执行SQL语句进行预处理，如：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$wpdb-&gt;prepare( <span class="string">"SELECT * FROM `table` WHERE `column` = %s AND `field` = %d"</span>, <span class="string">'foo'</span>, <span class="number">1337</span> );</div></pre></td></tr></table></figure></p>
 <p>以上例子将会返回下列字符串:<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="string">`table`</span> <span class="keyword">WHERE</span> <span class="string">`column`</span> = <span class="string">'foo'</span> <span class="keyword">AND</span> <span class="string">`field`</span> = <span class="number">1337</span><span class="string">"</span></div></pre></td></tr></table></figure></p>
 <p>但是该函数没有并没有对传入的$query参数进行严格的过滤，如果$query参数内容或部分内容可控，就可能导致SQL注入。</p>
@@ -404,7 +404,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.vulspy.com/2017/09/02/Wordpress-SQL-Injection-Analysis-1/" data-id="cj9y5qhhe0004lqpvhfealazk" class="article-share-link">Share</a>
+      <a data-url="http://blog.vulnspy.com/2017/09/02/Wordpress-SQL-Injection-Analysis-1/" data-id="cjchjwq810005g0s6q4kj6z7z" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/漏洞分析/">漏洞分析</a></li></ul>
@@ -438,7 +438,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>Author: Ambulong@vulspy</p>
+        <p>Author: Ambulong</p>
 <h1 id="SSRF-Related-Tips"><a href="#SSRF-Related-Tips" class="headerlink" title="SSRF Related Tips"></a>SSRF Related Tips</h1><h2 id="Vulnerabilities"><a href="#Vulnerabilities" class="headerlink" title="Vulnerabilities"></a>Vulnerabilities</h2><ul>
 <li>Weblogic SSRF</li>
 <li>DokuWiki<ul>
@@ -505,7 +505,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.vulspy.com/2017/08/12/SSRF-And-URL-Related-TIPS/" data-id="cj9y5qhhg0006lqpvejguco0z" class="article-share-link">Share</a>
+      <a data-url="http://blog.vulnspy.com/2017/08/12/SSRF-And-URL-Related-TIPS/" data-id="cjchjwq7n0001g0s6cbyweany" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/渗透测试/">渗透测试</a></li></ul>
@@ -539,7 +539,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>Author: Ambulong@vulspy</p>
+        <p>Author: Ambulong</p>
 <h1 id="PHP-SESSION"><a href="#PHP-SESSION" class="headerlink" title="PHP SESSION"></a>PHP SESSION</h1><ul>
 <li>phpMyAdmin</li>
 <li>ownCloud</li>
@@ -689,7 +689,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.vulspy.com/2017/08/02/Local-Privilege-Escalation-Tips/" data-id="cj9y5qhgt0000lqpv795wc2ek" class="article-share-link">Share</a>
+      <a data-url="http://blog.vulnspy.com/2017/08/02/Local-Privilege-Escalation-Tips/" data-id="cjchjwq7h0000g0s6hv1i5poh" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/渗透测试/">渗透测试</a></li></ul>
@@ -767,7 +767,7 @@
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2017 <a href="mailto:zeng.ambulong@gmail.com">Ambulong</a><br>
+      &copy; 2018 <a href="mailto:zeng.ambulong@gmail.com">Ambulong</a><br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>

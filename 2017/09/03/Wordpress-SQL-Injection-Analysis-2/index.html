@@ -3,25 +3,25 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Wordpress SQL注入分析（二） | Vulspy Blog</title>
+  <title>Wordpress SQL注入分析（二） | Vulnspy Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="作者：Ambulong@VulSpy  Wordpress SQL注入分析（一） Wordpress SQL注入分析（二）  在上一篇文章 Wordpress SQL注入分析（一） 中，我们分析了Wordpress中的prepare函数在什么情况下会产生SQL注入漏洞。本篇文章将分析Wordpress中的一处SQL注入。 当前最新版：Wordpress 4.8.1 第三章：发现Wordpress中">
+  <meta name="description" content="作者：Ambulong  Wordpress SQL注入分析（一） Wordpress SQL注入分析（二）  在上一篇文章 Wordpress SQL注入分析（一） 中，我们分析了Wordpress中的prepare函数在什么情况下会产生SQL注入漏洞。本篇文章将分析Wordpress中的一处SQL注入。 当前最新版：Wordpress 4.8.1 第三章：发现Wordpress中的SQL注入3">
 <meta name="keywords" content="漏洞分析">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Wordpress SQL注入分析（二）">
-<meta property="og:url" content="http://blog.vulspy.com/2017/09/03/Wordpress-SQL-Injection-Analysis-2/index.html">
-<meta property="og:site_name" content="Vulspy Blog">
-<meta property="og:description" content="作者：Ambulong@VulSpy  Wordpress SQL注入分析（一） Wordpress SQL注入分析（二）  在上一篇文章 Wordpress SQL注入分析（一） 中，我们分析了Wordpress中的prepare函数在什么情况下会产生SQL注入漏洞。本篇文章将分析Wordpress中的一处SQL注入。 当前最新版：Wordpress 4.8.1 第三章：发现Wordpress中">
+<meta property="og:url" content="http://blog.vulnspy.com/2017/09/03/Wordpress-SQL-Injection-Analysis-2/index.html">
+<meta property="og:site_name" content="Vulnspy Blog">
+<meta property="og:description" content="作者：Ambulong  Wordpress SQL注入分析（一） Wordpress SQL注入分析（二）  在上一篇文章 Wordpress SQL注入分析（一） 中，我们分析了Wordpress中的prepare函数在什么情况下会产生SQL注入漏洞。本篇文章将分析Wordpress中的一处SQL注入。 当前最新版：Wordpress 4.8.1 第三章：发现Wordpress中的SQL注入3">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://blog.vulspy.com/2017/09/03/Wordpress-SQL-Injection-Analysis-2/4.1.1.png">
-<meta property="og:image" content="http://blog.vulspy.com/2017/09/03/Wordpress-SQL-Injection-Analysis-2/4.2.1.png">
-<meta property="og:updated_time" content="2017-10-25T09:21:47.240Z">
+<meta property="og:image" content="http://blog.vulnspy.com/2017/09/03/Wordpress-SQL-Injection-Analysis-2/4.1.1.png">
+<meta property="og:image" content="http://blog.vulnspy.com/2017/09/03/Wordpress-SQL-Injection-Analysis-2/4.2.1.png">
+<meta property="og:updated_time" content="2018-01-16T11:23:41.457Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Wordpress SQL注入分析（二）">
-<meta name="twitter:description" content="作者：Ambulong@VulSpy  Wordpress SQL注入分析（一） Wordpress SQL注入分析（二）  在上一篇文章 Wordpress SQL注入分析（一） 中，我们分析了Wordpress中的prepare函数在什么情况下会产生SQL注入漏洞。本篇文章将分析Wordpress中的一处SQL注入。 当前最新版：Wordpress 4.8.1 第三章：发现Wordpress中">
-<meta name="twitter:image" content="http://blog.vulspy.com/2017/09/03/Wordpress-SQL-Injection-Analysis-2/4.1.1.png">
+<meta name="twitter:description" content="作者：Ambulong  Wordpress SQL注入分析（一） Wordpress SQL注入分析（二）  在上一篇文章 Wordpress SQL注入分析（一） 中，我们分析了Wordpress中的prepare函数在什么情况下会产生SQL注入漏洞。本篇文章将分析Wordpress中的一处SQL注入。 当前最新版：Wordpress 4.8.1 第三章：发现Wordpress中的SQL注入3">
+<meta name="twitter:image" content="http://blog.vulnspy.com/2017/09/03/Wordpress-SQL-Injection-Analysis-2/4.1.1.png">
   
-    <link rel="alternate" href="/atom.xml" title="Vulspy Blog" type="application/atom+xml">
+    <link rel="alternate" href="/atom.xml" title="Vulnspy Blog" type="application/atom+xml">
   
   
     <link rel="icon" href="/favicon.png">
@@ -52,7 +52,7 @@
   <div id="header-outer" class="outer">
     <div id="header-title" class="inner">
       <h1 id="logo-wrap">
-        <a href="/" id="logo">Vulspy Blog</a>
+        <a href="/" id="logo">Vulnspy Blog</a>
       </h1>
       
     </div>
@@ -72,7 +72,7 @@
         <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.vulspy.com"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.vulnspy.com"></form>
       </div>
     </div>
   </div>
@@ -100,7 +100,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>作者：Ambulong@VulSpy</p>
+        <p>作者：Ambulong</p>
 <ul>
 <li><a href="/2017/09/02/Wordpress-SQL-Injection-Analysis-1/">Wordpress SQL注入分析（一）</a></li>
 <li><a href="/2017/09/03/Wordpress-SQL-Injection-Analysis-2/">Wordpress SQL注入分析（二）</a></li>
@@ -165,7 +165,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.vulspy.com/2017/09/03/Wordpress-SQL-Injection-Analysis-2/" data-id="cj9y5qhhk0007lqpva9rs7qu0" class="article-share-link">Share</a>
+      <a data-url="http://blog.vulnspy.com/2017/09/03/Wordpress-SQL-Injection-Analysis-2/" data-id="cjchjwq830008g0s6kkhyshkl" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/漏洞分析/">漏洞分析</a></li></ul>
@@ -261,7 +261,7 @@
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2017 <a href="mailto:zeng.ambulong@gmail.com">Ambulong</a><br>
+      &copy; 2018 <a href="mailto:zeng.ambulong@gmail.com">Ambulong</a><br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>

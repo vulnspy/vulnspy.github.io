@@ -3,24 +3,24 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Wordpress POST META_NAME校验绕过 | Vulspy Blog</title>
+  <title>Wordpress POST META_NAME校验绕过 | Vulnspy Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="作者：Ambulong@vulspy Wordpress中的POST META为文章的自定义栏目/字段，就如一篇文章中会有标题、作者等字段，但是对于有些主题/插件来说，文章中的自有字段显得不够用，就需要用到自定义栏目/字段。 （该操作的位置在添加/编辑文章，在文本编辑框下方的自定义栏目，如果没有找到自定义栏目，需要在右上角的显示选项内将自定义栏目勾选。） 自定义栏目/字段的数据以meta_key（">
+  <meta name="description" content="作者：Ambulong Wordpress中的POST META为文章的自定义栏目/字段，就如一篇文章中会有标题、作者等字段，但是对于有些主题/插件来说，文章中的自有字段显得不够用，就需要用到自定义栏目/字段。 （该操作的位置在添加/编辑文章，在文本编辑框下方的自定义栏目，如果没有找到自定义栏目，需要在右上角的显示选项内将自定义栏目勾选。） 自定义栏目/字段的数据以meta_key（字段/栏目名）">
 <meta name="keywords" content="漏洞分析">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Wordpress POST META_NAME校验绕过">
-<meta property="og:url" content="http://blog.vulspy.com/2017/09/05/Wordpress-POST-META-Check-Bypass/index.html">
-<meta property="og:site_name" content="Vulspy Blog">
-<meta property="og:description" content="作者：Ambulong@vulspy Wordpress中的POST META为文章的自定义栏目/字段，就如一篇文章中会有标题、作者等字段，但是对于有些主题/插件来说，文章中的自有字段显得不够用，就需要用到自定义栏目/字段。 （该操作的位置在添加/编辑文章，在文本编辑框下方的自定义栏目，如果没有找到自定义栏目，需要在右上角的显示选项内将自定义栏目勾选。） 自定义栏目/字段的数据以meta_key（">
+<meta property="og:url" content="http://blog.vulnspy.com/2017/09/05/Wordpress-POST-META-Check-Bypass/index.html">
+<meta property="og:site_name" content="Vulnspy Blog">
+<meta property="og:description" content="作者：Ambulong Wordpress中的POST META为文章的自定义栏目/字段，就如一篇文章中会有标题、作者等字段，但是对于有些主题/插件来说，文章中的自有字段显得不够用，就需要用到自定义栏目/字段。 （该操作的位置在添加/编辑文章，在文本编辑框下方的自定义栏目，如果没有找到自定义栏目，需要在右上角的显示选项内将自定义栏目勾选。） 自定义栏目/字段的数据以meta_key（字段/栏目名）">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://blog.vulspy.com/2017/09/05/Wordpress-POST-META-Check-Bypass/1.2.1.png">
-<meta property="og:updated_time" content="2017-11-09T10:55:51.206Z">
+<meta property="og:image" content="http://blog.vulnspy.com/2017/09/05/Wordpress-POST-META-Check-Bypass/1.2.1.png">
+<meta property="og:updated_time" content="2018-01-16T11:23:30.141Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Wordpress POST META_NAME校验绕过">
-<meta name="twitter:description" content="作者：Ambulong@vulspy Wordpress中的POST META为文章的自定义栏目/字段，就如一篇文章中会有标题、作者等字段，但是对于有些主题/插件来说，文章中的自有字段显得不够用，就需要用到自定义栏目/字段。 （该操作的位置在添加/编辑文章，在文本编辑框下方的自定义栏目，如果没有找到自定义栏目，需要在右上角的显示选项内将自定义栏目勾选。） 自定义栏目/字段的数据以meta_key（">
-<meta name="twitter:image" content="http://blog.vulspy.com/2017/09/05/Wordpress-POST-META-Check-Bypass/1.2.1.png">
+<meta name="twitter:description" content="作者：Ambulong Wordpress中的POST META为文章的自定义栏目/字段，就如一篇文章中会有标题、作者等字段，但是对于有些主题/插件来说，文章中的自有字段显得不够用，就需要用到自定义栏目/字段。 （该操作的位置在添加/编辑文章，在文本编辑框下方的自定义栏目，如果没有找到自定义栏目，需要在右上角的显示选项内将自定义栏目勾选。） 自定义栏目/字段的数据以meta_key（字段/栏目名）">
+<meta name="twitter:image" content="http://blog.vulnspy.com/2017/09/05/Wordpress-POST-META-Check-Bypass/1.2.1.png">
   
-    <link rel="alternate" href="/atom.xml" title="Vulspy Blog" type="application/atom+xml">
+    <link rel="alternate" href="/atom.xml" title="Vulnspy Blog" type="application/atom+xml">
   
   
     <link rel="icon" href="/favicon.png">
@@ -51,7 +51,7 @@
   <div id="header-outer" class="outer">
     <div id="header-title" class="inner">
       <h1 id="logo-wrap">
-        <a href="/" id="logo">Vulspy Blog</a>
+        <a href="/" id="logo">Vulnspy Blog</a>
       </h1>
       
     </div>
@@ -71,7 +71,7 @@
         <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.vulspy.com"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.vulnspy.com"></form>
       </div>
     </div>
   </div>
@@ -99,7 +99,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>作者：Ambulong@vulspy</p>
+        <p>作者：Ambulong</p>
 <p>Wordpress中的POST META为<code>文章</code>的<code>自定义栏目/字段</code>，就如一篇<code>文章</code>中会有<code>标题</code>、<code>作者</code>等字段，但是对于有些主题/插件来说，<code>文章</code>中的自有字段显得不够用，就需要用到<code>自定义栏目/字段</code>。</p>
 <p><em>（该操作的位置在<code>添加/编辑文章</code>，在文本编辑框下方的<code>自定义栏目</code>，如果没有找到<code>自定义栏目</code>，需要在右上角的<code>显示选项</code>内将<code>自定义栏目</code>勾选。）</em></p>
 <p><code>自定义栏目/字段</code>的数据以<code>meta_key</code>（字段/栏目名）-&gt;<code>meta_value</code>（值）的形式存放在<code>wp_postmeta</code>表内。以<code>下划线</code>开头的<code>meta_key</code>（字段/栏目名）被认为是保留字段，不允许用户添加。</p>
@@ -134,7 +134,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.vulspy.com/2017/09/05/Wordpress-POST-META-Check-Bypass/" data-id="cj9y5qhhd0003lqpvgulqyd8d" class="article-share-link">Share</a>
+      <a data-url="http://blog.vulnspy.com/2017/09/05/Wordpress-POST-META-Check-Bypass/" data-id="cjchjwq7w0004g0s64dg0gs2t" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/漏洞分析/">漏洞分析</a></li></ul>
@@ -230,7 +230,7 @@
   
   <div class="outer">
     <div id="footer-info" class="inner">
-      &copy; 2017 <a href="mailto:zeng.ambulong@gmail.com">Ambulong</a><br>
+      &copy; 2018 <a href="mailto:zeng.ambulong@gmail.com">Ambulong</a><br>
       Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>
