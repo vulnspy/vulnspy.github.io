@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://blog.vulnspy.com/"/>
-  <updated>2018-06-21T02:25:39.298Z</updated>
+  <updated>2018-06-21T02:41:54.141Z</updated>
   <id>http://blog.vulnspy.com/</id>
   
   <author>
@@ -16,11 +16,11 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>phpMyAdmin 4.8.x LFI Exploit</title>
+    <title>phpMyAdmin 4.8.x 本地文件包含漏洞利用</title>
     <link href="http://blog.vulnspy.com/2018/06/21/phpMyAdmin-4-8-x-LFI-Exploit/"/>
     <id>http://blog.vulnspy.com/2018/06/21/phpMyAdmin-4-8-x-LFI-Exploit/</id>
     <published>2018-06-21T01:58:48.000Z</published>
-    <updated>2018-06-21T02:25:39.298Z</updated>
+    <updated>2018-06-21T02:41:54.141Z</updated>
     
     <content type="html"><![CDATA[<p>作者: <a href="https://twitter.com/ambulong" target="_blank" rel="external">@Ambulong</a></p>
 <p>今天<a href="http://chamd5.org" target="_blank" rel="external">ChaMd5安全团队</a>公开了一个phpMyAdmin最新版中的本地文件包含漏洞：<a href="https://mp.weixin.qq.com/s?__biz=MzIzMTc1MjExOQ==&amp;mid=2247485036&amp;idx=1&amp;sn=8e9647906c5d94f72564dec5bc51a2ab&amp;chksm=e89e2eb4dfe9a7a28bff2efebb5b2723782dab660acff074c3f18c9e7dca924abdf3da618fb4&amp;mpshare=1&amp;scene=1&amp;srcid=0621gAv1FMtrgoahD01psMZr&amp;pass_ticket=LqhRfckPxAVG2dF%2FjxV%2F9%2FcEb5pShRgewJe%2FttJn2gIlIyGF%2FbsgGmzcbsV%2BLmMK#rd" target="_blank" rel="external">phpmyadmin4.8.1后台getshell</a>。该漏洞利用不要求root帐号，只需能够登录 phpMyAdmin 便能够利用。</p>
