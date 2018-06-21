@@ -17,7 +17,7 @@
 <meta property="og:image" content="http://blog.vulnspy.com/2018/06/21/phpMyAdmin-4-8-x-Authorited-CLI-to-RCE/exp_2.png">
 <meta property="og:image" content="http://blog.vulnspy.com/2018/06/21/phpMyAdmin-4-8-x-Authorited-CLI-to-RCE/exp_3.png">
 <meta property="og:image" content="http://blog.vulnspy.com/2018/06/21/phpMyAdmin-4-8-x-Authorited-CLI-to-RCE/exp_4.png">
-<meta property="og:updated_time" content="2018-06-21T01:35:16.886Z">
+<meta property="og:updated_time" content="2018-06-21T02:02:49.578Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="phpMyAdmin 4.8.x LFI to RCE (Authorization Required)">
 <meta name="twitter:description" content="Author: @Ambulong Security Team ChaMd5 disclose a Local File Inclusion vulnerability in phpMyAdmin latest version 4.8.1. And the exploiting of this vulnerability may lead to Remote Code Execution. In">
@@ -107,7 +107,7 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p>Author: <a href="https://twitter.com/ambulong" target="_blank" rel="external">@Ambulong</a></p>
-<p>Security Team <a href="http://chamd5.org" target="_blank" rel="external">ChaMd5</a> disclose a <a href="https://mp.weixin.qq.com/s/mukO4t_J_SSfGmyfzDo4Fg" target="_blank" rel="external">Local File Inclusion vulnerability in phpMyAdmin latest version 4.8.1</a>. And the exploiting of this vulnerability may lead to Remote Code Execution.</p>
+<p>Security Team <a href="http://chamd5.org" target="_blank" rel="external">ChaMd5</a> disclose a <a href="https://mp.weixin.qq.com/s?__biz=MzIzMTc1MjExOQ==&amp;mid=2247485036&amp;idx=1&amp;sn=8e9647906c5d94f72564dec5bc51a2ab&amp;chksm=e89e2eb4dfe9a7a28bff2efebb5b2723782dab660acff074c3f18c9e7dca924abdf3da618fb4&amp;mpshare=1&amp;scene=1&amp;srcid=0621gAv1FMtrgoahD01psMZr&amp;pass_ticket=LqhRfckPxAVG2dF%2FjxV%2F9%2FcEb5pShRgewJe%2FttJn2gIlIyGF%2FbsgGmzcbsV%2BLmMK#rd" target="_blank" rel="external">Local File Inclusion vulnerability in phpMyAdmin latest version 4.8.1</a>. And the exploiting of this vulnerability may lead to Remote Code Execution.</p>
 <p>In this article, we will use VulnSpy’s <a href="http://www.vulnspy.com/phpmyadmin-4.8.1/" target="_blank" rel="external">online phpMyAdmin environment</a> to demonstrate the exploit of this vulnerability.</p>
 <p><strong>VulnSpy’s online phpMyAdmin environment address: <a href="http://www.vulnspy.com/phpmyadmin-4.8.1/" target="_blank" rel="external">http://www.vulnspy.com/phpmyadmin-4.8.1/</a></strong></p>
 <h2 id="Vulnerability-Details"><a href="#Vulnerability-Details" class="headerlink" title="Vulnerability Details"></a>Vulnerability Details</h2><p>1.Line 54-63 in file <a href="https://github.com/phpmyadmin/phpmyadmin/blob/848fed8cbd6b30b4ee6394d5f694b8429119f51c/index.php#L61" target="_blank" rel="external">/index.php</a>:</p>
@@ -141,6 +141,15 @@
   
     
 <nav id="article-nav">
+  
+    <a href="/2018/06/21/phpMyAdmin-4-8-x-LFI-Exploit/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          phpMyAdmin 4.8.x LFI Exploit
+        
+      </div>
+    </a>
   
   
     <a href="/2018/06/12/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-PMASA-2017-9-exploit/" id="article-nav-older" class="article-nav-link-wrap">
@@ -215,6 +224,10 @@
       <ul>
         
           <li>
+            <a href="/2018/06/21/phpMyAdmin-4-8-x-LFI-Exploit/">phpMyAdmin 4.8.x LFI Exploit</a>
+          </li>
+        
+          <li>
             <a href="/2018/06/21/phpMyAdmin-4-8-x-Authorited-CLI-to-RCE/">phpMyAdmin 4.8.x LFI to RCE (Authorization Required)</a>
           </li>
         
@@ -228,10 +241,6 @@
         
           <li>
             <a href="/2017/11/09/Wordpress-4-8-2-SQL-Injection-POC/">Wordpress &lt;= 4.8.2 SQL Injection POC</a>
-          </li>
-        
-          <li>
-            <a href="/2017/09/05/Wordpress-POST-META-Check-Bypass/">Wordpress POST META_NAME校验绕过</a>
           </li>
         
       </ul>

