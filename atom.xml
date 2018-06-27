@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://blog.vulnspy.com/"/>
-  <updated>2018-06-27T06:11:56.218Z</updated>
+  <updated>2018-06-27T06:18:48.920Z</updated>
   <id>http://blog.vulnspy.com/</id>
   
   <author>
@@ -20,12 +20,13 @@
     <link href="http://blog.vulnspy.com/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility/"/>
     <id>http://blog.vulnspy.com/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility/</id>
     <published>2018-06-27T05:01:41.000Z</published>
-    <updated>2018-06-27T06:11:56.218Z</updated>
+    <updated>2018-06-27T06:18:48.920Z</updated>
     
     <content type="html"><![CDATA[<p>作者: <a href="https://twitter.com/ambulong" target="_blank" rel="external">@Ambulong</a></p>
 <p>WordPress是如今使用最为广泛的一套内容管理系统。根据 w3tech 统计，全世界大概有30%的网站运行着WordPress程序。</p>
 <p>昨日RIPS团队公开了一个Wordpress的<a href="https://blog.ripstech.com/2018/wordpress-file-delete-to-code-execution/" target="_blank" rel="external">任意文件删除漏洞</a>（需要登录），目前该漏洞仍然未修复（2018年06月27日），该漏洞影响 Wordpress 最新版 4.9.6.</p>
-<p>本文我们将结合 VulnSpy 的<a href="http://www.vulnspy.com/wordpress-4.9/" target="_blank" rel="external">在线 WordPress 环境</a>来演示该漏洞的利用。</p>
+<p>本文我们将结合 VulnSpy 的<a href="http://www.vulnspy.com/wordpress-4.9/wordpress_4.9/" target="_blank" rel="external">在线 WordPress 环境</a>来演示该漏洞的利用。</p>
+<p>VulnSpy Wordpress 4.9 在线环境: <a href="http://www.vulnspy.com/wordpress-4.9/wordpress_4.9/" target="_blank" rel="external">http://www.vulnspy.com/wordpress-4.9/wordpress_4.9/</a></p>
 <h2 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h2><ol>
 <li>文件wp-includes/post.php中：</li>
 </ol>
@@ -38,7 +39,7 @@
 <p><code>$newmeta[&#39;thumb&#39;]</code>来自于$_POST[‘thumb’]，未经过滤直接将其存入数据库，即上一步的<code>$meta[&#39;thumb&#39;]</code>可控。</p>
 <p>详细分析可见：WARNING: WordPress File Delete to Code Execution - <a href="https://blog.ripstech.com/2018/wordpress-file-delete-to-code-execution/" target="_blank" rel="external">https://blog.ripstech.com/2018/wordpress-file-delete-to-code-execution/</a></p>
 <h2 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h2><p><strong>1. 使用VSPlate安装你的Wordpress 4.9</strong></p>
-<p>Wordpress 4.9 在线环境: <a href="https://www.vsplate.com/?github=vulnspy%2Fwordpress-4.9" target="_blank" rel="external">https://www.vsplate.com/?github=vulnspy/wordpress-4.9</a></p>
+<p>Wordpress 4.9 在线环境: <a href="http://www.vulnspy.com/wordpress-4.9/wordpress_4.9/" target="_blank" rel="external">http://www.vulnspy.com/wordpress-4.9/wordpress_4.9/</a></p>
 <img src="/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility/1.1.png" alt="Wordpress AFD" title="Wordpress AFD">
 <p><strong>2. 登录后台，添加媒体</strong></p>
 <p>访问 <a href="http://9c9b.vsplate.me/wp-admin/upload.php" target="_blank" rel="external">http://9c9b.vsplate.me/wp-admin/upload.php</a>,  上传任意图片.</p>
@@ -79,13 +80,13 @@
     <link href="http://blog.vulnspy.com/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility-Exploit/"/>
     <id>http://blog.vulnspy.com/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility-Exploit/</id>
     <published>2018-06-27T04:40:40.000Z</published>
-    <updated>2018-06-27T06:12:32.832Z</updated>
+    <updated>2018-06-27T06:18:10.496Z</updated>
     
     <content type="html"><![CDATA[<p>Author: <a href="https://twitter.com/ambulong" target="_blank" rel="external">@Ambulong</a></p>
 <p>WordPress is the most popular CMS on the web. According to w3tech, it is used by approximately 30% of all websites. This wide adoption makes it an interesting target for cyber criminals. </p>
 <p>RIPS Team disclosed an Arbitrary File Delection Vulnerbility at Jun. 26, 2018: <a href="https://blog.ripstech.com/2018/wordpress-file-delete-to-code-execution/" target="_blank" rel="external">WARNING: WordPress File Delete to Code Execution</a></p>
-<p>In this article, we will use VulnSpy’s <a href="http://www.vulnspy.com/wordpress-4.9/" target="_blank" rel="external">online Wordpress environment</a> to demonstrate the exploit of this vulnerability.</p>
-<p>VulnSpy’s online WordPress environment address: <a href="http://www.vulnspy.com/wordpress-4.9/" target="_blank" rel="external">http://www.vulnspy.com/wordpress-4.9/</a></p>
+<p>In this article, we will use VulnSpy’s <a href="http://www.vulnspy.com/wordpress-4.9/wordpress_4.9/" target="_blank" rel="external">online Wordpress environment</a> to demonstrate the exploit of this vulnerability.</p>
+<p>VulnSpy’s online WordPress environment address: <a href="http://www.vulnspy.com/wordpress-4.9/wordpress_4.9/" target="_blank" rel="external">http://www.vulnspy.com/wordpress-4.9/wordpress_4.9/</a></p>
 <h2 id="Vulnerability-Details"><a href="#Vulnerability-Details" class="headerlink" title="Vulnerability Details"></a>Vulnerability Details</h2><p>REF: WARNING: WordPress File Delete to Code Execution - <a href="https://blog.ripstech.com/2018/wordpress-file-delete-to-code-execution/" target="_blank" rel="external">https://blog.ripstech.com/2018/wordpress-file-delete-to-code-execution/</a></p>
 <h2 id="Exploit"><a href="#Exploit" class="headerlink" title="Exploit"></a>Exploit</h2><p><strong>1. Launch/Install Your Wordpress 4.9</strong></p>
 <p>Wordpress 4.9 Online Env: <a href="https://www.vsplate.com/?github=vulnspy%2Fwordpress-4.9" target="_blank" rel="external">https://www.vsplate.com/?github=vulnspy/wordpress-4.9</a></p>
