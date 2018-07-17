@@ -5,22 +5,22 @@
   
   <title>phpMyAdmin 4.8.x LFI to RCE (Authorization Required) | Vulnspy Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Author: @Ambulong  Issue from OJ Reeves: phpMyAdmin 4.8.x LFI to RCE – encoding not required   Security Team ChaMd5 disclose a Local File Inclusion vulnerability in phpMyAdmin latest version 4.8.1. An">
+  <meta name="description" content="Author: @Ambulong Security Team ChaMd5 disclose a Local File Inclusion vulnerability in phpMyAdmin latest version 4.8.1. And the exploiting of this vulnerability may lead to Remote Code Execution. In">
 <meta name="keywords" content="Exploit">
 <meta property="og:type" content="article">
 <meta property="og:title" content="phpMyAdmin 4.8.x LFI to RCE (Authorization Required)">
 <meta property="og:url" content="http://blog.vulnspy.com/2018/06/21/phpMyAdmin-4-8-x-Authorited-CLI-to-RCE/index.html">
 <meta property="og:site_name" content="Vulnspy Blog">
-<meta property="og:description" content="Author: @Ambulong  Issue from OJ Reeves: phpMyAdmin 4.8.x LFI to RCE – encoding not required   Security Team ChaMd5 disclose a Local File Inclusion vulnerability in phpMyAdmin latest version 4.8.1. An">
+<meta property="og:description" content="Author: @Ambulong Security Team ChaMd5 disclose a Local File Inclusion vulnerability in phpMyAdmin latest version 4.8.1. And the exploiting of this vulnerability may lead to Remote Code Execution. In">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://blog.vulnspy.com/2018/06/21/phpMyAdmin-4-8-x-Authorited-CLI-to-RCE/exp_1.png">
 <meta property="og:image" content="http://blog.vulnspy.com/2018/06/21/phpMyAdmin-4-8-x-Authorited-CLI-to-RCE/exp_2.png">
 <meta property="og:image" content="http://blog.vulnspy.com/2018/06/21/phpMyAdmin-4-8-x-Authorited-CLI-to-RCE/exp_3.png">
 <meta property="og:image" content="http://blog.vulnspy.com/2018/06/21/phpMyAdmin-4-8-x-Authorited-CLI-to-RCE/exp_4.png">
-<meta property="og:updated_time" content="2018-06-25T04:48:52.554Z">
+<meta property="og:updated_time" content="2018-07-17T04:02:41.404Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="phpMyAdmin 4.8.x LFI to RCE (Authorization Required)">
-<meta name="twitter:description" content="Author: @Ambulong  Issue from OJ Reeves: phpMyAdmin 4.8.x LFI to RCE – encoding not required   Security Team ChaMd5 disclose a Local File Inclusion vulnerability in phpMyAdmin latest version 4.8.1. An">
+<meta name="twitter:description" content="Author: @Ambulong Security Team ChaMd5 disclose a Local File Inclusion vulnerability in phpMyAdmin latest version 4.8.1. And the exploiting of this vulnerability may lead to Remote Code Execution. In">
 <meta name="twitter:image" content="http://blog.vulnspy.com/2018/06/21/phpMyAdmin-4-8-x-Authorited-CLI-to-RCE/exp_1.png">
   
     <link rel="alternate" href="/atom.xml" title="Vulnspy Blog" type="application/atom+xml">
@@ -107,6 +107,9 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p>Author: <a href="https://twitter.com/ambulong" target="_blank" rel="external">@Ambulong</a></p>
+<p>Security Team <a href="http://chamd5.org" target="_blank" rel="external">ChaMd5</a> disclose a <a href="https://mp.weixin.qq.com/s?__biz=MzIzMTc1MjExOQ==&amp;mid=2247485036&amp;idx=1&amp;sn=8e9647906c5d94f72564dec5bc51a2ab&amp;chksm=e89e2eb4dfe9a7a28bff2efebb5b2723782dab660acff074c3f18c9e7dca924abdf3da618fb4&amp;mpshare=1&amp;scene=1&amp;srcid=0621gAv1FMtrgoahD01psMZr&amp;pass_ticket=LqhRfckPxAVG2dF%2FjxV%2F9%2FcEb5pShRgewJe%2FttJn2gIlIyGF%2FbsgGmzcbsV%2BLmMK#rd" target="_blank" rel="external">Local File Inclusion vulnerability in phpMyAdmin latest version 4.8.1</a>. And the exploiting of this vulnerability may lead to Remote Code Execution. In this article, we will use VulnSpy’s <a href="http://www.vulnspy.com/phpmyadmin-4.8.1/" target="_blank" rel="external">online phpMyAdmin environment</a> to demonstrate the exploit of this vulnerability.</p>
+<a id="more"></a>
+<hr>
 <ul>
 <li><em>Issue from <a href="https://github.com/OJ" target="_blank" rel="external">OJ Reeves</a>: <a href="https://github.com/vulnspy/vulnspy.github.io/issues/1" target="_blank" rel="external">phpMyAdmin 4.8.x LFI to RCE – encoding not required </a></em></li>
 </ul>

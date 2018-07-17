@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://blog.vulnspy.com/"/>
-  <updated>2018-06-27T06:18:48.920Z</updated>
+  <updated>2018-07-17T04:04:01.840Z</updated>
   <id>http://blog.vulnspy.com/</id>
   
   <author>
@@ -20,9 +20,12 @@
     <link href="http://blog.vulnspy.com/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility/"/>
     <id>http://blog.vulnspy.com/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility/</id>
     <published>2018-06-27T05:01:41.000Z</published>
-    <updated>2018-06-27T06:18:48.920Z</updated>
+    <updated>2018-07-17T04:04:01.840Z</updated>
     
     <content type="html"><![CDATA[<p>作者: <a href="https://twitter.com/ambulong" target="_blank" rel="external">@Ambulong</a></p>
+<p>WordPress是如今使用最为广泛的一套内容管理系统。根据 w3tech 统计，全世界大概有30%的网站运行着WordPress程序。昨日RIPS团队公开了一个Wordpress的<a href="https://blog.ripstech.com/2018/wordpress-file-delete-to-code-execution/" target="_blank" rel="external">任意文件删除漏洞</a>（需要登录），目前该漏洞仍然未修复（2018年06月27日），该漏洞影响 Wordpress 最新版 4.9.6.</p>
+<a id="more"></a>
+<hr>
 <p>WordPress是如今使用最为广泛的一套内容管理系统。根据 w3tech 统计，全世界大概有30%的网站运行着WordPress程序。</p>
 <p>昨日RIPS团队公开了一个Wordpress的<a href="https://blog.ripstech.com/2018/wordpress-file-delete-to-code-execution/" target="_blank" rel="external">任意文件删除漏洞</a>（需要登录），目前该漏洞仍然未修复（2018年06月27日），该漏洞影响 Wordpress 最新版 4.9.6.</p>
 <p>本文我们将结合 VulnSpy 的<a href="http://www.vulnspy.com/wordpress-4.9/wordpress_4.9/" target="_blank" rel="external">在线 WordPress 环境</a>来演示该漏洞的利用。</p>
@@ -66,7 +69,7 @@
     <summary type="html">
     
       &lt;p&gt;作者: &lt;a href=&quot;https://twitter.com/ambulong&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;@Ambulong&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;WordPress是如今使用最为广泛的一套内容管理系统。根据 w3tech 统计，全
+&lt;p&gt;WordPress是如今使用最为广泛的一套内容管理系统。根据 w3tech 统计，全世界大概有30%的网站运行着WordPress程序。昨日RIPS团队公开了一个Wordpress的&lt;a href=&quot;https://blog.ripstech.com/2018/wordpress-file-delete-to-code-execution/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;任意文件删除漏洞&lt;/a&gt;（需要登录），目前该漏洞仍然未修复（2018年06月27日），该漏洞影响 Wordpress 最新版 4.9.6.&lt;/p&gt;
     
     </summary>
     
@@ -80,9 +83,12 @@
     <link href="http://blog.vulnspy.com/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility-Exploit/"/>
     <id>http://blog.vulnspy.com/2018/06/27/Wordpress-4-9-6-Arbitrary-File-Delection-Vulnerbility-Exploit/</id>
     <published>2018-06-27T04:40:40.000Z</published>
-    <updated>2018-06-27T06:24:52.893Z</updated>
+    <updated>2018-07-17T04:04:15.948Z</updated>
     
     <content type="html"><![CDATA[<p>Author: <a href="https://twitter.com/ambulong" target="_blank" rel="external">@Ambulong</a></p>
+<p>WordPress is the most popular CMS on the web. According to w3tech, it is used by approximately 30% of all websites. This wide adoption makes it an interesting target for cyber criminals. RIPS Team disclosed an Arbitrary File Deletion Vulnerability at Jun. 26, 2018: <a href="https://blog.ripstech.com/2018/wordpress-file-delete-to-code-execution/" target="_blank" rel="external">WARNING: WordPress File Delete to Code Execution</a></p>
+<a id="more"></a>
+<hr>
 <p>WordPress is the most popular CMS on the web. According to w3tech, it is used by approximately 30% of all websites. This wide adoption makes it an interesting target for cyber criminals. </p>
 <p>RIPS Team disclosed an Arbitrary File Deletion Vulnerability at Jun. 26, 2018: <a href="https://blog.ripstech.com/2018/wordpress-file-delete-to-code-execution/" target="_blank" rel="external">WARNING: WordPress File Delete to Code Execution</a></p>
 <p>In this article, we will use VulnSpy’s <a href="http://www.vulnspy.com/wordpress-4.9/wordpress_4.9/" target="_blank" rel="external">online Wordpress environment</a> to demonstrate the exploit of this vulnerability.</p>
@@ -115,7 +121,7 @@
     <summary type="html">
     
       &lt;p&gt;Author: &lt;a href=&quot;https://twitter.com/ambulong&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;@Ambulong&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;WordPress is the most popular CMS on t
+&lt;p&gt;WordPress is the most popular CMS on the web. According to w3tech, it is used by approximately 30% of all websites. This wide adoption makes it an interesting target for cyber criminals. RIPS Team disclosed an Arbitrary File Deletion Vulnerability at Jun. 26, 2018: &lt;a href=&quot;https://blog.ripstech.com/2018/wordpress-file-delete-to-code-execution/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;WARNING: WordPress File Delete to Code Execution&lt;/a&gt;&lt;/p&gt;
     
     </summary>
     
@@ -129,9 +135,12 @@
     <link href="http://blog.vulnspy.com/2018/06/21/phpMyAdmin-4-8-x-LFI-Exploit/"/>
     <id>http://blog.vulnspy.com/2018/06/21/phpMyAdmin-4-8-x-LFI-Exploit/</id>
     <published>2018-06-21T01:58:48.000Z</published>
-    <updated>2018-06-25T04:30:12.989Z</updated>
+    <updated>2018-07-17T04:02:54.173Z</updated>
     
     <content type="html"><![CDATA[<p>作者: <a href="https://twitter.com/ambulong" target="_blank" rel="external">@Ambulong</a></p>
+<p>今天<a href="http://chamd5.org" target="_blank" rel="external">ChaMd5安全团队</a>公开了一个phpMyAdmin最新版中的本地文件包含漏洞：<a href="https://mp.weixin.qq.com/s?__biz=MzIzMTc1MjExOQ==&amp;mid=2247485036&amp;idx=1&amp;sn=8e9647906c5d94f72564dec5bc51a2ab&amp;chksm=e89e2eb4dfe9a7a28bff2efebb5b2723782dab660acff074c3f18c9e7dca924abdf3da618fb4&amp;mpshare=1&amp;scene=1&amp;srcid=0621gAv1FMtrgoahD01psMZr&amp;pass_ticket=LqhRfckPxAVG2dF%2FjxV%2F9%2FcEb5pShRgewJe%2FttJn2gIlIyGF%2FbsgGmzcbsV%2BLmMK#rd" target="_blank" rel="external">phpmyadmin4.8.1后台getshell</a>。该漏洞利用不要求root帐号，只需能够登录 phpMyAdmin 便能够利用。在这篇文章中我们将使用VulnSpy的<a href="http://www.vulnspy.com/phpmyadmin-4.8.1/" target="_blank" rel="external">在线 phpMyAdmin 环境</a>来演示该漏洞的利用。</p>
+<a id="more"></a>
+<hr>
 <ul>
 <li><em>来自 <a href="https://github.com/OJ" target="_blank" rel="external">OJ Reeves</a> 的纠错: <a href="https://github.com/vulnspy/vulnspy.github.io/issues/1" target="_blank" rel="external">phpMyAdmin 4.8.x LFI to RCE – encoding not required </a></em></li>
 </ul>
@@ -163,8 +172,7 @@
     <summary type="html">
     
       &lt;p&gt;作者: &lt;a href=&quot;https://twitter.com/ambulong&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;@Ambulong&lt;/a&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;em&gt;来自 &lt;a href=&quot;https://github.com/O
+&lt;p&gt;今天&lt;a href=&quot;http://chamd5.org&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;ChaMd5安全团队&lt;/a&gt;公开了一个phpMyAdmin最新版中的本地文件包含漏洞：&lt;a href=&quot;https://mp.weixin.qq.com/s?__biz=MzIzMTc1MjExOQ==&amp;amp;mid=2247485036&amp;amp;idx=1&amp;amp;sn=8e9647906c5d94f72564dec5bc51a2ab&amp;amp;chksm=e89e2eb4dfe9a7a28bff2efebb5b2723782dab660acff074c3f18c9e7dca924abdf3da618fb4&amp;amp;mpshare=1&amp;amp;scene=1&amp;amp;srcid=0621gAv1FMtrgoahD01psMZr&amp;amp;pass_ticket=LqhRfckPxAVG2dF%2FjxV%2F9%2FcEb5pShRgewJe%2FttJn2gIlIyGF%2FbsgGmzcbsV%2BLmMK#rd&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;phpmyadmin4.8.1后台getshell&lt;/a&gt;。该漏洞利用不要求root帐号，只需能够登录 phpMyAdmin 便能够利用。在这篇文章中我们将使用VulnSpy的&lt;a href=&quot;http://www.vulnspy.com/phpmyadmin-4.8.1/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;在线 phpMyAdmin 环境&lt;/a&gt;来演示该漏洞的利用。&lt;/p&gt;
     
     </summary>
     
@@ -178,9 +186,12 @@
     <link href="http://blog.vulnspy.com/2018/06/21/phpMyAdmin-4-8-x-Authorited-CLI-to-RCE/"/>
     <id>http://blog.vulnspy.com/2018/06/21/phpMyAdmin-4-8-x-Authorited-CLI-to-RCE/</id>
     <published>2018-06-21T00:16:03.000Z</published>
-    <updated>2018-06-25T04:48:52.554Z</updated>
+    <updated>2018-07-17T04:02:41.404Z</updated>
     
     <content type="html"><![CDATA[<p>Author: <a href="https://twitter.com/ambulong" target="_blank" rel="external">@Ambulong</a></p>
+<p>Security Team <a href="http://chamd5.org" target="_blank" rel="external">ChaMd5</a> disclose a <a href="https://mp.weixin.qq.com/s?__biz=MzIzMTc1MjExOQ==&amp;mid=2247485036&amp;idx=1&amp;sn=8e9647906c5d94f72564dec5bc51a2ab&amp;chksm=e89e2eb4dfe9a7a28bff2efebb5b2723782dab660acff074c3f18c9e7dca924abdf3da618fb4&amp;mpshare=1&amp;scene=1&amp;srcid=0621gAv1FMtrgoahD01psMZr&amp;pass_ticket=LqhRfckPxAVG2dF%2FjxV%2F9%2FcEb5pShRgewJe%2FttJn2gIlIyGF%2FbsgGmzcbsV%2BLmMK#rd" target="_blank" rel="external">Local File Inclusion vulnerability in phpMyAdmin latest version 4.8.1</a>. And the exploiting of this vulnerability may lead to Remote Code Execution. In this article, we will use VulnSpy’s <a href="http://www.vulnspy.com/phpmyadmin-4.8.1/" target="_blank" rel="external">online phpMyAdmin environment</a> to demonstrate the exploit of this vulnerability.</p>
+<a id="more"></a>
+<hr>
 <ul>
 <li><em>Issue from <a href="https://github.com/OJ" target="_blank" rel="external">OJ Reeves</a>: <a href="https://github.com/vulnspy/vulnspy.github.io/issues/1" target="_blank" rel="external">phpMyAdmin 4.8.x LFI to RCE – encoding not required </a></em></li>
 </ul>
@@ -215,8 +226,7 @@
     <summary type="html">
     
       &lt;p&gt;Author: &lt;a href=&quot;https://twitter.com/ambulong&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;@Ambulong&lt;/a&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;em&gt;Issue from &lt;a href=&quot;https://
+&lt;p&gt;Security Team &lt;a href=&quot;http://chamd5.org&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;ChaMd5&lt;/a&gt; disclose a &lt;a href=&quot;https://mp.weixin.qq.com/s?__biz=MzIzMTc1MjExOQ==&amp;amp;mid=2247485036&amp;amp;idx=1&amp;amp;sn=8e9647906c5d94f72564dec5bc51a2ab&amp;amp;chksm=e89e2eb4dfe9a7a28bff2efebb5b2723782dab660acff074c3f18c9e7dca924abdf3da618fb4&amp;amp;mpshare=1&amp;amp;scene=1&amp;amp;srcid=0621gAv1FMtrgoahD01psMZr&amp;amp;pass_ticket=LqhRfckPxAVG2dF%2FjxV%2F9%2FcEb5pShRgewJe%2FttJn2gIlIyGF%2FbsgGmzcbsV%2BLmMK#rd&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Local File Inclusion vulnerability in phpMyAdmin latest version 4.8.1&lt;/a&gt;. And the exploiting of this vulnerability may lead to Remote Code Execution. In this article, we will use VulnSpy’s &lt;a href=&quot;http://www.vulnspy.com/phpmyadmin-4.8.1/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;online phpMyAdmin environment&lt;/a&gt; to demonstrate the exploit of this vulnerability.&lt;/p&gt;
     
     </summary>
     
@@ -230,9 +240,12 @@
     <link href="http://blog.vulnspy.com/2018/06/12/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-PMASA-2017-9-exploit/"/>
     <id>http://blog.vulnspy.com/2018/06/12/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-PMASA-2017-9-exploit/</id>
     <published>2018-06-12T01:00:56.000Z</published>
-    <updated>2018-06-12T11:32:59.621Z</updated>
+    <updated>2018-07-17T04:02:26.579Z</updated>
     
     <content type="html"><![CDATA[<p>Author: <a href="https://twitter.com/ambulong" target="_blank" rel="external">@Ambulong</a></p>
+<p>phpMyAdmin is a well-known MySQL/MariaDB online management tool, phpMyAdmin team released the version 4.7.7 that addresses the CSRF vulnerability found by Barot. (<a href="https://www.phpmyadmin.net/security/PMASA-2017-9/" target="_blank" rel="external">PMASA-2017-9</a>). The vulnerability allows an attacker to execute an arbitrary SQL statement silently by inducing an administrator to access malicious pages.</p>
+<a id="more"></a>
+<hr>
 <h2 id="1-phpMyAmin-4-7-x-XSRF-CSRF-Vulnerability-PMASA-2017-9"><a href="#1-phpMyAmin-4-7-x-XSRF-CSRF-Vulnerability-PMASA-2017-9" class="headerlink" title="1 phpMyAmin 4.7.x XSRF/CSRF Vulnerability (PMASA-2017-9)"></a>1 phpMyAmin 4.7.x XSRF/CSRF Vulnerability (PMASA-2017-9)</h2><p>phpMyAdmin is a well-known MySQL/MariaDB online management tool, phpMyAdmin team released the version 4.7.7 that addresses the CSRF vulnerability found by Barot. (<a href="https://www.phpmyadmin.net/security/PMASA-2017-9/" target="_blank" rel="external">PMASA-2017-9</a>). The vulnerability allows an attacker to execute an arbitrary SQL statement silently by inducing an administrator to access malicious pages.</p>
 <p>In this article, we will use VulnSpy’s <a href="https://www.vulnspy.com/?u=pmasa-2017-9" target="_blank" rel="external">online phpMyAdmin environment</a> to demonstrate the exploit of this vulnerability.</p>
 <p><strong>VulnSpy’s online phpMyAdmin environment address: <a href="https://www.vulnspy.com/?u=pmasa-2017-9" target="_blank" rel="external">https://www.vulnspy.com/?u=pmasa-2017-9</a></strong></p>
@@ -275,7 +288,7 @@
     <summary type="html">
     
       &lt;p&gt;Author: &lt;a href=&quot;https://twitter.com/ambulong&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;@Ambulong&lt;/a&gt;&lt;/p&gt;
-&lt;h2 id=&quot;1-phpMyAmin-4-7-x-XSRF-CSRF-Vulne
+&lt;p&gt;phpMyAdmin is a well-known MySQL/MariaDB online management tool, phpMyAdmin team released the version 4.7.7 that addresses the CSRF vulnerability found by Barot. (&lt;a href=&quot;https://www.phpmyadmin.net/security/PMASA-2017-9/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;PMASA-2017-9&lt;/a&gt;). The vulnerability allows an attacker to execute an arbitrary SQL statement silently by inducing an administrator to access malicious pages.&lt;/p&gt;
     
     </summary>
     
@@ -289,9 +302,12 @@
     <link href="http://blog.vulnspy.com/2018/06/10/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-exploit/"/>
     <id>http://blog.vulnspy.com/2018/06/10/phpMyAdmin-4-7-x-XSRF-CSRF-vulnerability-exploit/</id>
     <published>2018-06-10T15:58:49.000Z</published>
-    <updated>2018-06-12T11:34:19.541Z</updated>
+    <updated>2018-07-17T04:02:02.445Z</updated>
     
     <content type="html"><![CDATA[<p>作者: <a href="https://twitter.com/ambulong" target="_blank" rel="external">Ambulong</a></p>
+<p>phpMyAdmin是个知名MySQL/MariaDB在线管理工具，phpMyAdmin团队在4.7.7版本中修复了一个危害严重的CSRF漏洞（<a href="https://www.phpmyadmin.net/security/PMASA-2017-9/" target="_blank" rel="external">PMASA-2017-9</a>），攻击者可以通过诱导管理员访问恶意页面，悄无声息地执行任意SQL语句。</p>
+<a id="more"></a>
+<hr>
 <p>phpMyAdmin是个知名MySQL/MariaDB在线管理工具，phpMyAdmin团队在4.7.7版本中修复了一个危害严重的CSRF漏洞（<a href="https://www.phpmyadmin.net/security/PMASA-2017-9/" target="_blank" rel="external">PMASA-2017-9</a>），攻击者可以通过诱导管理员访问恶意页面，悄无声息地执行任意SQL语句。</p>
 <p>该篇文章我们将结合VulnSpy的<a href="https://www.vulnspy.com/?u=pmasa-2017-9" target="_blank" rel="external">在线phpMyAdmin环境</a>来熟悉该漏洞的利用。</p>
 <p><strong>在线 phpMyAdmin CSRF 演练地址：<a href="https://www.vulnspy.com/?u=pmasa-2017-9" target="_blank" rel="external">https://www.vulnspy.com/?u=pmasa-2017-9</a></strong></p>
@@ -357,7 +373,7 @@
     <summary type="html">
     
       &lt;p&gt;作者: &lt;a href=&quot;https://twitter.com/ambulong&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Ambulong&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;phpMyAdmin是个知名MySQL/MariaDB在线管理工具，phpMyAdmi
+&lt;p&gt;phpMyAdmin是个知名MySQL/MariaDB在线管理工具，phpMyAdmin团队在4.7.7版本中修复了一个危害严重的CSRF漏洞（&lt;a href=&quot;https://www.phpmyadmin.net/security/PMASA-2017-9/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;PMASA-2017-9&lt;/a&gt;），攻击者可以通过诱导管理员访问恶意页面，悄无声息地执行任意SQL语句。&lt;/p&gt;
     
     </summary>
     
@@ -371,9 +387,12 @@
     <link href="http://blog.vulnspy.com/2017/11/09/Wordpress-4-8-2-SQL-Injection-POC/"/>
     <id>http://blog.vulnspy.com/2017/11/09/Wordpress-4-8-2-SQL-Injection-POC/</id>
     <published>2017-11-09T11:13:04.000Z</published>
-    <updated>2018-01-16T11:23:16.917Z</updated>
+    <updated>2018-07-17T04:03:49.711Z</updated>
     
-    <content type="html"><![CDATA[<p>Author: Ambulong</p>
+    <content type="html"><![CDATA[<p>Author: <a href="https://twitter.com/ambulong" target="_blank" rel="external">@Ambulong</a></p>
+<p>I found this vulnerability after reading <a href="https://medium.com/websec/wordpress-sqli-bbb2afcc8e94" target="_blank" rel="external">slavco’s post</a>, and reported it to Wordpress Team via Hackerone on Sep. 2nd, 2017. But, unfortunately, WordPress team didn’t pay attention to this report too.</p>
+<a id="more"></a>
+<hr>
 <p>I found this vulnerability after reading <a href="https://medium.com/websec/wordpress-sqli-bbb2afcc8e94" target="_blank" rel="external">slavco’s post</a>, and reported it to Wordpress Team via Hackerone on Sep. 2nd, 2017. But, unfortunately, WordPress team didn’t pay attention to this report too.</p>
 <h2 id="SQL-Injection-Details"><a href="#SQL-Injection-Details" class="headerlink" title="# SQL Injection Details"></a># SQL Injection Details</h2><ul>
 <li><a href="https://medium.com/websec/wordpress-sqli-bbb2afcc8e94" target="_blank" rel="external">Wordpress SQLi by slavco</a></li>
@@ -412,8 +431,8 @@
     
     <summary type="html">
     
-      &lt;p&gt;Author: Ambulong&lt;/p&gt;
-&lt;p&gt;I found this vulnerability after reading &lt;a href=&quot;https://medium.com/websec/wordpress-sqli-bbb2afcc8e94&quot; target=&quot;
+      &lt;p&gt;Author: &lt;a href=&quot;https://twitter.com/ambulong&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;@Ambulong&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;I found this vulnerability after reading &lt;a href=&quot;https://medium.com/websec/wordpress-sqli-bbb2afcc8e94&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;slavco’s post&lt;/a&gt;, and reported it to Wordpress Team via Hackerone on Sep. 2nd, 2017. But, unfortunately, WordPress team didn’t pay attention to this report too.&lt;/p&gt;
     
     </summary>
     
@@ -427,9 +446,12 @@
     <link href="http://blog.vulnspy.com/2017/09/05/Wordpress-POST-META-Check-Bypass/"/>
     <id>http://blog.vulnspy.com/2017/09/05/Wordpress-POST-META-Check-Bypass/</id>
     <published>2017-09-04T16:00:00.000Z</published>
-    <updated>2018-01-16T11:23:30.141Z</updated>
+    <updated>2018-07-17T04:04:30.332Z</updated>
     
-    <content type="html"><![CDATA[<p>作者：Ambulong</p>
+    <content type="html"><![CDATA[<p>作者：<a href="https://twitter.com/ambulong" target="_blank" rel="external">@Ambulong</a></p>
+<p>本文将介绍如何绕过Wordpress的<code>meta_key</code>检查，添加字段/栏目名以<code>下划线</code>开头的<code>自定义栏目/字段</code>。</p>
+<a id="more"></a>
+<hr>
 <p>Wordpress中的POST META为<code>文章</code>的<code>自定义栏目/字段</code>，就如一篇<code>文章</code>中会有<code>标题</code>、<code>作者</code>等字段，但是对于有些主题/插件来说，<code>文章</code>中的自有字段显得不够用，就需要用到<code>自定义栏目/字段</code>。</p>
 <p><em>（该操作的位置在<code>添加/编辑文章</code>，在文本编辑框下方的<code>自定义栏目</code>，如果没有找到<code>自定义栏目</code>，需要在右上角的<code>显示选项</code>内将<code>自定义栏目</code>勾选。）</em></p>
 <p><code>自定义栏目/字段</code>的数据以<code>meta_key</code>（字段/栏目名）-&gt;<code>meta_value</code>（值）的形式存放在<code>wp_postmeta</code>表内。以<code>下划线</code>开头的<code>meta_key</code>（字段/栏目名）被认为是保留字段，不允许用户添加。</p>
@@ -464,8 +486,8 @@
     
     <summary type="html">
     
-      &lt;p&gt;作者：Ambulong&lt;/p&gt;
-&lt;p&gt;Wordpress中的POST META为&lt;code&gt;文章&lt;/code&gt;的&lt;code&gt;自定义栏目/字段&lt;/code&gt;，就如一篇&lt;code&gt;文章&lt;/code&gt;中会有&lt;code&gt;标题&lt;/code&gt;、&lt;code&gt;作者&lt;/code&gt;等字段，但是
+      &lt;p&gt;作者：&lt;a href=&quot;https://twitter.com/ambulong&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;@Ambulong&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;本文将介绍如何绕过Wordpress的&lt;code&gt;meta_key&lt;/code&gt;检查，添加字段/栏目名以&lt;code&gt;下划线&lt;/code&gt;开头的&lt;code&gt;自定义栏目/字段&lt;/code&gt;。&lt;/p&gt;
     
     </summary>
     
@@ -479,9 +501,12 @@
     <link href="http://blog.vulnspy.com/2017/09/03/Wordpress-SQL-Injection-Analysis-2/"/>
     <id>http://blog.vulnspy.com/2017/09/03/Wordpress-SQL-Injection-Analysis-2/</id>
     <published>2017-09-02T17:14:41.000Z</published>
-    <updated>2018-01-16T11:23:41.457Z</updated>
+    <updated>2018-07-17T04:04:56.964Z</updated>
     
-    <content type="html"><![CDATA[<p>作者：Ambulong</p>
+    <content type="html"><![CDATA[<p>作者：<a href="https://twitter.com/ambulong" target="_blank" rel="external">@Ambulong</a></p>
+<p>在上一篇文章 <a href="/2017/09/05/Wordpress-SQL-Injection-Analysis-1/">Wordpress SQL注入分析（一）</a> 中，我们分析了Wordpress中的prepare函数在什么情况下会产生SQL注入漏洞。本篇文章将分析Wordpress中的一处SQL注入。</p>
+<a id="more"></a>
+<hr>
 <ul>
 <li><a href="/2017/09/02/Wordpress-SQL-Injection-Analysis-1/">Wordpress SQL注入分析（一）</a></li>
 <li><a href="/2017/09/03/Wordpress-SQL-Injection-Analysis-2/">Wordpress SQL注入分析（二）</a></li>
@@ -546,10 +571,8 @@
     
     <summary type="html">
     
-      &lt;p&gt;作者：Ambulong&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&quot;/2017/09/02/Wordpress-SQL-Injection-Analysis-1/&quot;&gt;Wordpress SQL注入分析（一）&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;/2017/09/03
+      &lt;p&gt;作者：&lt;a href=&quot;https://twitter.com/ambulong&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;@Ambulong&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;在上一篇文章 &lt;a href=&quot;/2017/09/05/Wordpress-SQL-Injection-Analysis-1/&quot;&gt;Wordpress SQL注入分析（一）&lt;/a&gt; 中，我们分析了Wordpress中的prepare函数在什么情况下会产生SQL注入漏洞。本篇文章将分析Wordpress中的一处SQL注入。&lt;/p&gt;
     
     </summary>
     
@@ -563,9 +586,15 @@
     <link href="http://blog.vulnspy.com/2017/09/02/Wordpress-SQL-Injection-Analysis-1/"/>
     <id>http://blog.vulnspy.com/2017/09/02/Wordpress-SQL-Injection-Analysis-1/</id>
     <published>2017-09-01T16:50:59.000Z</published>
-    <updated>2018-01-16T12:23:03.739Z</updated>
+    <updated>2018-07-17T04:04:48.056Z</updated>
     
-    <content type="html"><![CDATA[<p>作者：Ambulong</p>
+    <content type="html"><![CDATA[<p>作者：<a href="https://twitter.com/ambulong" target="_blank" rel="external">@Ambulong</a></p>
+<ul>
+<li><a href="/2017/09/02/Wordpress-SQL-Injection-Analysis-1/">Wordpress SQL注入分析（一）</a></li>
+<li><a href="/2017/09/03/Wordpress-SQL-Injection-Analysis-2/">Wordpress SQL注入分析（二）</a></li>
+</ul>
+<a id="more"></a>
+<hr>
 <ul>
 <li><a href="/2017/09/02/Wordpress-SQL-Injection-Analysis-1/">Wordpress SQL注入分析（一）</a></li>
 <li><a href="/2017/09/03/Wordpress-SQL-Injection-Analysis-2/">Wordpress SQL注入分析（二）</a></li>
@@ -634,10 +663,11 @@
     
     <summary type="html">
     
-      &lt;p&gt;作者：Ambulong&lt;/p&gt;
+      &lt;p&gt;作者：&lt;a href=&quot;https://twitter.com/ambulong&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;@Ambulong&lt;/a&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&quot;/2017/09/02/Wordpress-SQL-Injection-Analysis-1/&quot;&gt;Wordpress SQL注入分析（一）&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;/2017/09/03
+&lt;li&gt;&lt;a href=&quot;/2017/09/03/Wordpress-SQL-Injection-Analysis-2/&quot;&gt;Wordpress SQL注入分析（二）&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
     
     </summary>
     
@@ -651,9 +681,12 @@
     <link href="http://blog.vulnspy.com/2017/08/12/SSRF-And-URL-Related-TIPS/"/>
     <id>http://blog.vulnspy.com/2017/08/12/SSRF-And-URL-Related-TIPS/</id>
     <published>2017-08-11T16:00:01.000Z</published>
-    <updated>2018-01-16T11:23:07.033Z</updated>
+    <updated>2018-07-17T04:03:46.107Z</updated>
     
-    <content type="html"><![CDATA[<p>Author: Ambulong</p>
+    <content type="html"><![CDATA[<p>Author: <a href="https://twitter.com/ambulong" target="_blank" rel="external">@Ambulong</a></p>
+<p>SSRF And URL Related TIPS</p>
+<a id="more"></a>
+<hr>
 <h1 id="SSRF-Related-Tips"><a href="#SSRF-Related-Tips" class="headerlink" title="SSRF Related Tips"></a>SSRF Related Tips</h1><h2 id="Vulnerabilities"><a href="#Vulnerabilities" class="headerlink" title="Vulnerabilities"></a>Vulnerabilities</h2><ul>
 <li>Weblogic SSRF</li>
 <li>DokuWiki<ul>
@@ -720,8 +753,8 @@
     
     <summary type="html">
     
-      &lt;p&gt;Author: Ambulong&lt;/p&gt;
-&lt;h1 id=&quot;SSRF-Related-Tips&quot;&gt;&lt;a href=&quot;#SSRF-Related-Tips&quot; class=&quot;headerlink&quot; title=&quot;SSRF Related Tips&quot;&gt;&lt;/a&gt;SSRF Relate
+      &lt;p&gt;Author: &lt;a href=&quot;https://twitter.com/ambulong&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;@Ambulong&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;SSRF And URL Related TIPS&lt;/p&gt;
     
     </summary>
     
@@ -735,9 +768,12 @@
     <link href="http://blog.vulnspy.com/2017/08/02/Local-Privilege-Escalation-Tips/"/>
     <id>http://blog.vulnspy.com/2017/08/02/Local-Privilege-Escalation-Tips/</id>
     <published>2017-08-01T16:00:00.000Z</published>
-    <updated>2018-01-16T11:23:10.889Z</updated>
+    <updated>2018-07-17T04:03:35.247Z</updated>
     
-    <content type="html"><![CDATA[<p>Author: Ambulong</p>
+    <content type="html"><![CDATA[<p>Author: <a href="https://twitter.com/ambulong" target="_blank" rel="external">@Ambulong</a></p>
+<p>Local Privilege Escalation Tips</p>
+<a id="more"></a>
+<hr>
 <h1 id="PHP-SESSION"><a href="#PHP-SESSION" class="headerlink" title="PHP SESSION"></a>PHP SESSION</h1><ul>
 <li>phpMyAdmin</li>
 <li>ownCloud</li>
@@ -887,9 +923,8 @@
     
     <summary type="html">
     
-      &lt;p&gt;Author: Ambulong&lt;/p&gt;
-&lt;h1 id=&quot;PHP-SESSION&quot;&gt;&lt;a href=&quot;#PHP-SESSION&quot; class=&quot;headerlink&quot; title=&quot;PHP SESSION&quot;&gt;&lt;/a&gt;PHP SESSION&lt;/h1&gt;&lt;ul&gt;
-&lt;li&gt;phpM
+      &lt;p&gt;Author: &lt;a href=&quot;https://twitter.com/ambulong&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;@Ambulong&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Local Privilege Escalation Tips&lt;/p&gt;
     
     </summary>
     

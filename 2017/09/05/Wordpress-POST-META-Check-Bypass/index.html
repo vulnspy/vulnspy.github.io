@@ -5,19 +5,19 @@
   
   <title>Wordpress POST META_NAME校验绕过 | Vulnspy Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="作者：Ambulong Wordpress中的POST META为文章的自定义栏目/字段，就如一篇文章中会有标题、作者等字段，但是对于有些主题/插件来说，文章中的自有字段显得不够用，就需要用到自定义栏目/字段。 （该操作的位置在添加/编辑文章，在文本编辑框下方的自定义栏目，如果没有找到自定义栏目，需要在右上角的显示选项内将自定义栏目勾选。） 自定义栏目/字段的数据以meta_key（字段/栏目名）">
+  <meta name="description" content="作者：@Ambulong 本文将介绍如何绕过Wordpress的meta_key检查，添加字段/栏目名以下划线开头的自定义栏目/字段。">
 <meta name="keywords" content="漏洞分析">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Wordpress POST META_NAME校验绕过">
 <meta property="og:url" content="http://blog.vulnspy.com/2017/09/05/Wordpress-POST-META-Check-Bypass/index.html">
 <meta property="og:site_name" content="Vulnspy Blog">
-<meta property="og:description" content="作者：Ambulong Wordpress中的POST META为文章的自定义栏目/字段，就如一篇文章中会有标题、作者等字段，但是对于有些主题/插件来说，文章中的自有字段显得不够用，就需要用到自定义栏目/字段。 （该操作的位置在添加/编辑文章，在文本编辑框下方的自定义栏目，如果没有找到自定义栏目，需要在右上角的显示选项内将自定义栏目勾选。） 自定义栏目/字段的数据以meta_key（字段/栏目名）">
+<meta property="og:description" content="作者：@Ambulong 本文将介绍如何绕过Wordpress的meta_key检查，添加字段/栏目名以下划线开头的自定义栏目/字段。">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://blog.vulnspy.com/2017/09/05/Wordpress-POST-META-Check-Bypass/1.2.1.png">
-<meta property="og:updated_time" content="2018-01-16T11:23:30.141Z">
+<meta property="og:updated_time" content="2018-07-17T04:04:30.332Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Wordpress POST META_NAME校验绕过">
-<meta name="twitter:description" content="作者：Ambulong Wordpress中的POST META为文章的自定义栏目/字段，就如一篇文章中会有标题、作者等字段，但是对于有些主题/插件来说，文章中的自有字段显得不够用，就需要用到自定义栏目/字段。 （该操作的位置在添加/编辑文章，在文本编辑框下方的自定义栏目，如果没有找到自定义栏目，需要在右上角的显示选项内将自定义栏目勾选。） 自定义栏目/字段的数据以meta_key（字段/栏目名）">
+<meta name="twitter:description" content="作者：@Ambulong 本文将介绍如何绕过Wordpress的meta_key检查，添加字段/栏目名以下划线开头的自定义栏目/字段。">
 <meta name="twitter:image" content="http://blog.vulnspy.com/2017/09/05/Wordpress-POST-META-Check-Bypass/1.2.1.png">
   
     <link rel="alternate" href="/atom.xml" title="Vulnspy Blog" type="application/atom+xml">
@@ -103,7 +103,10 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>作者：Ambulong</p>
+        <p>作者：<a href="https://twitter.com/ambulong" target="_blank" rel="external">@Ambulong</a></p>
+<p>本文将介绍如何绕过Wordpress的<code>meta_key</code>检查，添加字段/栏目名以<code>下划线</code>开头的<code>自定义栏目/字段</code>。</p>
+<a id="more"></a>
+<hr>
 <p>Wordpress中的POST META为<code>文章</code>的<code>自定义栏目/字段</code>，就如一篇<code>文章</code>中会有<code>标题</code>、<code>作者</code>等字段，但是对于有些主题/插件来说，<code>文章</code>中的自有字段显得不够用，就需要用到<code>自定义栏目/字段</code>。</p>
 <p><em>（该操作的位置在<code>添加/编辑文章</code>，在文本编辑框下方的<code>自定义栏目</code>，如果没有找到<code>自定义栏目</code>，需要在右上角的<code>显示选项</code>内将<code>自定义栏目</code>勾选。）</em></p>
 <p><code>自定义栏目/字段</code>的数据以<code>meta_key</code>（字段/栏目名）-&gt;<code>meta_value</code>（值）的形式存放在<code>wp_postmeta</code>表内。以<code>下划线</code>开头的<code>meta_key</code>（字段/栏目名）被认为是保留字段，不允许用户添加。</p>
