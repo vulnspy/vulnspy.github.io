@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://blog.vulnspy.com/"/>
-  <updated>2018-07-17T04:04:01.840Z</updated>
+  <updated>2018-10-24T04:54:15.194Z</updated>
   <id>http://blog.vulnspy.com/</id>
   
   <author>
@@ -14,6 +14,84 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>jQuery-File-Upload &lt;= 9.x 远程命令执行漏洞 (ImageMagick/Ghostscript)</title>
+    <link href="http://blog.vulnspy.com/2018/10/23/jQuery-File-Upload-9-x-Remote-Code-Execution-With-ImageMagick-Ghostscript-CN/"/>
+    <id>http://blog.vulnspy.com/2018/10/23/jQuery-File-Upload-9-x-Remote-Code-Execution-With-ImageMagick-Ghostscript-CN/</id>
+    <published>2018-10-23T14:18:14.000Z</published>
+    <updated>2018-10-24T04:54:15.194Z</updated>
+    
+    <content type="html"><![CDATA[<p>作者: <a href="https://twitter.com/ambulong" target="_blank" rel="external">@Ambulong</a></p>
+<p><a href="https://github.com/blueimp/jQuery-File-Upload" target="_blank" rel="external">jQuery-File-Upload</a> 是 Github 上继 jQuery 之后最受关注的 jQuery 项目，该项目最近被披露出一个存在了长达三年之久的任意文件上传漏洞，该漏洞在随后发布的 v9.22.2 版本中被修复，但是在 <a href="http://www.vulnspy.com/" target="_blank" rel="external">VulnSpy</a> 团队对代码的复查中发现了另外一个严重的命令执行漏洞，该漏洞允许攻击者通过上传恶意的图片文件来执行任意系统命令。</p>
+<a id="more"></a>
+<h3 id="漏洞细节"><a href="#漏洞细节" class="headerlink" title="漏洞细节"></a>漏洞细节</h3><p>在 jQuery-File-Upload 的 PHP 上传处理文件 <a href="https://github.com/blueimp/jQuery-File-Upload/blob/master/server/php/UploadHandler.php" target="_blank" rel="external">/server/php/UploadHandler.php</a> 中优先使用了 Imagick 来校验上传的图片：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">protected</span> <span class="function"><span class="keyword">function</span> <span class="title">get_image_size</span><span class="params">($file_path)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;options[<span class="string">'image_library'</span>]) &#123;</div><div class="line">        <span class="keyword">if</span> (extension_loaded(<span class="string">'imagick'</span>)) &#123;</div><div class="line">            $image = <span class="keyword">new</span> \Imagick();</div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                <span class="keyword">if</span> (@$image-&gt;pingImage($file_path)) &#123;</div><div class="line">                    $dimensions = <span class="keyword">array</span>($image-&gt;getImageWidth(), $image-&gt;getImageHeight());</div><div class="line">                    $image-&gt;destroy();</div><div class="line">                    <span class="keyword">return</span> $dimensions;</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">            &#125; <span class="keyword">catch</span> (\<span class="keyword">Exception</span> $e) &#123;</div><div class="line">                error_log($e-&gt;getMessage());</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;options[<span class="string">'image_library'</span>] === <span class="number">2</span>) &#123;</div><div class="line">            $cmd = <span class="keyword">$this</span>-&gt;options[<span class="string">'identify_bin'</span>];</div><div class="line">            $cmd .= <span class="string">' -ping '</span>.escapeshellarg($file_path);</div><div class="line">            exec($cmd, $output, $error);</div><div class="line">            <span class="keyword">if</span> (!$error &amp;&amp; !<span class="keyword">empty</span>($output)) &#123;</div><div class="line">                <span class="comment">// image.jpg JPEG 1920x1080 1920x1080+0+0 8-bit sRGB 465KB 0.000u 0:00.000</span></div><div class="line">                $infos = preg_split(<span class="string">'/\s+/'</span>, substr($output[<span class="number">0</span>], strlen($file_path)));</div><div class="line">                $dimensions = preg_split(<span class="string">'/x/'</span>, $infos[<span class="number">2</span>]);</div><div class="line">                <span class="keyword">return</span> $dimensions;</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (!function_exists(<span class="string">'getimagesize'</span>)) &#123;</div><div class="line">        error_log(<span class="string">'Function not found: getimagesize'</span>);</div><div class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> @getimagesize($file_path);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>我们都知道 ImageMagick 在近几年来出现了多个严重的安全漏洞：</p>
+<ul>
+<li><a href="https://seclists.org/oss-sec/2018/q3/142" target="_blank" rel="external">More Ghostscript Issues: Should we disable PS coders in policy.xml by default?</a></li>
+<li><a href="http://seclists.org/oss-sec/2016/q4/29" target="_blank" rel="external">CVE Request - multiple ghostscript -dSAFER sandbox problems</a></li>
+<li><a href="https://seclists.org/oss-sec/2016/q2/432" target="_blank" rel="external">CVE Request: GraphicsMagick and ImageMagick popen() shell vulnerability via filename</a></li>
+</ul>
+<p>因此我们可已直接通过上传含有恶意代码的图片来利用该漏洞，按照老规矩，<a href="http://www.vulnspy.com/" target="_blank" rel="external">VulnSpy</a> 已经准备好了在线的实验环境，大家可以移步到下面链接进行测试：</p>
+<p><strong>在线测试地址：<a href="https://www.vulnspy.com/cn-jquery-file-upload-below-v9.x-rce/" target="_blank" rel="external">https://www.vulnspy.com/cn-jquery-file-upload-below-v9.x-rce/</a></strong></p>
+<h3 id="如何修复"><a href="#如何修复" class="headerlink" title="如何修复"></a>如何修复</h3><p>将 <a href="https://github.com/blueimp/jQuery-File-Upload/blob/286f25ce9646b7f699110ef877e346930b1b9cad/server/php/UploadHandler.php#L131" target="_blank" rel="external">/server/php/UploadHandler.php</a> 中的默认图片处理库修改为GD库：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Set to 0 to use the GD library to scale and orient images,</span></div><div class="line"><span class="comment">// set to 1 to use imagick (if installed, falls back to GD),</span></div><div class="line"><span class="comment">// set to 2 to use the ImageMagick convert binary directly:</span></div><div class="line"><span class="string">'image_library'</span> =&gt; <span class="number">0</span></div></pre></td></tr></table></figure>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><ul>
+<li><a href="https://github.com/blueimp/jQuery-File-Upload/blob/master/VULNERABILITIES.md#remote-code-execution-vulnerability-in-the-php-component" target="_blank" rel="external">Remote code execution vulnerability in the PHP component</a></li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;作者: &lt;a href=&quot;https://twitter.com/ambulong&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;@Ambulong&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/blueimp/jQuery-File-Upload&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;jQuery-File-Upload&lt;/a&gt; 是 Github 上继 jQuery 之后最受关注的 jQuery 项目，该项目最近被披露出一个存在了长达三年之久的任意文件上传漏洞，该漏洞在随后发布的 v9.22.2 版本中被修复，但是在 &lt;a href=&quot;http://www.vulnspy.com/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;VulnSpy&lt;/a&gt; 团队对代码的复查中发现了另外一个严重的命令执行漏洞，该漏洞允许攻击者通过上传恶意的图片文件来执行任意系统命令。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="漏洞分析" scheme="http://blog.vulnspy.com/tags/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>jQuery-File-Upload &lt;= 9.x Remote Code Execution (with ImageMagick/Ghostscript)</title>
+    <link href="http://blog.vulnspy.com/2018/10/23/jQuery-File-Upload-9-x-Remote-Code-Execution-With-ImageMagick-Ghostscript/"/>
+    <id>http://blog.vulnspy.com/2018/10/23/jQuery-File-Upload-9-x-Remote-Code-Execution-With-ImageMagick-Ghostscript/</id>
+    <published>2018-10-23T14:14:57.000Z</published>
+    <updated>2018-10-24T04:54:28.665Z</updated>
+    
+    <content type="html"><![CDATA[<p>Author: <a href="https://twitter.com/ambulong" target="_blank" rel="external">@Ambulong</a></p>
+<p><a href="https://github.com/blueimp/jQuery-File-Upload" target="_blank" rel="external">jQuery-File-Upload</a> is the second most starred jQuery project on GitHub, after the jQuery framework itself. The project was recently reported to have a three-year-old arbitrary file upload vulnerability that was fixed in the release of v9.22.2, but another serious command execution vulnerability was found in the <a href="http://www.vulnspy.com/" target="_blank" rel="external">VulnSpy</a> team’s review of the code, this vulnerability allows attackers to execute arbitrary system commands by uploading malicious picture files.</p>
+<a id="more"></a>
+<p>The Imagick extension is used by default to verify uploaded images in the jQuery-File-Upload upload file <a href="https://github.com/blueimp/jQuery-File-Upload/blob/master/server/php/UploadHandler.php" target="_blank" rel="external">/server/php/UploadHandler.php</a>:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">protected</span> <span class="function"><span class="keyword">function</span> <span class="title">get_image_size</span><span class="params">($file_path)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;options[<span class="string">'image_library'</span>]) &#123;</div><div class="line">        <span class="keyword">if</span> (extension_loaded(<span class="string">'imagick'</span>)) &#123;</div><div class="line">            $image = <span class="keyword">new</span> \Imagick();</div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                <span class="keyword">if</span> (@$image-&gt;pingImage($file_path)) &#123;</div><div class="line">                    $dimensions = <span class="keyword">array</span>($image-&gt;getImageWidth(), $image-&gt;getImageHeight());</div><div class="line">                    $image-&gt;destroy();</div><div class="line">                    <span class="keyword">return</span> $dimensions;</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">            &#125; <span class="keyword">catch</span> (\<span class="keyword">Exception</span> $e) &#123;</div><div class="line">                error_log($e-&gt;getMessage());</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;options[<span class="string">'image_library'</span>] === <span class="number">2</span>) &#123;</div><div class="line">            $cmd = <span class="keyword">$this</span>-&gt;options[<span class="string">'identify_bin'</span>];</div><div class="line">            $cmd .= <span class="string">' -ping '</span>.escapeshellarg($file_path);</div><div class="line">            exec($cmd, $output, $error);</div><div class="line">            <span class="keyword">if</span> (!$error &amp;&amp; !<span class="keyword">empty</span>($output)) &#123;</div><div class="line">                <span class="comment">// image.jpg JPEG 1920x1080 1920x1080+0+0 8-bit sRGB 465KB 0.000u 0:00.000</span></div><div class="line">                $infos = preg_split(<span class="string">'/\s+/'</span>, substr($output[<span class="number">0</span>], strlen($file_path)));</div><div class="line">                $dimensions = preg_split(<span class="string">'/x/'</span>, $infos[<span class="number">2</span>]);</div><div class="line">                <span class="keyword">return</span> $dimensions;</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (!function_exists(<span class="string">'getimagesize'</span>)) &#123;</div><div class="line">        error_log(<span class="string">'Function not found: getimagesize'</span>);</div><div class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> @getimagesize($file_path);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>We all know that several serious security vulnerabilities in ImageMagick has been disclosed in recent years:</p>
+<ul>
+<li><a href="https://seclists.org/oss-sec/2018/q3/142" target="_blank" rel="external">More Ghostscript Issues: Should we disable PS coders in policy.xml by default?</a></li>
+<li><a href="http://seclists.org/oss-sec/2016/q4/29" target="_blank" rel="external">CVE Request - multiple ghostscript -dSAFER sandbox problems</a></li>
+<li><a href="https://seclists.org/oss-sec/2016/q2/432" target="_blank" rel="external">CVE Request: GraphicsMagick and ImageMagick popen() shell vulnerability via filename</a></li>
+</ul>
+<p>Therefore, we can directly exploit the vulnerability by uploading pictures containing malicious code. The <a href="http://www.vulnspy.com/" target="_blank" rel="external">VulnSpy</a> team has provided an online experimental environment, You can go to the following address to reproduce this vulnerability.</p>
+<p><strong>Online Environment: <a href="https://www.vulnspy.com/en-jquery-file-upload-below-v9.x-rce/" target="_blank" rel="external">https://www.vulnspy.com/en-jquery-file-upload-below-v9.x-rce/</a></strong></p>
+<h3 id="How-to-Fix"><a href="#How-to-Fix" class="headerlink" title="How to Fix"></a>How to Fix</h3><p>In File <a href="https://github.com/blueimp/jQuery-File-Upload/blob/286f25ce9646b7f699110ef877e346930b1b9cad/server/php/UploadHandler.php#L131" target="_blank" rel="external">/server/php/UploadHandler.php</a>, change <code>image_library</code> to <code>0</code>:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// Set to 0 to use the GD library to scale and orient images,</span></div><div class="line"><span class="comment">// set to 1 to use imagick (if installed, falls back to GD),</span></div><div class="line"><span class="comment">// set to 2 to use the ImageMagick convert binary directly:</span></div><div class="line"><span class="string">'image_library'</span> =&gt; <span class="number">0</span></div></pre></td></tr></table></figure>
+<h3 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h3><ul>
+<li><a href="https://github.com/blueimp/jQuery-File-Upload/blob/master/VULNERABILITIES.md#remote-code-execution-vulnerability-in-the-php-component" target="_blank" rel="external">Remote code execution vulnerability in the PHP component</a></li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Author: &lt;a href=&quot;https://twitter.com/ambulong&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;@Ambulong&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/blueimp/jQuery-File-Upload&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;jQuery-File-Upload&lt;/a&gt; is the second most starred jQuery project on GitHub, after the jQuery framework itself. The project was recently reported to have a three-year-old arbitrary file upload vulnerability that was fixed in the release of v9.22.2, but another serious command execution vulnerability was found in the &lt;a href=&quot;http://www.vulnspy.com/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;VulnSpy&lt;/a&gt; team’s review of the code, this vulnerability allows attackers to execute arbitrary system commands by uploading malicious picture files.&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="Exploit" scheme="http://blog.vulnspy.com/tags/Exploit/"/>
+    
+  </entry>
   
   <entry>
     <title>Wordpress &lt;= 4.9.6 任意文件删除漏洞</title>
