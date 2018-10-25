@@ -3,19 +3,19 @@
 <head>
   <meta charset="utf-8">
   
-  <title>jQuery-File-Upload &lt;= 9.x Remote Code Execution (with ImageMagick/Ghostscript) | Vulnspy Blog</title>
+  <title>Exploit Remote Code Execution via jQuery-File-Upload &lt;= 9.x (ImageMagick/Ghostscript) | Vulnspy Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="Author: @Ambulong jQuery-File-Upload is the second most starred jQuery project on GitHub, after the jQuery framework itself. The project was recently reported to have a three-year-old arbitrary file u">
 <meta name="keywords" content="Exploit">
 <meta property="og:type" content="article">
-<meta property="og:title" content="jQuery-File-Upload &lt;= 9.x Remote Code Execution (with ImageMagick&#x2F;Ghostscript)">
+<meta property="og:title" content="Exploit Remote Code Execution via jQuery-File-Upload &lt;= 9.x (ImageMagick&#x2F;Ghostscript)">
 <meta property="og:url" content="http://blog.vulnspy.com/2018/10/23/jQuery-File-Upload-9-x-Remote-Code-Execution-With-ImageMagick-Ghostscript/index.html">
 <meta property="og:site_name" content="Vulnspy Blog">
 <meta property="og:description" content="Author: @Ambulong jQuery-File-Upload is the second most starred jQuery project on GitHub, after the jQuery framework itself. The project was recently reported to have a three-year-old arbitrary file u">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-10-24T04:54:28.665Z">
+<meta property="og:updated_time" content="2018-10-25T06:41:50.776Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="jQuery-File-Upload &lt;= 9.x Remote Code Execution (with ImageMagick&#x2F;Ghostscript)">
+<meta name="twitter:title" content="Exploit Remote Code Execution via jQuery-File-Upload &lt;= 9.x (ImageMagick&#x2F;Ghostscript)">
 <meta name="twitter:description" content="Author: @Ambulong jQuery-File-Upload is the second most starred jQuery project on GitHub, after the jQuery framework itself. The project was recently reported to have a three-year-old arbitrary file u">
   
     <link rel="alternate" href="/atom.xml" title="Vulnspy Blog" type="application/atom+xml">
@@ -93,7 +93,7 @@
         
   
     <h1 class="article-title" itemprop="name">
-      jQuery-File-Upload &lt;= 9.x Remote Code Execution (with ImageMagick/Ghostscript)
+      Exploit Remote Code Execution via jQuery-File-Upload &lt;= 9.x (ImageMagick/Ghostscript)
     </h1>
   
 
@@ -104,6 +104,7 @@
         <p>Author: <a href="https://twitter.com/ambulong" target="_blank" rel="external">@Ambulong</a></p>
 <p><a href="https://github.com/blueimp/jQuery-File-Upload" target="_blank" rel="external">jQuery-File-Upload</a> is the second most starred jQuery project on GitHub, after the jQuery framework itself. The project was recently reported to have a three-year-old arbitrary file upload vulnerability that was fixed in the release of v9.22.2, but another serious command execution vulnerability was found in the <a href="http://www.vulnspy.com/" target="_blank" rel="external">VulnSpy</a> team’s review of the code, this vulnerability allows attackers to execute arbitrary system commands by uploading malicious picture files.</p>
 <a id="more"></a>
+<p><strong>Notice: The old title (jQuery-File-Upload &lt;= 9.x Remote Code Execution) had <a href="https://www.reddit.com/r/netsec/comments/9qx1mh/jqueryfileupload_9x_remote_code_execution/" target="_blank" rel="external">some kind of misleading</a>, this is not really an RCE in jQuery-File-Upload. But jQuery-File-Upload make is easier to exploit, this vulnerability should be more danger than <a href="https://github.com/blueimp/jQuery-File-Upload/blob/master/VULNERABILITIES.md#remote-code-execution-vulnerability-in-the-php-component" target="_blank" rel="external">previous RCE</a>, because not everybody use the example code, but they must to use UploadHandler.php.</strong></p>
 <p>The Imagick extension is used by default to verify uploaded images in the jQuery-File-Upload upload file <a href="https://github.com/blueimp/jQuery-File-Upload/blob/master/server/php/UploadHandler.php" target="_blank" rel="external">/server/php/UploadHandler.php</a>:</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">protected</span> <span class="function"><span class="keyword">function</span> <span class="title">get_image_size</span><span class="params">($file_path)</span> </span>&#123;</div><div class="line">    <span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;options[<span class="string">'image_library'</span>]) &#123;</div><div class="line">        <span class="keyword">if</span> (extension_loaded(<span class="string">'imagick'</span>)) &#123;</div><div class="line">            $image = <span class="keyword">new</span> \Imagick();</div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                <span class="keyword">if</span> (@$image-&gt;pingImage($file_path)) &#123;</div><div class="line">                    $dimensions = <span class="keyword">array</span>($image-&gt;getImageWidth(), $image-&gt;getImageHeight());</div><div class="line">                    $image-&gt;destroy();</div><div class="line">                    <span class="keyword">return</span> $dimensions;</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">            &#125; <span class="keyword">catch</span> (\<span class="keyword">Exception</span> $e) &#123;</div><div class="line">                error_log($e-&gt;getMessage());</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">if</span> (<span class="keyword">$this</span>-&gt;options[<span class="string">'image_library'</span>] === <span class="number">2</span>) &#123;</div><div class="line">            $cmd = <span class="keyword">$this</span>-&gt;options[<span class="string">'identify_bin'</span>];</div><div class="line">            $cmd .= <span class="string">' -ping '</span>.escapeshellarg($file_path);</div><div class="line">            exec($cmd, $output, $error);</div><div class="line">            <span class="keyword">if</span> (!$error &amp;&amp; !<span class="keyword">empty</span>($output)) &#123;</div><div class="line">                <span class="comment">// image.jpg JPEG 1920x1080 1920x1080+0+0 8-bit sRGB 465KB 0.000u 0:00.000</span></div><div class="line">                $infos = preg_split(<span class="string">'/\s+/'</span>, substr($output[<span class="number">0</span>], strlen($file_path)));</div><div class="line">                $dimensions = preg_split(<span class="string">'/x/'</span>, $infos[<span class="number">2</span>]);</div><div class="line">                <span class="keyword">return</span> $dimensions;</div><div class="line">            &#125;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span> (!function_exists(<span class="string">'getimagesize'</span>)) &#123;</div><div class="line">        error_log(<span class="string">'Function not found: getimagesize'</span>);</div><div class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> @getimagesize($file_path);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>We all know that several serious security vulnerabilities in ImageMagick has been disclosed in recent years:</p>
@@ -123,7 +124,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://blog.vulnspy.com/2018/10/23/jQuery-File-Upload-9-x-Remote-Code-Execution-With-ImageMagick-Ghostscript/" data-id="cjnmqf3t6000g77pvmm4zcn7g" class="article-share-link">Share</a>
+      <a data-url="http://blog.vulnspy.com/2018/10/23/jQuery-File-Upload-9-x-Remote-Code-Execution-With-ImageMagick-Ghostscript/" data-id="cjno7zp50000gs2pvhypc2s1g" class="article-share-link">Share</a>
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Exploit/">Exploit</a></li></ul>
@@ -138,7 +139,7 @@
       <strong class="article-nav-caption">Newer</strong>
       <div class="article-nav-title">
         
-          jQuery-File-Upload &lt;= 9.x 远程命令执行漏洞 (ImageMagick/Ghostscript)
+          利用 jQuery-File-Upload &lt;= 9.x 触发远程命令执行漏洞 (ImageMagick/Ghostscript)
         
       </div>
     </a>
@@ -188,11 +189,11 @@
       <ul>
         
           <li>
-            <a href="/2018/10/23/jQuery-File-Upload-9-x-Remote-Code-Execution-With-ImageMagick-Ghostscript-CN/">jQuery-File-Upload &lt;= 9.x 远程命令执行漏洞 (ImageMagick/Ghostscript)</a>
+            <a href="/2018/10/23/jQuery-File-Upload-9-x-Remote-Code-Execution-With-ImageMagick-Ghostscript-CN/">利用 jQuery-File-Upload &lt;= 9.x 触发远程命令执行漏洞 (ImageMagick/Ghostscript)</a>
           </li>
         
           <li>
-            <a href="/2018/10/23/jQuery-File-Upload-9-x-Remote-Code-Execution-With-ImageMagick-Ghostscript/">jQuery-File-Upload &lt;= 9.x Remote Code Execution (with ImageMagick/Ghostscript)</a>
+            <a href="/2018/10/23/jQuery-File-Upload-9-x-Remote-Code-Execution-With-ImageMagick-Ghostscript/">Exploit Remote Code Execution via jQuery-File-Upload &lt;= 9.x (ImageMagick/Ghostscript)</a>
           </li>
         
           <li>
