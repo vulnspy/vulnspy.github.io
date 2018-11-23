@@ -215,7 +215,7 @@
     <link href="http://blog.vulnspy.com/2018/06/21/phpMyAdmin-4-8-x-LFI-Exploit/"/>
     <id>http://blog.vulnspy.com/2018/06/21/phpMyAdmin-4-8-x-LFI-Exploit/</id>
     <published>2018-06-21T01:58:48.000Z</published>
-    <updated>2018-07-17T04:02:54.173Z</updated>
+    <updated>2018-11-23T14:14:12.876Z</updated>
     
     <content type="html"><![CDATA[<p>作者: <a href="https://twitter.com/ambulong" target="_blank" rel="external">@Ambulong</a></p>
 <p>今天<a href="http://chamd5.org" target="_blank" rel="external">ChaMd5安全团队</a>公开了一个phpMyAdmin最新版中的本地文件包含漏洞：<a href="https://mp.weixin.qq.com/s?__biz=MzIzMTc1MjExOQ==&amp;mid=2247485036&amp;idx=1&amp;sn=8e9647906c5d94f72564dec5bc51a2ab&amp;chksm=e89e2eb4dfe9a7a28bff2efebb5b2723782dab660acff074c3f18c9e7dca924abdf3da618fb4&amp;mpshare=1&amp;scene=1&amp;srcid=0621gAv1FMtrgoahD01psMZr&amp;pass_ticket=LqhRfckPxAVG2dF%2FjxV%2F9%2FcEb5pShRgewJe%2FttJn2gIlIyGF%2FbsgGmzcbsV%2BLmMK#rd" target="_blank" rel="external">phpmyadmin4.8.1后台getshell</a>。该漏洞利用不要求root帐号，只需能够登录 phpMyAdmin 便能够利用。在这篇文章中我们将使用VulnSpy的<a href="http://www.vulnspy.com/phpmyadmin-4.8.1/" target="_blank" rel="external">在线 phpMyAdmin 环境</a>来演示该漏洞的利用。</p>
@@ -223,6 +223,7 @@
 <hr>
 <ul>
 <li><em>来自 <a href="https://github.com/OJ" target="_blank" rel="external">OJ Reeves</a> 的纠错: <a href="https://github.com/vulnspy/vulnspy.github.io/issues/1" target="_blank" rel="external">phpMyAdmin 4.8.x LFI to RCE – encoding not required </a></em></li>
+<li><em>来自 <a href="https://github.com/m3lon" target="_blank" rel="external">m3lon</a> 的纠错: <a href="https://github.com/vulnspy/vulnspy.github.io/issues/1" target="_blank" rel="external">phpMyAdmin 4.8.x LFI to RCE – encoding not required </a></em></li>
 </ul>
 <p>今天<a href="http://chamd5.org" target="_blank" rel="external">ChaMd5安全团队</a>公开了一个phpMyAdmin最新版中的本地文件包含漏洞：<a href="https://mp.weixin.qq.com/s?__biz=MzIzMTc1MjExOQ==&amp;mid=2247485036&amp;idx=1&amp;sn=8e9647906c5d94f72564dec5bc51a2ab&amp;chksm=e89e2eb4dfe9a7a28bff2efebb5b2723782dab660acff074c3f18c9e7dca924abdf3da618fb4&amp;mpshare=1&amp;scene=1&amp;srcid=0621gAv1FMtrgoahD01psMZr&amp;pass_ticket=LqhRfckPxAVG2dF%2FjxV%2F9%2FcEb5pShRgewJe%2FttJn2gIlIyGF%2FbsgGmzcbsV%2BLmMK#rd" target="_blank" rel="external">phpmyadmin4.8.1后台getshell</a>。该漏洞利用不要求root帐号，只需能够登录 phpMyAdmin 便能够利用。</p>
 <p>在这篇文章中我们将使用VulnSpy的<a href="http://www.vulnspy.com/phpmyadmin-4.8.1/" target="_blank" rel="external">在线 phpMyAdmin 环境</a>来演示该漏洞的利用。</p>
@@ -266,7 +267,7 @@
     <link href="http://blog.vulnspy.com/2018/06/21/phpMyAdmin-4-8-x-Authorited-CLI-to-RCE/"/>
     <id>http://blog.vulnspy.com/2018/06/21/phpMyAdmin-4-8-x-Authorited-CLI-to-RCE/</id>
     <published>2018-06-21T00:16:03.000Z</published>
-    <updated>2018-07-17T04:02:41.404Z</updated>
+    <updated>2018-11-23T14:19:35.770Z</updated>
     
     <content type="html"><![CDATA[<p>Author: <a href="https://twitter.com/ambulong" target="_blank" rel="external">@Ambulong</a></p>
 <p>Security Team <a href="http://chamd5.org" target="_blank" rel="external">ChaMd5</a> disclose a <a href="https://mp.weixin.qq.com/s?__biz=MzIzMTc1MjExOQ==&amp;mid=2247485036&amp;idx=1&amp;sn=8e9647906c5d94f72564dec5bc51a2ab&amp;chksm=e89e2eb4dfe9a7a28bff2efebb5b2723782dab660acff074c3f18c9e7dca924abdf3da618fb4&amp;mpshare=1&amp;scene=1&amp;srcid=0621gAv1FMtrgoahD01psMZr&amp;pass_ticket=LqhRfckPxAVG2dF%2FjxV%2F9%2FcEb5pShRgewJe%2FttJn2gIlIyGF%2FbsgGmzcbsV%2BLmMK#rd" target="_blank" rel="external">Local File Inclusion vulnerability in phpMyAdmin latest version 4.8.1</a>. And the exploiting of this vulnerability may lead to Remote Code Execution. In this article, we will use VulnSpy’s <a href="http://www.vulnspy.com/phpmyadmin-4.8.1/" target="_blank" rel="external">online phpMyAdmin environment</a> to demonstrate the exploit of this vulnerability.</p>
@@ -274,6 +275,7 @@
 <hr>
 <ul>
 <li><em>Issue from <a href="https://github.com/OJ" target="_blank" rel="external">OJ Reeves</a>: <a href="https://github.com/vulnspy/vulnspy.github.io/issues/1" target="_blank" rel="external">phpMyAdmin 4.8.x LFI to RCE – encoding not required </a></em></li>
+<li><em>Issue from <a href="https://github.com/m3lon" target="_blank" rel="external">m3lon</a>: <a href="https://github.com/vulnspy/vulnspy.github.io/issues/1" target="_blank" rel="external">phpMyAdmin 4.8.x LFI to RCE – encoding not required </a></em></li>
 </ul>
 <p>Security Team <a href="http://chamd5.org" target="_blank" rel="external">ChaMd5</a> disclose a <a href="https://mp.weixin.qq.com/s?__biz=MzIzMTc1MjExOQ==&amp;mid=2247485036&amp;idx=1&amp;sn=8e9647906c5d94f72564dec5bc51a2ab&amp;chksm=e89e2eb4dfe9a7a28bff2efebb5b2723782dab660acff074c3f18c9e7dca924abdf3da618fb4&amp;mpshare=1&amp;scene=1&amp;srcid=0621gAv1FMtrgoahD01psMZr&amp;pass_ticket=LqhRfckPxAVG2dF%2FjxV%2F9%2FcEb5pShRgewJe%2FttJn2gIlIyGF%2FbsgGmzcbsV%2BLmMK#rd" target="_blank" rel="external">Local File Inclusion vulnerability in phpMyAdmin latest version 4.8.1</a>. And the exploiting of this vulnerability may lead to Remote Code Execution.</p>
 <p>In this article, we will use VulnSpy’s <a href="http://www.vulnspy.com/phpmyadmin-4.8.1/" target="_blank" rel="external">online phpMyAdmin environment</a> to demonstrate the exploit of this vulnerability.</p>
@@ -286,6 +288,13 @@
 <p><del>Core::checkPageValidity can be bypassed by using by double encoding like <code>%253f</code>.</del></p>
 <p>Core::checkPageValidity can be bypassed by using <code>db_sql.php?</code>.</p>
 <p><em>Thanks for <a href="https://github.com/OJ" target="_blank" rel="external">OJ Reeves</a>‘s report, we don’t need to encode <code>?</code>. Sorry for that mistake. </em></p>
+<ul>
+<li>Issue: <a href="https://github.com/vulnspy/vulnspy.github.io/issues/1" target="_blank" rel="external">phpMyAdmin 4.8.x LFI to RCE – encoding not required </a></li>
+</ul>
+<p><strong>2018-11-23 Update:</strong></p>
+<p><del>Core::checkPageValidity can be bypassed by using <code>db_sql.php?</code>.</del></p>
+<p>Core::checkPageValidity can be bypassed by using <code>db_sql.php?</code>. In windows, the path contains ‘?’ is considered as a invalid path, Core::checkPageValidity can be bypassed by using by double encoding like <code>%253f</code>. REF:<a href="https://docs.microsoft.com/en-us/windows/desktop/FileIO/naming-a-file" target="_blank" rel="external">Naming Files, Paths, and Namespaces</a></p>
+<p><em>Thanks for <a href="https://github.com/m3lon" target="_blank" rel="external">m3lon</a>‘s report, we need to encode <code>?</code> in windows. </em></p>
 <ul>
 <li>Issue: <a href="https://github.com/vulnspy/vulnspy.github.io/issues/1" target="_blank" rel="external">phpMyAdmin 4.8.x LFI to RCE – encoding not required </a></li>
 </ul>
